@@ -23,4 +23,6 @@ public abstract class AEvent {
      * @return The type of the event
      */
     abstract public IEventType getType();
+
+    abstract public String toString();
 }

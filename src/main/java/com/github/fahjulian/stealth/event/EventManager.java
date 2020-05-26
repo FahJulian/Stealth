@@ -85,4 +85,9 @@ public final class EventManager {
         get().listeners.get(eventType).add(new SortedEventListener<>(listener, index));
         Collections.sort(get().listeners.get(eventType));
     }
+
+    @Override
+    public String toString() {
+        return "Stealth App Event Manager";
+    }
 }

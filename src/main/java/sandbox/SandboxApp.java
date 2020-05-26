@@ -2,6 +2,8 @@ package sandbox;
 
 import com.github.fahjulian.stealth.App;
 import com.github.fahjulian.stealth.core.Log;
+import com.github.fahjulian.stealth.entity.Entity;
+import com.github.fahjulian.stealth.entity.Transform;
 import com.github.fahjulian.stealth.event.EventManager;
 
 public class SandboxApp extends App {
@@ -11,6 +13,10 @@ public class SandboxApp extends App {
         EventManager.addListener(SandboxEventType.SANDBOX_EVENT, this::onSandboxEvent1, 2);
         EventManager.addListener(SandboxEventType.SANDBOX_EVENT, this::onSandboxEvent2, 1);
         EventManager.addListener(SandboxEventType.SANDBOX_EVENT, this::onSandboxEvent3, 0);
+        
+        Entity e = new Entity("First Entity", new Transform(), new SandboxComponent());
+        e.getComponent(SandboxComponentType.SANDBOX).init();
+        
         new SandboxEvent();
     }
 

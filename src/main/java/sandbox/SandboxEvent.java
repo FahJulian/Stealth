@@ -15,4 +15,9 @@ public class SandboxEvent extends AEvent {
     public IEventType getType() {
         return SandboxEventType.SANDBOX_EVENT;
     }
+
+    @Override
+    public String toString() {
+        return "SandboxEvent";
+    }
 }
