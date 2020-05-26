@@ -3,7 +3,7 @@ package com.github.fahjulian.stealth.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.fahjulian.stealth.core.AScene;
+import com.github.fahjulian.stealth.core.ASceneLayer;
 import com.github.fahjulian.stealth.core.Log;
 
 /**
@@ -16,7 +16,7 @@ public final class Entity {
     private final String name;
     private final Transform transform;
     private final Map<IComponentType, AComponent> components;
-    private AScene scene;            // TODO: Change to layer??
+    private ASceneLayer layer;        
     private boolean isInitialized;
 
     /**
@@ -120,16 +120,16 @@ public final class Entity {
         return components.containsKey(componentType);
     }
 
-    public void setScene(AScene scene) {
-        this.scene = scene;
+    public void setLayer(ASceneLayer layer) {
+        this.layer = layer;
     }
 
     public String getName() {
         return name;
     }
 
-    public AScene getScene() {
-        return scene;
+    public ASceneLayer getLayer() {
+        return layer;
     }
 
     public Transform getTransform() {
