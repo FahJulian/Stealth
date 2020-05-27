@@ -3,8 +3,8 @@ package com.github.fahjulian.stealth.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.fahjulian.stealth.core.ASceneLayer;
 import com.github.fahjulian.stealth.core.Log;
+import com.github.fahjulian.stealth.scene.ASceneLayer;
 
 /**
  * Stealth features a component based entity system.
@@ -70,6 +70,7 @@ public final class Entity {
         }
 
         components.put(c.getType(), c);
+        c.setEntity(this);
         if (isInitialized) c.init();
     }
 
@@ -90,6 +91,7 @@ public final class Entity {
         } 
 
         components.replace(type, c);
+        c.setEntity(this);
         if (isInitialized) c.init();
     }
 

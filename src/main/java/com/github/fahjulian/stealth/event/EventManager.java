@@ -33,7 +33,7 @@ public final class EventManager {
         }
     }
 
-    private Map<IEventType, List<SortedEventListener<? extends AEvent>>> listeners;
+    private Map<Class<? extends AEvent>, List<SortedEventListener<? extends AEvent>>> listeners;
 
     private static EventManager instance;
 
@@ -61,29 +61,37 @@ public final class EventManager {
      */
     @SuppressWarnings("unchecked")
     public static <E extends AEvent> void dispatch(E event) {
-        if (get().listeners.containsKey(event.getType())) {
-            List<SortedEventListener<? extends AEvent>> listeners = get().listeners.get(event.getType());
+        List<SortedEventListener<?>> listeners = get().getListeners(event.getClass());
+        if (listeners == null) 
+            return;
 
-            for (int i = 0; !event.handled && i < listeners.size(); i++) {
-                IEventListener<E> listener = (IEventListener<E>) listeners.get(i).listener;
-                event.handled = listener.onEvent(event);
-            }
+        for (int i = 0; !event.handled && i < listeners.size(); i++) {
+            IEventListener<E> listener = (IEventListener<E>) listeners.get(i).listener;
+            event.handled = listener.onEvent(event);
         }
     }
 
     /**
      * Register an EventListener for its type of Event
      * @param <E> The class of the EventListener's event
-     * @param eventType The type of Event the eventlistener listens to
+     * @param eventClass The class of the Event the eventlistener listens to
      * @param listener The EventListener to register
      * @param index The "importance" of the listener (Like a zIndex in rendering)
      */
-    public static <E extends AEvent> void addListener(IEventType eventType, IEventListener<E> listener, int index) {
-        if (!get().listeners.containsKey(eventType))
-            get().listeners.put(eventType, new ArrayList<>());
+    public static <E extends AEvent> void addListener(Class<E> eventClass, IEventListener<E> listener, int index) {
+        if (!get().listeners.containsKey(eventClass))
+            get().listeners.put(eventClass, new ArrayList<>());
 
-        get().listeners.get(eventType).add(new SortedEventListener<>(listener, index));
-        Collections.sort(get().listeners.get(eventType));
+        get().listeners.get(eventClass).add(new SortedEventListener<E>(listener, index));
+        Collections.sort(get().listeners.get(eventClass));
+    }
+
+    private <E extends AEvent> List<SortedEventListener<?>> getListeners(Class<E> eventClass) {
+        for (Class<?> key : get().listeners.keySet()) 
+            if (key.isAssignableFrom(eventClass))
+                return listeners.get(key); 
+
+        return null;
     }
 
     @Override

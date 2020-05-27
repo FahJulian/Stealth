@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.fahjulian.stealth.App;
+import com.github.fahjulian.stealth.AApplication;
 import com.github.fahjulian.stealth.core.Log;
 import com.github.fahjulian.stealth.graphics.Shader;
 import com.github.fahjulian.stealth.graphics.Texture;
@@ -58,7 +58,7 @@ public final class ResourcePool {
      * @param shader The shader to store
      */
     public static void addShader(String filepath, Shader shader) {
-        if (App.get().isRunning())
+        if (AApplication.get().isRunning())
             Log.warn("(ResourcePool) Resources should not be added during runtime of the game.");
         if (shaders.containsValue(shader))
             Log.warn("(ResourcePool) Shader %s already exists. A shader should only be added once.", shader);
@@ -77,7 +77,7 @@ public final class ResourcePool {
      * @param texture The shader to store
      */
     public static void addTexture(String filepath, Texture texture) {
-        if (App.get().isRunning())
+        if (AApplication.get().isRunning())
             Log.warn("(ResourcePool) Resources should not be added during runtime of the game.");
         if (textures.containsValue(texture))
             Log.warn("(ResourcePool) Texture %s already exists. A texture should only be added once.", texture);

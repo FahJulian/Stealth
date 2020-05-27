@@ -1,20 +1,20 @@
 package com.github.fahjulian.stealth.event.application;
 
 import com.github.fahjulian.stealth.event.AEvent;
-import com.github.fahjulian.stealth.event.IEventType;
 
 public class UpdateEvent extends AEvent {
 
-    @Override
-    public IEventType getType() {
-        // TODO Auto-generated method stub
-        return null;
+    public final int ID;
+
+    private static int id = 0;
+
+    public UpdateEvent() {
+        this.ID = id++;
     }
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
-        return null;
+        return String.format("UpdateEvent #%d", ID);
     }
     
 }

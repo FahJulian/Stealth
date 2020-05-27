@@ -9,7 +9,7 @@ package com.github.fahjulian.stealth.event;
  */
 public abstract class AEvent {
     
-    boolean handled;
+    boolean handled = false;
 
     /**
      * Must be called by subclassed in order for them 
@@ -18,11 +18,6 @@ public abstract class AEvent {
     protected void dispatch() {
         EventManager.dispatch(this);
     }
-
-    /**
-     * @return The type of the event
-     */
-    abstract public IEventType getType();
 
     abstract public String toString();
 }
