@@ -10,7 +10,7 @@ public abstract class AApplication {
     protected static String logDir = ".log/";
     protected static boolean debug = true;
 
-    private Window window;
+    protected Window window;
     private boolean running;
 
     private static AApplication instance;
@@ -23,14 +23,14 @@ public abstract class AApplication {
         window = Window.get();
         window.init(title, width, height);
 
-        init();
+        onInit();
     }
 
     public static AApplication get() {
         return instance;
     }
 
-    protected abstract void init();
+    protected abstract void onInit();
 
     public void run() {
         running = true;
@@ -68,5 +68,13 @@ public abstract class AApplication {
 
     public boolean isRunning() {
         return running;
+    }
+
+    public static void setLogDir(String logDir) {
+        AApplication.logDir = logDir;
+    }
+
+    public static void setDebug(boolean debug) {
+        AApplication.debug = debug;
     }
 }

@@ -6,7 +6,7 @@ public class RenderEvent extends AEvent {
 
     // TODO: Improve for graphcis system
     public RenderEvent() {
-
+        dispatch();
     }
 
     @Override

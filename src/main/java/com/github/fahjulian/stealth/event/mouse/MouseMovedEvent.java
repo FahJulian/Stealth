@@ -4,6 +4,7 @@ public class MouseMovedEvent extends AMouseEvent {
 
     public MouseMovedEvent(float x, float y) {
 		super(x, y);
+		dispatch();
     }
 
 	@Override

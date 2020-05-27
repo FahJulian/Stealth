@@ -11,6 +11,6 @@ public abstract class AKeyEvent extends AEvent {
     }
 
     public static enum Key {
-        ANY;
+        UNKNOWN;
     }
 }

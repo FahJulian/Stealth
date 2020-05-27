@@ -10,6 +10,7 @@ public class UpdateEvent extends AEvent {
 
     public UpdateEvent() {
         this.ID = id++;
+        dispatch();
     }
 
     @Override

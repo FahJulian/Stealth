@@ -3,6 +3,9 @@ package com.github.fahjulian.stealth.core;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_3;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
@@ -35,10 +38,11 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.fahjulian.stealth.event.key.AKeyEvent;
+import com.github.fahjulian.stealth.event.key.AKeyEvent.Key;
 import com.github.fahjulian.stealth.event.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.event.key.KeyReleasedEvent;
 import com.github.fahjulian.stealth.event.mouse.AMouseEvent;
+import com.github.fahjulian.stealth.event.mouse.AMouseEvent.Button;
 import com.github.fahjulian.stealth.event.mouse.MouseButtonPressedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseButtonReleasedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseDraggedEvent;
@@ -150,7 +154,7 @@ public final class Window {
         }
 
         this.currentScene = scene;
-        scene.init();
+        if (initialized) scene.init();
     }
 
     public String getInitialTitle() {
@@ -179,7 +183,7 @@ class GLFWInputListener {
     }
 
     public void mouseButtonCallback(long windowID, int buttonID, int action, int mods) {
-        AMouseEvent.Button button = translateMouseButton(buttonID);
+        Button button = translateMouseButton(buttonID);
 
         if (action == GLFW_PRESS) {
             pressedButtons.add(button);
@@ -195,7 +199,7 @@ class GLFWInputListener {
     }
 
     public void keyCallback(long window, int keyID, int scancode, int action, int mods) {
-        AKeyEvent.Key key = translateKey(keyID);
+        Key key = translateKey(keyID);
 
         if (action == GLFW_PRESS) {
             new KeyPressedEvent(key);
@@ -204,11 +208,21 @@ class GLFWInputListener {
         }
     }
 
-    private AMouseEvent.Button translateMouseButton(int glfwButtonID) {
-        return null;
+    private Button translateMouseButton(int glfwButtonID) {
+        switch (glfwButtonID) {
+            case GLFW_MOUSE_BUTTON_1: 
+                return Button.LEFT;
+            case GLFW_MOUSE_BUTTON_2:
+                return Button.RIGHT;
+            case GLFW_MOUSE_BUTTON_3:
+                return Button.MIDDLE;
+            default:
+                Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
+                return Button.UNKNOWN;
+        }
     }
 
-    private AKeyEvent.Key translateKey(int glfwKeyID) {
-        return null;
+    private Key translateKey(int glfwKeyID) {
+        return Key.UNKNOWN;
     }
 }

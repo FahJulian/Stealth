@@ -4,6 +4,7 @@ public class KeyPressedEvent extends AKeyEvent {
 
     public KeyPressedEvent(Key key) {
         super(key);
+        dispatch();
     }
 
     @Override

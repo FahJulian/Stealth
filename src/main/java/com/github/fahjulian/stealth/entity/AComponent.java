@@ -10,7 +10,7 @@ public abstract class AComponent {
     /**
      * Initializes the Component. Sets up event listeners.
      */
-    abstract public void init();
+    abstract public void onInit();
     abstract public IComponentType getType();
     abstract public String toString();
 

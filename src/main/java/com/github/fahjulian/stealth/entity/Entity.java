@@ -17,7 +17,7 @@ public final class Entity {
     private final Transform transform;
     private final Map<IComponentType, AComponent> components;
     private ASceneLayer layer;        
-    private boolean isInitialized;
+    private boolean initialized;
 
     /**
      * Construct a new Entity with a name, transform and possible initial components
@@ -29,7 +29,7 @@ public final class Entity {
         this.name = name;
         this.transform = transform;
         this.components = new HashMap<>();
-        this.isInitialized = false;
+        this.initialized = false;
 
         for (AComponent c : components) {
             if (hasComponent(c.getType())) {
@@ -71,7 +71,7 @@ public final class Entity {
 
         components.put(c.getType(), c);
         c.setEntity(this);
-        if (isInitialized) c.init();
+        if (initialized) c.onInit();
     }
 
     /**
@@ -92,7 +92,7 @@ public final class Entity {
 
         components.replace(type, c);
         c.setEntity(this);
-        if (isInitialized) c.init();
+        if (initialized) c.onInit();
     }
 
     /**
@@ -100,9 +100,9 @@ public final class Entity {
      */
     public void init() {
         for (AComponent c : components.values()) {
-            c.init();
+            c.onInit();
         }
-        isInitialized = true;
+        initialized = true;
     }
 
     /**
