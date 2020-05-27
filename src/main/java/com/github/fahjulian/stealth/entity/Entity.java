@@ -1,7 +1,7 @@
 package com.github.fahjulian.stealth.entity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.github.fahjulian.stealth.core.Log;
 import com.github.fahjulian.stealth.scene.ALayer;
@@ -15,7 +15,7 @@ public final class Entity {
     
     private final String name;
     private final Transform transform;
-    private final Map<Class<? extends AComponent>, AComponent> components;
+    private final List<AComponent> components;
     private ALayer layer;        
     private boolean initialized;
 
@@ -28,7 +28,7 @@ public final class Entity {
     public Entity(String name, Transform transform, AComponent... components) {
         this.name = name;
         this.transform = transform;
-        this.components = new HashMap<>();
+        this.components = new ArrayList<>();
         this.initialized = false;
 
         for (AComponent c : components) {
@@ -37,7 +37,7 @@ public final class Entity {
                 continue;
             }
             
-            this.components.put(c.getClass(), c);
+            this.components.add(c);
             c.setEntity(this);
         }
     }
@@ -51,10 +51,9 @@ public final class Entity {
      */
     @SuppressWarnings("unchecked")
     public <C extends AComponent> C getComponent(Class<C> componentClass) {
-        for (Class<? extends AComponent> key : components.keySet()) {
-            if (componentClass.isAssignableFrom(key))
-                return (C) components.get(key);
-        }
+        for (AComponent c : components)
+            if (componentClass.isAssignableFrom(c.getClass()))
+                return (C) c;
 
         return null;
     }
@@ -69,7 +68,7 @@ public final class Entity {
             return;
         }
 
-        components.put(c.getClass(), c);
+        components.add(c);
         c.setEntity(this);
         if (initialized) c.onInit();
     }
@@ -83,9 +82,9 @@ public final class Entity {
             return;
         }
 
-        for (AComponent c : components.values()) {
+        for (AComponent c : components) 
             c.onInit();
-        }
+        
         initialized = true;
     }
 
@@ -94,9 +93,9 @@ public final class Entity {
      * @param type The type of component ot remove
      */
     public <C extends AComponent> void removeComponent(Class<C> componentClass) {
-        for (Class<?> key : components.keySet())
-            if (componentClass.isAssignableFrom(key))
-                components.remove(key);
+        for (AComponent c : components) 
+            if (componentClass.isAssignableFrom(c.getClass()))
+                components.remove(c);
     }
 
     /**
@@ -105,8 +104,8 @@ public final class Entity {
      * @return Whether or not a component of the specified type has been found
      */
     public <C extends AComponent> boolean hasComponent(Class<C> componentClass) {
-        for (Class<?> key : components.keySet())
-            if (componentClass.isAssignableFrom(key))
+        for (AComponent c : components) 
+            if (componentClass.isAssignableFrom(c.getClass()))
                 return true;
 
         return false;
