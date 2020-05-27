@@ -7,7 +7,7 @@ import java.util.List;
 public abstract class AScene {
 
     protected boolean running;
-    protected List<ASceneLayer> layerStack;
+    protected List<ALayer> layerStack;
     protected Camera camera;
     private boolean initialized;
 
@@ -21,15 +21,15 @@ public abstract class AScene {
     public void init() {
         onInit();
 
-        for (ASceneLayer layer : layerStack) 
-            layer.onInit();
+        for (ALayer layer : layerStack) 
+            layer.init();
         
         initialized = true;
     }
 
-    public void add(ASceneLayer layer) {
+    public void add(ALayer layer) {
         layerStack.add(layer);
         layer.setScene(this, layerStack.indexOf(layer));
-        if (initialized) layer.onInit();
+        if (initialized) layer.init();
     }
 }

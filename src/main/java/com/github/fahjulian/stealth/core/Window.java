@@ -164,6 +164,14 @@ public final class Window {
     public void setTitle(String title) {
         glfwSetWindowTitle(glfwID, title);
     }   
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }
 
 

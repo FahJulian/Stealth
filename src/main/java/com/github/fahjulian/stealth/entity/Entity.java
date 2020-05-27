@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.fahjulian.stealth.core.Log;
-import com.github.fahjulian.stealth.scene.ASceneLayer;
+import com.github.fahjulian.stealth.scene.ALayer;
 
 /**
  * Stealth features a component based entity system.
@@ -15,8 +15,8 @@ public final class Entity {
     
     private final String name;
     private final Transform transform;
-    private final Map<IComponentType, AComponent> components;
-    private ASceneLayer layer;        
+    private final Map<Class<? extends AComponent>, AComponent> components;
+    private ALayer layer;        
     private boolean initialized;
 
     /**
@@ -32,11 +32,12 @@ public final class Entity {
         this.initialized = false;
 
         for (AComponent c : components) {
-            if (hasComponent(c.getType())) {
+            if (hasComponent(c.getClass())) {
                 Log.warn("(Entity) Cant add two Components of the same type to entity %s", this.name);
                 continue;
             }
-            this.components.put(c.getType(), c);
+            
+            this.components.put(c.getClass(), c);
             c.setEntity(this);
         }
     }
@@ -49,11 +50,10 @@ public final class Entity {
      * @return The found component or null
      */
     @SuppressWarnings("unchecked")
-    public <C extends AComponent> C getComponent(IComponentType componentType) throws ClassCastException {
-        for (IComponentType type : components.keySet()) {
-            if (type == componentType) {
-                return (C) components.get(type);
-            }
+    public <C extends AComponent> C getComponent(Class<C> componentClass) {
+        for (Class<? extends AComponent> key : components.keySet()) {
+            if (componentClass.isAssignableFrom(key))
+                return (C) components.get(key);
         }
 
         return null;
@@ -64,33 +64,12 @@ public final class Entity {
      * @param c The component to add
      */
     public void addComponent(AComponent c) {
-        if (hasComponent(c.getType())) {
-            Log.warn("(Entity) Cant add two Components of the same type to entity %s", this.name);
+        if (hasComponent(c.getClass())) {
+            Log.warn("(Entity) Cant add two Components of type %s to entity %s", c.getClass(), this.name);
             return;
         }
 
-        components.put(c.getType(), c);
-        c.setEntity(this);
-        if (initialized) c.onInit();
-    }
-
-    /**
-     * Replace the component of the specified component with the new component
-     * @param type The type of component to replace
-     * @param c The new component
-     */
-    public void replaceComponent(IComponentType type, AComponent c) {
-        if (!hasComponent(c.getType())) {
-            Log.warn("(Entity) Cant replace non-existent component of type %s", type);
-            return;
-        }
-
-        if (type != c.getType()) {
-            Log.warn("(Entity) Invalid ComponentType %s for Component %s", type, c);
-            return;
-        } 
-
-        components.replace(type, c);
+        components.put(c.getClass(), c);
         c.setEntity(this);
         if (initialized) c.onInit();
     }
@@ -99,6 +78,11 @@ public final class Entity {
      * Initialize all components the entity holds
      */
     public void init() {
+        if (layer == null) {
+            Log.warn("(Entity) Entity %s must be assigned to a layer before init().", name);
+            return;
+        }
+
         for (AComponent c : components.values()) {
             c.onInit();
         }
@@ -109,8 +93,10 @@ public final class Entity {
      * Remove the component of type type
      * @param type The type of component ot remove
      */
-    public void removeComponent(IComponentType type) {
-        this.components.remove(type);
+    public <C extends AComponent> void removeComponent(Class<C> componentClass) {
+        for (Class<?> key : components.keySet())
+            if (componentClass.isAssignableFrom(key))
+                components.remove(key);
     }
 
     /**
@@ -118,11 +104,15 @@ public final class Entity {
      * @param componentType The type of component to check for
      * @return Whether or not a component of the specified type has been found
      */
-    public boolean hasComponent(IComponentType componentType) {
-        return components.containsKey(componentType);
+    public <C extends AComponent> boolean hasComponent(Class<C> componentClass) {
+        for (Class<?> key : components.keySet())
+            if (componentClass.isAssignableFrom(key))
+                return true;
+
+        return false;
     }
 
-    public void setLayer(ASceneLayer layer) {
+    public void setLayer(ALayer layer) {
         this.layer = layer;
     }
 
@@ -130,7 +120,7 @@ public final class Entity {
         return name;
     }
 
-    public ASceneLayer getLayer() {
+    public ALayer getLayer() {
         return layer;
     }
 
