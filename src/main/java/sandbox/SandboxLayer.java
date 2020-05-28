@@ -3,16 +3,10 @@ package sandbox;
 import com.github.fahjulian.stealth.core.Log;
 import com.github.fahjulian.stealth.entity.Entity;
 import com.github.fahjulian.stealth.entity.Transform;
-import com.github.fahjulian.stealth.event.application.RenderEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseMovedEvent;
 import com.github.fahjulian.stealth.scene.ALayer;
 
 public class SandboxLayer extends ALayer {
-
-    @Override
-    public boolean onRender(RenderEvent event) {
-        return false;
-    }
 
     @Override
     public void onInit() {

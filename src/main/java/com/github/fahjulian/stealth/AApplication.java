@@ -4,6 +4,7 @@ import com.github.fahjulian.stealth.core.Log;
 import com.github.fahjulian.stealth.core.Window;
 import com.github.fahjulian.stealth.event.application.RenderEvent;
 import com.github.fahjulian.stealth.event.application.UpdateEvent;
+import com.github.fahjulian.stealth.scene.AScene;
 
 public abstract class AApplication {
 
@@ -11,11 +12,12 @@ public abstract class AApplication {
     protected static boolean debug = true;
 
     protected Window window;
+    private AScene scene;
     private boolean running;
 
     private static AApplication instance;
 
-    public AApplication(String title, int width, int height) {
+    protected AApplication(String title, int width, int height) {
         instance = this;
         running = false;
 
@@ -24,6 +26,7 @@ public abstract class AApplication {
         window.init(title, width, height);
 
         onInit();
+        getScene().init();
     }
 
     public static AApplication get() {
@@ -64,6 +67,14 @@ public abstract class AApplication {
             excessUpdates += (endTime - startTime) / nsPerUpdate;
             startTime = endTime;
         }
+    }
+
+    public void setScene(AScene scene) {
+        this.scene = scene;
+    }
+
+    public AScene getScene() {
+        return scene;
     }
 
     public boolean isRunning() {

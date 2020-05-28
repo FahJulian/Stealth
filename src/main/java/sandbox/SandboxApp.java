@@ -10,12 +10,13 @@ public class SandboxApp extends AApplication {
 
     @Override
     protected void onInit() {
-        SandboxScene scene = new SandboxScene();
-        window.setScene(scene);
+        setScene(new SandboxScene());
+        getScene().add(new SandboxLayer());
+        getScene().init();
     }
 
     public static void main(String... args) {
-        new SandboxApp("Sandbox App", 500, 500).run();
+        new SandboxApp("Sandbox App", 1000, 1000 / 16 * 9).run();
     }
 }
 

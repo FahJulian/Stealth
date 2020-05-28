@@ -50,7 +50,6 @@ import com.github.fahjulian.stealth.event.mouse.MouseMovedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseScrolledEvent;
 import com.github.fahjulian.stealth.scene.AScene;
 
-import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
@@ -68,6 +67,9 @@ public final class Window {
         initialized = false;
     }
 
+    /**
+     * Retrieve the Window instance
+     */
     public static Window get() {
         if (instance == null)
             instance = new Window();
@@ -75,6 +77,12 @@ public final class Window {
         return instance;
     }
 
+    /**
+     * Initialize the Window instance
+     * @param title The title of the GLFW Window
+     * @param width The width of the GLFW Window
+     * @param height The height of the GLFW Window
+     */
     public void init(String title, int width, int height) {
         this.title = title;
         this.width = width;
@@ -118,20 +126,9 @@ public final class Window {
         Log.info("(Window) Initialized window.");
     }
 
-    public void start() {
-        if (instance == null || !instance.initialized) {
-            Log.error("(Window) Window must be initialized before calling the run() method.");
-            return;
-        }
-
-        if (instance.currentScene == null) {
-            Log.error("(Window) Must first set a scene before calling the run() method");
-            return;
-        }
-
-        Log.info("(LWJGL) Using LWJGL Version %s", Version.getVersion());
-    }
-
+    /**
+     * Free all memory allocated to GLFW
+     */
     public void delete() {
         glfwFreeCallbacks(glfwID);
         glfwDestroyWindow(glfwID);
@@ -139,22 +136,19 @@ public final class Window {
         glfwSetErrorCallback(null).free();
     }
 
+    /**
+     * Allow GLFW Events to be polled.
+     * Should be called in the main loop.
+     */
     public void pollEvents() {
         glfwPollEvents();
     }
 
+    /**
+     * Check if a close event has been called in GLFW
+     */
     public boolean isClosed() {
         return glfwWindowShouldClose(glfwID);
-    }
-
-    public void setScene(AScene scene) {
-        if (scene == null) {
-            Log.error("(Window) Cant set null as the windows scene.");
-            return;
-        }
-
-        this.currentScene = scene;
-        if (initialized) scene.init();
     }
 
     public String getInitialTitle() {

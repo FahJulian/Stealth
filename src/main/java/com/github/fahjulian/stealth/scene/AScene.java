@@ -32,4 +32,8 @@ public abstract class AScene {
         layer.setScene(this, layerStack.indexOf(layer));
         if (initialized) layer.init();
     }
+
+    public Camera getCamera() {
+        return camera;
+    }
 }

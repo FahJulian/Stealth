@@ -10,7 +10,6 @@ public final class Transform {
     private final Vector2f position;
     private final Vector2f scale;
     private int zIndex;
-    private boolean hasChanges;
 
     /**
      * Construct a new emtpy transform
@@ -55,40 +54,40 @@ public final class Transform {
         this.position = position;
         this.scale = scale;
         this.zIndex = zIndex;
-        hasChanges = true;
+    }
+
+    @Override
+    public Transform clone() {
+        return new Transform(position, scale, zIndex);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof Transform))
+            return false;
+                            
+        Transform t = (Transform) o;
+        return t.position.equals(position) && t.scale.equals(scale) && t.zIndex == zIndex;
     }
 
     public void setPosition(float x, float y) {
         this.position.set(x , y);
-        hasChanges = true;
     }
 
     public void setPosition(Vector2f position) {
         this.position.set(position);
-        hasChanges = true;
     }
 
     public void setScale(float x, float y) {
         this.scale.set(x, y);
-        hasChanges = true;
     }
 
     public void setScale(Vector2f scale) {
         this.scale.set(scale);
-        hasChanges = true;
     }
 
     public void setZIndex(int zIndex) {
         this.zIndex = zIndex;
-        hasChanges = true;
-    }
-
-    /**
-     * Mark all changes the transform has as handled.
-     * Mostly for rendering.
-     */
-    public void cleanChages() {
-        hasChanges = false;
     }
 
     public Vector2f getPosition() {
@@ -101,13 +100,5 @@ public final class Transform {
 
     public int getZIndex() {
         return zIndex;
-    }
-
-    /**
-     * Check for changes in the transform. Mostly for rendering
-     * @return Whether or not the transform has changed since the last check.
-     */
-    public boolean hasChanges() {
-        return hasChanges;
     }
 }

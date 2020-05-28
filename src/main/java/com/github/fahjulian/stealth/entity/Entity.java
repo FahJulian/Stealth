@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.fahjulian.stealth.core.Log;
+import com.github.fahjulian.stealth.entity.component.AComponent;
 import com.github.fahjulian.stealth.scene.ALayer;
 
 /**
@@ -44,9 +45,8 @@ public final class Entity {
 
     /**
      * Retrieve the component of the specified type if the entity has such a component.
-     * @param <C> The class of the component. Should only be included if component should be returned casted
-     * @param componentType The type of the component
-     * @throws ClassCastException If the component can not be casted to C (If the class does not fit to the type)
+     * @param <C> The class of the component
+     * @param componentClass The class of the component
      * @return The found component or null
      */
     @SuppressWarnings("unchecked")
@@ -75,6 +75,7 @@ public final class Entity {
 
     /**
      * Initialize all components the entity holds
+     * Should only be called after setting the {@link #layer}
      */
     public void init() {
         if (layer == null) {
@@ -90,9 +91,9 @@ public final class Entity {
 
     /**
      * Remove the component of type type
-     * @param type The type of component ot remove
+     * @param componentClass The class of component ot remove
      */
-    public <C extends AComponent> void removeComponent(Class<C> componentClass) {
+    public void removeComponent(Class<? extends AComponent> componentClass) {
         for (AComponent c : components) 
             if (componentClass.isAssignableFrom(c.getClass()))
                 components.remove(c);
@@ -100,10 +101,10 @@ public final class Entity {
 
     /**
      * Check if the entiy holds a component of the specified type
-     * @param componentType The type of component to check for
+     * @param componentClass The class of component to check for
      * @return Whether or not a component of the specified type has been found
      */
-    public <C extends AComponent> boolean hasComponent(Class<C> componentClass) {
+    public boolean hasComponent(Class<?> componentClass) {
         for (AComponent c : components) 
             if (componentClass.isAssignableFrom(c.getClass()))
                 return true;

@@ -1,7 +1,7 @@
 package sandbox;
 
 import com.github.fahjulian.stealth.core.Log;
-import com.github.fahjulian.stealth.entity.AComponent;
+import com.github.fahjulian.stealth.entity.component.AComponent;
 import com.github.fahjulian.stealth.event.mouse.MouseDraggedEvent;
 
 public class SandboxComponent extends AComponent {
