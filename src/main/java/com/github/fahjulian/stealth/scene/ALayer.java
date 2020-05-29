@@ -11,6 +11,8 @@ import com.github.fahjulian.stealth.event.EventManager;
 import com.github.fahjulian.stealth.event.IEventListener;
 import com.github.fahjulian.stealth.event.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Renderer;
+import com.github.fahjulian.stealth.graphics.Shader;
+import com.github.fahjulian.stealth.util.ResourcePool;
 
 public abstract class ALayer {
     
@@ -29,13 +31,27 @@ public abstract class ALayer {
 
     abstract public void onInit();
 
-    public <E extends AEvent> void addEventListener(Class<E> eventClass, IEventListener<E> listener) {
-        EventManager.addListener(eventClass, listener, index);
-    }
-
-    void setScene(AScene scene, int index) {
+    public void init(AScene scene, int index) {
         this.scene = scene;
         this.index = index;
+
+        onInit();
+
+        ResourcePool.addShader(shaderPath, new Shader(shaderPath));
+        EventManager.addListener(RenderEvent.class, this::onRender, Integer.MAX_VALUE - index);
+        renderer = new Renderer(shaderPath);
+        
+        for (Entity e: entities) {
+            e.init();
+            if (e.hasComponent(SpriteComponent.class))
+                renderer.add(e.getComponent(SpriteComponent.class));
+        }
+
+        initialized = true;
+    }
+
+    public <E extends AEvent> void addEventListener(Class<E> eventClass, IEventListener<E> listener) {
+        EventManager.addListener(eventClass, listener, index);
     }
 
     public boolean onRender(RenderEvent event) {
@@ -43,33 +59,18 @@ public abstract class ALayer {
         return false;
     }
 
-    public void init() {
-        if (scene == null) {
-            Log.warn("Scene must be set for layer to be initialized.");
-            return;
-        }
-
-        onInit();
-
-        for (Entity e: entities)
-            e.init();
-
-        renderer = new Renderer(shaderPath);
-        EventManager.addListener(RenderEvent.class, this::onRender, Integer.MAX_VALUE - index);
-        initialized = true;
-    }
-
     public void add(Entity e) {
         entities.add(e);
         e.setLayer(this);
+        if (initialized) e.init();
 
-        if (e.hasComponent(SpriteComponent.class))
+        if (initialized && e.hasComponent(SpriteComponent.class))
             renderer.add(e.getComponent(SpriteComponent.class));
     }
 
     protected void setShader(String shaderPath) {
         if (initialized) {
-            Log.warn("(AShader) Can only set shader path of a layer before or during initialization, not after.");
+            Log.warn("(AShader) Can only class setShader() in onInit() method of ALayer subclass.");
             return;
         }
 

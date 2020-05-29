@@ -49,10 +49,10 @@ public class RenderBatch implements Comparable<RenderBatch> {
         TEXTURE_COORDS_BUFFER_SIZE = 2,
         TEXTURE_ID_BUFFER_SIZE = 1,
 
-        POS_BUFFER_OFFSET = 0,
-        COLOR_BUFFER_OFFSET = POS_BUFFER_OFFSET + POS_BUFFER_SIZE,
-        TEXTURE_COORDS_BUFFER_OFFSET = COLOR_BUFFER_OFFSET + COLOR_BUFFER_SIZE,
-        TEXTURE_ID_BUFFER_OFFSET = TEXTURE_COORDS_BUFFER_OFFSET + TEXTURE_COORDS_BUFFER_SIZE,
+        POS_BUFFER_OFFSET = 0 * Float.BYTES,
+        COLOR_BUFFER_OFFSET = POS_BUFFER_OFFSET + POS_BUFFER_SIZE * Float.BYTES,
+        TEXTURE_COORDS_BUFFER_OFFSET = COLOR_BUFFER_OFFSET + COLOR_BUFFER_SIZE * Float.BYTES,
+        TEXTURE_ID_BUFFER_OFFSET = TEXTURE_COORDS_BUFFER_OFFSET + TEXTURE_COORDS_BUFFER_SIZE * Float.BYTES,
 
         STRIDE_SIZE = POS_BUFFER_SIZE + COLOR_BUFFER_SIZE + TEXTURE_COORDS_BUFFER_SIZE + TEXTURE_ID_BUFFER_SIZE;
 
@@ -86,24 +86,29 @@ public class RenderBatch implements Comparable<RenderBatch> {
     }
     
 	public void render() {
+        glBindBuffer(GL_ARRAY_BUFFER, vboID);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
         rebuffer();
 
         shader.bind();
         shader.upload("uProjection", AApplication.get().getScene().getCamera().getProjectionMatrix());
         shader.upload("uView", AApplication.get().getScene().getCamera().getViewMatrix());
-        shader.upload("UTextures", new int[] { 0, 1, 2, 3, 4, 5, 6, 7 });
 
         for (int i = 0; i < textures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i);
             textures.get(i).bind();
         }
 
+        shader.upload("UTextures", new int[] { 0, 1, 2, 3, 4, 5, 6, 7 });
+
         draw();
 
         for (int i = 0; i < textures.size(); i++)
             textures.get(i).unbind();
         
-        shader.detach();
+        shader.unbind();
      }
      
     private void rebuffer() {
@@ -137,11 +142,11 @@ public class RenderBatch implements Comparable<RenderBatch> {
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
         glDisableVertexAttribArray(3);
-        glBindVertexArray(vaoID);
+        glBindVertexArray(0);
     }
 
 	private void loadSpriteData(SpriteComponent sprite, int index) {
-        int offset = 4 * STRIDE_SIZE;
+        int offset = index * 4 * STRIDE_SIZE;
         Vector2f[] textureCoords = sprite.getTextureCoords();
         Transform transform = sprite.getEntity().getTransform();
         int textureID = textures.indexOf(sprite.getTexture());
@@ -155,7 +160,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
             vertices[offset + 5] = 1.0f;
             vertices[offset + 6] = textureCoords[corner].x; 
             vertices[offset + 7] = textureCoords[corner].y; 
-            vertices[offset + 8] = textureID;
+            vertices[offset + 8] = (float) textureID;
             offset += STRIDE_SIZE;
         }
     }
@@ -185,10 +190,11 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
         int idx = spriteCount++;
         sprites[idx] = sprite;
-        loadSpriteData(sprite, idx);
 
         if (!textures.contains(texture))
             textures.add(texture);
+
+        loadSpriteData(sprite, idx);
 	}
 
     public boolean hasRoomFor(SpriteComponent sprite) {

@@ -56,6 +56,18 @@ public final class Transform {
         this.zIndex = zIndex;
     }
 
+    /**
+     * Construct a transform with a position, scale and zIndex 
+     * @param posX The x coordinate to initialize with
+     * @param posY The y coordinate to initialize with
+     * @param scaleX The width to initialize with
+     * @param scaleY The height to initialize with
+     * @param zIndex The zIndex to initialized with (The higher the closer to the camera)
+     */
+    public Transform(float posX, float posY, float scaleX, float scaleY, int zIndex) {
+        this(new Vector2f(posX, posY), new Vector2f(scaleX, scaleY), zIndex);
+    }
+
     @Override
     public Transform clone() {
         return new Transform(position, scale, zIndex);

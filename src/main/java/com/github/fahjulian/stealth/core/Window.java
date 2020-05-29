@@ -32,6 +32,7 @@ import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -58,7 +59,7 @@ public final class Window {
     private String title;
     private int width, height;
     private boolean initialized;
-    private long glfwID;
+    public long glfwID;
     private AScene currentScene;
 
     private static Window instance;
@@ -122,6 +123,7 @@ public final class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
+        glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
         initialized = true;
         Log.info("(Window) Initialized window.");
     }

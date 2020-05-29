@@ -1,5 +1,9 @@
 package com.github.fahjulian.stealth;
 
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.glClear;
+
 import com.github.fahjulian.stealth.core.Log;
 import com.github.fahjulian.stealth.core.Window;
 import com.github.fahjulian.stealth.event.application.RenderEvent;
@@ -8,32 +12,48 @@ import com.github.fahjulian.stealth.scene.AScene;
 
 public abstract class AApplication {
 
-    protected static String logDir = ".log/";
-    protected static boolean debug = true;
-
+    
     protected Window window;
     private AScene scene;
     private boolean running;
+    private boolean initialized;
+    private String title;
+    private int width, height;
+    protected boolean debug;
+    protected String logDir;
 
     private static AApplication instance;
 
-    protected AApplication(String title, int width, int height) {
+    protected AApplication(String title, int width, int height, String logDir, boolean debug) {
         instance = this;
-        running = false;
 
-        Log.init(logDir, debug);
-        window = Window.get();
-        window.init(title, width, height);
+        this.title = title;
+        this.width = width;
+        this.height = height;
+        this.debug = debug;
+        this.logDir = logDir;
+        this.running = false;
+        this.initialized = false;
 
-        onInit();
-        getScene().init();
+        init();
     }
 
     public static AApplication get() {
         return instance;
     }
 
-    protected abstract void onInit();
+    protected abstract AScene onInit();
+
+    public void init() {
+        Log.init(logDir, debug);
+        window = Window.get();
+        window.init(title, width, height);
+
+        scene = onInit();
+        scene.init();
+
+        initialized = true;
+    }
 
     public void run() {
         running = true;
@@ -54,7 +74,9 @@ public abstract class AApplication {
                 excessUpdates--;
             }
 
+            glClear(GL_COLOR_BUFFER_BIT);
             new RenderEvent();
+            glfwSwapBuffers(Window.get().glfwID);
             frames++;
 
             if (System.currentTimeMillis() - timer > 1000) {
@@ -79,13 +101,5 @@ public abstract class AApplication {
 
     public boolean isRunning() {
         return running;
-    }
-
-    public static void setLogDir(String logDir) {
-        AApplication.logDir = logDir;
-    }
-
-    public static void setDebug(boolean debug) {
-        AApplication.debug = debug;
     }
 }
