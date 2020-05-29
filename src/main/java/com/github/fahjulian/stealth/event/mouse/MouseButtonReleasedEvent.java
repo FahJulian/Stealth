@@ -7,6 +7,7 @@ public class MouseButtonReleasedEvent extends AMouseEvent {
     public MouseButtonReleasedEvent(float x, float y, Button button) {
         super(x, y);
         this.button = button;
+        dispatch();
     }
 
     @Override

@@ -2,7 +2,11 @@ package com.github.fahjulian.stealth.core;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_3;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
@@ -29,24 +33,24 @@ import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.fahjulian.stealth.event.key.AKeyEvent;
+import com.github.fahjulian.stealth.event.key.AKeyEvent.Key;
 import com.github.fahjulian.stealth.event.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.event.key.KeyReleasedEvent;
 import com.github.fahjulian.stealth.event.mouse.AMouseEvent;
+import com.github.fahjulian.stealth.event.mouse.AMouseEvent.Button;
 import com.github.fahjulian.stealth.event.mouse.MouseButtonPressedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseButtonReleasedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseDraggedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseMovedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseScrolledEvent;
-import com.github.fahjulian.stealth.scene.AScene;
 
-import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
@@ -54,16 +58,17 @@ public final class Window {
     
     private String title;
     private int width, height;
-    private boolean initialized;
-    private long glfwID;
-    private AScene currentScene;
+    public long glfwID;
 
     private static Window instance;
 
     private Window() {
-        initialized = false;
     }
 
+    /**
+     * Retrieve the Window instance
+     * @return The Window instance
+     */
     public static Window get() {
         if (instance == null)
             instance = new Window();
@@ -71,6 +76,12 @@ public final class Window {
         return instance;
     }
 
+    /**
+     * Initialize the Window instance
+     * @param title The title of the GLFW Window
+     * @param width The width of the GLFW Window
+     * @param height The height of the GLFW Window
+     */
     public void init(String title, int width, int height) {
         this.title = title;
         this.width = width;
@@ -110,24 +121,13 @@ public final class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        initialized = true;
+        glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
         Log.info("(Window) Initialized window.");
     }
 
-    public void start() {
-        if (instance == null || !instance.initialized) {
-            Log.error("(Window) Window must be initialized before calling the run() method.");
-            return;
-        }
-
-        if (instance.currentScene == null) {
-            Log.error("(Window) Must first set a scene before calling the run() method");
-            return;
-        }
-
-        Log.info("(LWJGL) Using LWJGL Version %s", Version.getVersion());
-    }
-
+    /**
+     * Free all memory allocated to GLFW
+     */
     public void delete() {
         glfwFreeCallbacks(glfwID);
         glfwDestroyWindow(glfwID);
@@ -135,22 +135,20 @@ public final class Window {
         glfwSetErrorCallback(null).free();
     }
 
+    /**
+     * Allow GLFW Events to be polled.
+     * Should be called in the main loop.
+     */
     public void pollEvents() {
         glfwPollEvents();
     }
 
+    /**
+     * Check if a close event has been called in GLFW
+     * @return Whether or not the window should close
+     */
     public boolean isClosed() {
         return glfwWindowShouldClose(glfwID);
-    }
-
-    public void setScene(AScene scene) {
-        if (scene == null) {
-            Log.error("(Window) Cant set null as the windows scene.");
-            return;
-        }
-
-        this.currentScene = scene;
-        scene.init();
     }
 
     public String getInitialTitle() {
@@ -160,6 +158,14 @@ public final class Window {
     public void setTitle(String title) {
         glfwSetWindowTitle(glfwID, title);
     }   
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }
 
 
@@ -179,7 +185,7 @@ class GLFWInputListener {
     }
 
     public void mouseButtonCallback(long windowID, int buttonID, int action, int mods) {
-        AMouseEvent.Button button = translateMouseButton(buttonID);
+        Button button = translateMouseButton(buttonID);
 
         if (action == GLFW_PRESS) {
             pressedButtons.add(button);
@@ -195,7 +201,7 @@ class GLFWInputListener {
     }
 
     public void keyCallback(long window, int keyID, int scancode, int action, int mods) {
-        AKeyEvent.Key key = translateKey(keyID);
+        Key key = translateKey(keyID);
 
         if (action == GLFW_PRESS) {
             new KeyPressedEvent(key);
@@ -204,11 +210,26 @@ class GLFWInputListener {
         }
     }
 
-    private AMouseEvent.Button translateMouseButton(int glfwButtonID) {
-        return null;
+    private Button translateMouseButton(int glfwButtonID) {
+        switch (glfwButtonID) {
+            case GLFW_MOUSE_BUTTON_1: 
+                return Button.LEFT;
+            case GLFW_MOUSE_BUTTON_2:
+                return Button.RIGHT;
+            case GLFW_MOUSE_BUTTON_3:
+                return Button.MIDDLE;
+            default:
+                Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
+                return Button.UNKNOWN;
+        }
     }
 
-    private AKeyEvent.Key translateKey(int glfwKeyID) {
-        return null;
+    private Key translateKey(int glfwKeyID) {
+        switch(glfwKeyID) {
+            case GLFW_KEY_SPACE: return Key.SPACE;
+            default: 
+                Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
+                return Key.UNKNOWN;
+        }
     }
 }

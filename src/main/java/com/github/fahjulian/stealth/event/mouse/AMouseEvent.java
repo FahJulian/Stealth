@@ -14,6 +14,7 @@ public abstract class AMouseEvent extends AEvent {
     public static enum Button {
         LEFT,
         MIDDLE,
-        RIGHT;
+        RIGHT,
+        UNKNOWN;
     }
 }

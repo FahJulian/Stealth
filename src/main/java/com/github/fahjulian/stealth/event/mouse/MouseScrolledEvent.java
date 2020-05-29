@@ -8,6 +8,7 @@ public class MouseScrolledEvent extends AMouseEvent {
         super(x, y);
         this.scrollX = scrollX;
         this.scrollY = scrollY;
+        dispatch();
     }
 
     @Override

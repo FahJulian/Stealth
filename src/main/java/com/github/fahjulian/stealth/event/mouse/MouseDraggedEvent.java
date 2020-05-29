@@ -7,6 +7,7 @@ public class MouseDraggedEvent extends AMouseEvent {
     public MouseDraggedEvent(float x, float y, Button button) {
         super(x, y);
         this.button = button;
+        dispatch();
     }
 
     @Override

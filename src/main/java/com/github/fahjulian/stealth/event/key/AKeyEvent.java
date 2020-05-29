@@ -4,13 +4,18 @@ import com.github.fahjulian.stealth.event.AEvent;
 
 public abstract class AKeyEvent extends AEvent {
 
-    public final Key key;
+    protected final Key key;
 
     protected AKeyEvent(Key key) {
         this.key = key;
     }
 
+    public Key getKey() {
+        return key;
+    }
+
     public static enum Key {
-        ANY;
+        SPACE,
+        UNKNOWN;
     }
 }

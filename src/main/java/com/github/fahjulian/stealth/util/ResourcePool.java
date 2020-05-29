@@ -7,6 +7,7 @@ import java.util.Map;
 import com.github.fahjulian.stealth.AApplication;
 import com.github.fahjulian.stealth.core.Log;
 import com.github.fahjulian.stealth.graphics.Shader;
+import com.github.fahjulian.stealth.graphics.Spritesheet;
 import com.github.fahjulian.stealth.graphics.Texture;
 
 /**
@@ -53,6 +54,15 @@ public final class ResourcePool {
     }
 
     /**
+     * Retrieve a stored spritesheet
+     * @param filepath The path to the spritesheet on the system
+     * @return The spritesheet, if found, else null
+     */
+    public static Spritesheet getSpritesheet(String filepath) {
+        return (Spritesheet) getTexture(filepath);
+    }
+
+    /**
      * Store a shader 
      * @param filepath The path to the shader on the system (Will be used as a key for the shader)
      * @param shader The shader to store
@@ -72,9 +82,9 @@ public final class ResourcePool {
     }
 
     /**
-     * Store a shader 
-     * @param filepath The path to the shader on the system (Will be used as a key for the texture)
-     * @param texture The shader to store
+     * Store a texture 
+     * @param filepath The path to the texture on the system (Will be used as a key for the texture)
+     * @param texture The texture to store
      */
     public static void addTexture(String filepath, Texture texture) {
         if (AApplication.get().isRunning())
@@ -88,5 +98,14 @@ public final class ResourcePool {
         }
 
         textures.put(key, texture);
+    }
+
+    /**
+     * Store a spritesheet 
+     * @param filepath The path to the spritesheet on the system (Will be used as a key for the texture)
+     * @param spritesheet The spritesheet to store
+     */
+    public static void addSpritesheet(String filepath, Spritesheet spritesheet) {
+        addTexture(filepath, spritesheet);
     }
 }

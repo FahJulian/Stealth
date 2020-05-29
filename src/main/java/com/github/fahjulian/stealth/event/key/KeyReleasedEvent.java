@@ -4,6 +4,7 @@ public class KeyReleasedEvent extends AKeyEvent {
 
     public KeyReleasedEvent(Key key) {
         super(key);
+        dispatch();
     }
 
     @Override
