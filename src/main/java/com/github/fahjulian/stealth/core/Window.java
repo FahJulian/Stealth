@@ -2,6 +2,7 @@ package com.github.fahjulian.stealth.core;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
@@ -49,7 +50,6 @@ import com.github.fahjulian.stealth.event.mouse.MouseButtonReleasedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseDraggedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseMovedEvent;
 import com.github.fahjulian.stealth.event.mouse.MouseScrolledEvent;
-import com.github.fahjulian.stealth.scene.AScene;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -58,18 +58,16 @@ public final class Window {
     
     private String title;
     private int width, height;
-    private boolean initialized;
     public long glfwID;
-    private AScene currentScene;
 
     private static Window instance;
 
     private Window() {
-        initialized = false;
     }
 
     /**
      * Retrieve the Window instance
+     * @return The Window instance
      */
     public static Window get() {
         if (instance == null)
@@ -124,7 +122,6 @@ public final class Window {
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
-        initialized = true;
         Log.info("(Window) Initialized window.");
     }
 
@@ -148,6 +145,7 @@ public final class Window {
 
     /**
      * Check if a close event has been called in GLFW
+     * @return Whether or not the window should close
      */
     public boolean isClosed() {
         return glfwWindowShouldClose(glfwID);
@@ -227,6 +225,11 @@ class GLFWInputListener {
     }
 
     private Key translateKey(int glfwKeyID) {
-        return Key.UNKNOWN;
+        switch(glfwKeyID) {
+            case GLFW_KEY_SPACE: return Key.SPACE;
+            default: 
+                Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
+                return Key.UNKNOWN;
+        }
     }
 }

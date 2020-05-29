@@ -31,6 +31,9 @@ import com.github.fahjulian.stealth.util.ResourcePool;
 
 import org.joml.Vector2f;
 
+/**
+ * Class to group renderable objects together and draw them in one call.
+ */
 public class RenderBatch implements Comparable<RenderBatch> {
 
     private final int size;
@@ -44,9 +47,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
     private static final int MAX_TEXTURES = 7;
     private static final int 
-        POS_BUFFER_SIZE = 2,
-        COLOR_BUFFER_SIZE = 4,
-        TEXTURE_COORDS_BUFFER_SIZE = 2,
+        POS_BUFFER_SIZE = 2, COLOR_BUFFER_SIZE = 4, TEXTURE_COORDS_BUFFER_SIZE = 2,
         TEXTURE_ID_BUFFER_SIZE = 1,
 
         POS_BUFFER_OFFSET = 0 * Float.BYTES,
@@ -56,6 +57,12 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
         STRIDE_SIZE = POS_BUFFER_SIZE + COLOR_BUFFER_SIZE + TEXTURE_COORDS_BUFFER_SIZE + TEXTURE_ID_BUFFER_SIZE;
 
+    /**
+     * Construct a new render batch
+     * @param size The maximum amount of objects the batch can contain
+     * @param zIndex The zIndex of the layer the batch will be on
+     * @param shaderPath The path on the system to the shader to use 
+     */
     public RenderBatch(int size, int zIndex, String shaderPath) {
         this.size = size;
         this.zIndex = zIndex;
@@ -66,6 +73,9 @@ public class RenderBatch implements Comparable<RenderBatch> {
         this.spriteCount = 0;
 	}
 
+    /**
+     * Setup opengl properties
+     */
 	public void init() {
         vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
@@ -75,7 +85,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
         glBufferData(GL_ARRAY_BUFFER, vertices.length * Float.BYTES, GL_DYNAMIC_DRAW);
 
         int eboID = glGenBuffers();
-        int[] indices = generateIndices();
+        int[] indices = generateEBO();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
 
@@ -85,11 +95,10 @@ public class RenderBatch implements Comparable<RenderBatch> {
         glVertexAttribPointer(3, TEXTURE_ID_BUFFER_SIZE, GL_FLOAT, false, STRIDE_SIZE * Float.BYTES, TEXTURE_ID_BUFFER_OFFSET);
     }
     
+    /**
+     * Render the batch
+     */
 	public void render() {
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
         rebuffer();
 
         shader.bind();
@@ -109,7 +118,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
             textures.get(i).unbind();
         
         shader.unbind();
-     }
+    }
      
     private void rebuffer() {
         boolean rebuffer = false;
@@ -165,7 +174,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
         }
     }
 
-    private int[] generateIndices() {
+    private int[] generateEBO() {
         int[] indices = new int[this.size * 6];
         for (int i = 0; i < this.size; i++) {
             indices[i * 6 + 0] = 1 + i * 4;
@@ -179,6 +188,10 @@ public class RenderBatch implements Comparable<RenderBatch> {
         return indices;
     }
 
+    /**
+     * Add a SpriteComponent to the batch
+     * @param sprite The SpriteComponent to add
+     */
 	public void add(SpriteComponent sprite) {
         Texture texture = sprite.getTexture();
         if (spriteCount >= size) {
@@ -197,6 +210,11 @@ public class RenderBatch implements Comparable<RenderBatch> {
         loadSpriteData(sprite, idx);
 	}
 
+    /**
+     * Checks if there is enough room for te SpriteComponent to be added
+     * @param sprite The SpriteComponent to check if theres room for
+     * @return Whether or not there is room for the SpriteComponent
+     */
     public boolean hasRoomFor(SpriteComponent sprite) {
 		return (spriteCount < size) && ( textures.size() < 7 || textures.contains(sprite.getTexture()) );
 	}
@@ -209,5 +227,4 @@ public class RenderBatch implements Comparable<RenderBatch> {
     public int compareTo(RenderBatch o) {
         return Integer.compare(this.zIndex, o.zIndex);
     }
-
 }

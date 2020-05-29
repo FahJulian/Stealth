@@ -12,6 +12,13 @@ public class Spritesheet extends Texture {
     private List<Sprite> sprites;
     private int rows, cols;
 
+    /** 
+     * Create a new Spritesheet from an image file
+     * @param texturePath The path to the image file on the system
+     * @param spriteWidth The width of each sprite
+     * @param spriteHeight The height of each sprite
+     * @param spacing The spacing between each sprite (Only on bottom and left borders of the sprites!)
+    */
     public Spritesheet(String texturePath, int spriteWidth, int spriteHeight, int spacing) {
         super(texturePath);
 
@@ -41,9 +48,18 @@ public class Spritesheet extends Texture {
         this(texturePath, spriteWidth, spriteHeight, 0);
     }
 
+    /**
+     * Get the sprite at the given position on the Spritesheet 
+     * @param x The column of the sprite
+     * @param y The row of the sprite
+     * @return The sprite at the given position or null if coordinates are illeagal
+     */
     public Sprite getSprite(int x, int y) {
-        if (x < 0 || x >= cols || y < 0 || y >= rows)
+        if (x < 0 || x >= cols || y < 0 || y >= rows) {
             Log.warn("(Spritesheet) Illegal coordinates for Sprite on Spritesheet %s: (%d, %d)", this, x, y);
+            return null;
+        }
+
         return sprites.get(x + y * cols);
     }
 }

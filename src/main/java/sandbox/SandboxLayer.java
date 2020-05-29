@@ -19,16 +19,17 @@ public class SandboxLayer extends ALayer {
 
     static class Factories {
         static final IEntityFactory player = (t) -> 
-            new Entity("Player", t, new SpriteComponent(ResourcePool.getSpritesheet(sheetPath).getSprite(0, 0)));
+            new Entity("Player", t, 
+                new SpriteComponent(ResourcePool.getSpritesheet(sheetPath).getSprite(0, 0)),
+                new SpriteSwitchingComponent());
     }
-
 
     @Override
     public void onInit() {
         loadResources();
         setShader("src/main/resources/shaders/custom.glsl");
 
-        add(Factories.player.make(new Transform(50.f, 50.f, 152.f, 152.f, 0)));
+        add(Factories.player.create(new Transform(50.f, 50.f, 152.f, 152.f, 0)));
 
         addEventListener(MouseDraggedEvent.class, this::onMouseDragged);
     }

@@ -4,14 +4,22 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+/**
+ * The Camera holds matricies defining what area of the screen gets rendered.
+ */
 public class Camera {
     
     private final Vector2f position;
     private final Matrix4f projectionMatrix;
     private final Matrix4f viewMatrix;
 
-    public Camera(float x, float y) {
-        this.position = new Vector2f(x, y);
+    /**
+     * Construct a new camera
+     * @param posX The x-Position of the camera
+     * @param posY The x-Position of the camera
+     */
+    public Camera(float posX, float posY) {
+        this.position = new Vector2f(posX, posY);
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
         adjustProjection();

@@ -9,7 +9,7 @@ import org.joml.Vector2f;
 
 public class SpriteComponent extends AComponent {
     
-    private final Sprite sprite;
+    private Sprite sprite;
     private Transform lastTransform;
     private boolean hasChanges;
 
@@ -39,6 +39,11 @@ public class SpriteComponent extends AComponent {
     
     public Sprite getSprite() {
         return sprite;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
+        hasChanges = true;
     }
 
     public Vector2f[] getTextureCoords() {

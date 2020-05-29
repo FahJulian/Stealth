@@ -30,6 +30,10 @@ public class Texture {
 	private final int width, height;
 	private int ID;
 
+	/**
+	 * Create a texture from an image file
+	 * @param filePath The path to the image file on the system
+	 */
 	public Texture(String filePath) {
 		this.filePath = filePath;
 

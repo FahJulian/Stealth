@@ -42,7 +42,7 @@ public abstract class AApplication {
         return instance;
     }
 
-    protected abstract AScene onInit();
+    abstract protected AScene onInit();
 
     public void init() {
         Log.init(logDir, debug);
@@ -89,10 +89,13 @@ public abstract class AApplication {
             excessUpdates += (endTime - startTime) / nsPerUpdate;
             startTime = endTime;
         }
+
+        Window.get().delete();
     }
 
     public void setScene(AScene scene) {
         this.scene = scene;
+        if (initialized) scene.init();
     }
 
     public AScene getScene() {

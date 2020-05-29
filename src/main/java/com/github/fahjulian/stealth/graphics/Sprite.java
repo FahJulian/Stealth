@@ -7,7 +7,8 @@ public class Sprite {
 	private final Spritesheet spritesheet;
 	private final Vector2f[] spritesheetCoords;
 
-	public Sprite(Spritesheet spritesheet, Vector2f[] spritesheetCoords) {
+	/** Create a sprite. Should only be called by Spritesheet */
+	Sprite(Spritesheet spritesheet, Vector2f[] spritesheetCoords) {
 		this.spritesheet = spritesheet;
 		this.spritesheetCoords = spritesheetCoords;
 	}

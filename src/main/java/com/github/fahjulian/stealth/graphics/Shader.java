@@ -50,6 +50,10 @@ public class Shader {
 	private String vertexSource;
 	private String fragmentSource;
 
+	/** 
+	 * Construct a new Shader from a .glsl file 
+	 * @param filePath The path to the .glsl file on the system
+	 */
 	public Shader(String filePath) { 
 		try {
 			loadSource(filePath);

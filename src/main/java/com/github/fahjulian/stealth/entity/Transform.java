@@ -27,6 +27,15 @@ public final class Transform {
     }
 
     /**
+     * Construct a transform with a position but not scale
+     * @param posX The x coordinate to initialize with
+     * @param posY The y coordinate to initialize with
+     */
+    public Transform(float posX, float posY) {
+        this(new Vector2f(posX, posY), new Vector2f(), 0);
+    }
+
+    /**
      * Construct a transform with a position and a zIndex 
      * @param position The position to initialize with
      * @param zIndex The zIndex to initialized with (The higher the closer to the camera)
@@ -36,12 +45,33 @@ public final class Transform {
     }
 
     /**
+     * Construct a transform with a position and zIndex 
+     * @param posX The x coordinate to initialize with
+     * @param posY The y coordinate to initialize with
+     * @param zIndex The zIndex to initialized with (The higher the closer to the camera)
+     */
+    public Transform(float posX, float posY, int zIndex) {
+        this(new Vector2f(posX, posY), new Vector2f(), zIndex);
+    }
+
+    /**
      * Construct a transform with a position and scale
      * @param position The position to initialize with
      * @param scale The scale to initialize with
      */
     public Transform(Vector2f position, Vector2f scale) {
         this(position, scale, 0);
+    }
+
+    /**
+     * Construct a transform with a position and scale
+     * @param posX The x coordinate to initialize with
+     * @param posY The y coordinate to initialize with
+     * @param scaleX The width to initialize with
+     * @param scaleY The height to initialize with
+     */
+    public Transform(float posX, float posY, float scaleX, float scaleY) {
+        this(new Vector2f(posX, posY), new Vector2f(scaleX, scaleY), 0);
     }
 
     /**

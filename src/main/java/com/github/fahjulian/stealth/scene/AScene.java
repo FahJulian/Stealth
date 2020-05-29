@@ -15,8 +15,9 @@ public abstract class AScene {
         initialized = false;
     }
 
-    public abstract void onInit();
+    abstract protected void onInit();
 
+    /** Initialize the scene. Should only be called by {@link com.github.fahjulian.stealth.AApplication} */
     public void init() {
         onInit();
 
@@ -26,6 +27,10 @@ public abstract class AScene {
         initialized = true;
     }
 
+    /** 
+     * Add a layer to the scene
+     * @param layer The layer to add
+     */
     public void add(ALayer layer) {
         layerStack.add(layer);
         if (initialized) layer.init(this, layerStack.indexOf(layer));
