@@ -6,7 +6,7 @@ import com.github.fahjulian.stealth.core.event.AEvent;
 public class EntityTransformEvent extends AEvent {
 
     public static enum Type {
-        POSITION, SCALE, ZINDEX;
+        POSITION, SCALE;
     }
 
     private final Type type;

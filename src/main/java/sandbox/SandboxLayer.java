@@ -29,7 +29,7 @@ public class SandboxLayer extends ALayer {
         loadResources();
         setShader("src/main/resources/shaders/custom.glsl");
 
-        add(Factories.player.create(new Transform(50.f, 50.f, 152.f, 152.f, 0)));
+        add(Factories.player.create(new Transform(50.f, 50.f, 152.f, 152.f)));
 
         addEventListener(MouseDraggedEvent.class, this::onMouseDragged);
     }

@@ -4,6 +4,7 @@ import com.github.fahjulian.stealth.events.entity.EntityTransformEvent;
 import com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type;
 
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 /**
  * A Transform is a data set that hold information about an entities
@@ -12,15 +13,14 @@ import org.joml.Vector2f;
 public final class Transform {
 
     private Entity entity;
-    private final Vector2f position;
-    private final Vector2f scale;
-    private int zIndex;
+    private final Vector3f position;
+    private final Vector3f scale;
 
     /**
      * Construct a new emtpy transform
      */
     public Transform() {
-        this(new Vector2f(), new Vector2f(), 0);
+        this(new Vector3f(), new Vector3f());
     }
 
     /**
@@ -28,7 +28,15 @@ public final class Transform {
      * @param position The position to initialize with
      */
     public Transform(Vector2f position) {
-        this(position, new Vector2f(), 0);
+        this(new Vector3f(position, 0.0f), new Vector3f());
+    }
+
+    public Transform(Vector3f position) {
+        this(position, new Vector3f());
+    }
+
+    public Transform(float posX, float posY) {
+        this(new Vector3f(posX, posY, 0.0f), new Vector3f());
     }
 
     /**
@@ -36,27 +44,8 @@ public final class Transform {
      * @param posX The x coordinate to initialize with
      * @param posY The y coordinate to initialize with
      */
-    public Transform(float posX, float posY) {
-        this(new Vector2f(posX, posY), new Vector2f(), 0);
-    }
-
-    /**
-     * Construct a transform with a position and a zIndex 
-     * @param position The position to initialize with
-     * @param zIndex The zIndex to initialized with (The higher the closer to the camera)
-     */
-    public Transform(Vector2f position, int zIndex) {
-        this(position, new Vector2f(), 0);
-    }
-
-    /**
-     * Construct a transform with a position and zIndex 
-     * @param posX The x coordinate to initialize with
-     * @param posY The y coordinate to initialize with
-     * @param zIndex The zIndex to initialized with (The higher the closer to the camera)
-     */
-    public Transform(float posX, float posY, int zIndex) {
-        this(new Vector2f(posX, posY), new Vector2f(), zIndex);
+    public Transform(float posX, float posY, float posZ) {
+        this(new Vector3f(posX, posY, posZ), new Vector3f());
     }
 
     /**
@@ -65,7 +54,7 @@ public final class Transform {
      * @param scale The scale to initialize with
      */
     public Transform(Vector2f position, Vector2f scale) {
-        this(position, scale, 0);
+        this(new Vector3f(position, 0.0f), new Vector3f(scale, 0.0f));
     }
 
     /**
@@ -76,19 +65,7 @@ public final class Transform {
      * @param scaleY The height to initialize with
      */
     public Transform(float posX, float posY, float scaleX, float scaleY) {
-        this(new Vector2f(posX, posY), new Vector2f(scaleX, scaleY), 0);
-    }
-
-    /**
-     * Construct a transform with a position, scale and zIndex 
-     * @param position The position to initialize with
-     * @param scale The scale to initialize with
-     * @param zIndex The zIndex to initialized with (The higher the closer to the camera)
-     */
-    public Transform(Vector2f position, Vector2f scale, int zIndex) {
-        this.position = position;
-        this.scale = scale;
-        this.zIndex = zIndex;
+        this(new Vector3f(posX, posY, 0.0f), new Vector3f(scaleX, scaleY, 0.0f));
     }
 
     /**
@@ -99,8 +76,19 @@ public final class Transform {
      * @param scaleY The height to initialize with
      * @param zIndex The zIndex to initialized with (The higher the closer to the camera)
      */
-    public Transform(float posX, float posY, float scaleX, float scaleY, int zIndex) {
-        this(new Vector2f(posX, posY), new Vector2f(scaleX, scaleY), zIndex);
+    public Transform(float posX, float posY, float posZ, float scaleX, float scaleY, float scaleZ) {
+        this(new Vector3f(posX, posY, posZ), new Vector3f(scaleX, scaleY, scaleZ));
+    }
+
+    /**
+     * Construct a transform with a position, scale and zIndex 
+     * @param position The position to initialize with
+     * @param scale The scale to initialize with
+     * @param zIndex The zIndex to initialized with (The higher the closer to the camera)
+     */
+    public Transform(Vector3f position, Vector3f scale) {
+        this.position = position;
+        this.scale = scale;
     }
 
     void setEntity(Entity entity) {
@@ -109,7 +97,7 @@ public final class Transform {
 
     @Override
     public Transform clone() {
-        return new Transform(position, scale, zIndex);
+        return new Transform(position, scale);
     }
 
     @Override
@@ -118,43 +106,50 @@ public final class Transform {
             return false;
                             
         Transform t = (Transform) o;
-        return t.position.equals(position) && t.scale.equals(scale) && t.zIndex == zIndex;
+        return t.position.equals(position) && t.scale.equals(scale);
     }
 
     public void setPosition(float x, float y) {
-        this.position.set(x, y);
+        setPosition(x, y, 0.0f);
+    }
+
+    public void setPosition(float x, float y, float z) {
+        this.position.set(x, y, z);
         new EntityTransformEvent(Type.POSITION, entity);
     }
 
     public void setPosition(Vector2f position) {
+        setPosition(new Vector3f(position, 0.0f));
+    }
+
+    public void setPosition(Vector3f position) {
         this.position.set(position);
         new EntityTransformEvent(Type.POSITION, entity);
     }
 
     public void setScale(float x, float y) {
-        this.scale.set(x, y);
+        setScale(x, y, 0.0f);
+    }
+
+    public void setScale(float x, float y, float z) {
+        this.scale.set(x, y, z);
         new EntityTransformEvent(Type.SCALE, entity);
     }
 
     public void setScale(Vector2f scale) {
+        setScale(new Vector3f(scale, 0.0f));
+    }
+
+    public void setScale(Vector3f scale) {
         this.scale.set(scale);
         new EntityTransformEvent(Type.SCALE, entity);
     }
 
-    public void setZIndex(int zIndex) {
-        this.zIndex = zIndex;
-        new EntityTransformEvent(Type.ZINDEX, entity);
-    }
-
-    public Vector2f getPosition() {
+    public Vector3f getPosition() {
         return position;
     }
 
-    public Vector2f getScale() {
+    public Vector3f getScale() {
         return scale;
-    }
-
-    public int getZIndex() {
-        return zIndex;
     }
 }

@@ -12,7 +12,7 @@ import com.github.fahjulian.stealth.core.event.IEventListener;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.core.util.ResourcePool;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
-import com.github.fahjulian.stealth.graphics.Renderer;
+import com.github.fahjulian.stealth.graphics.Renderer2D;
 import com.github.fahjulian.stealth.graphics.Shader;
 
 public abstract class ALayer {
@@ -21,7 +21,7 @@ public abstract class ALayer {
     private int index;
     protected AScene scene;
     private EventManager eventManager;
-    private Renderer renderer;
+    private Renderer2D renderer;
     private String shaderPath;
     private boolean initialized;
     private boolean active;
@@ -50,7 +50,7 @@ public abstract class ALayer {
 
         ResourcePool.addShader(shaderPath, new Shader(shaderPath));
         eventManager.addListener(RenderEvent.class, this::onRender, Integer.MAX_VALUE - index);
-        renderer = new Renderer(shaderPath);
+        renderer = new Renderer2D(shaderPath);
         
         for (Entity e: entities) {
             e.init();
