@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.fahjulian.stealth.entity.component.SpriteComponent;
+import com.github.fahjulian.stealth.components.SpriteComponent;
 
 /** 
  * Groups renderbatches together and manages adding entities to them.

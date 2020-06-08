@@ -1,8 +1,8 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.core.Log;
-import com.github.fahjulian.stealth.entity.component.AComponent;
-import com.github.fahjulian.stealth.event.mouse.MouseDraggedEvent;
+import com.github.fahjulian.stealth.core.entity.AComponent;
+import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.events.mouse.MouseDraggedEvent;
 
 public class SandboxComponent extends AComponent {
 
@@ -15,10 +15,4 @@ public class SandboxComponent extends AComponent {
         Log.info("Sandbox Componend registered %s", event);
         return false;
     }
-
-    @Override
-    public String toString() {
-        return "Sandbox Component";
-    }
-
 }

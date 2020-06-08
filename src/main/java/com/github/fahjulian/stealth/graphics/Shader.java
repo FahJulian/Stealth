@@ -31,8 +31,8 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 
 import java.nio.FloatBuffer;
 
-import com.github.fahjulian.stealth.core.Log;
-import com.github.fahjulian.stealth.util.IO;
+import com.github.fahjulian.stealth.core.util.IO;
+import com.github.fahjulian.stealth.core.util.Log;
 
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;

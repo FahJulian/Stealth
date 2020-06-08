@@ -1,15 +1,15 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.core.Log;
-import com.github.fahjulian.stealth.entity.Entity;
-import com.github.fahjulian.stealth.entity.IEntityFactory;
-import com.github.fahjulian.stealth.entity.Transform;
-import com.github.fahjulian.stealth.entity.component.SpriteComponent;
-import com.github.fahjulian.stealth.event.mouse.AMouseEvent.Button;
-import com.github.fahjulian.stealth.event.mouse.MouseDraggedEvent;
+import com.github.fahjulian.stealth.components.SpriteComponent;
+import com.github.fahjulian.stealth.core.entity.Entity;
+import com.github.fahjulian.stealth.core.entity.IEntityFactory;
+import com.github.fahjulian.stealth.core.entity.Transform;
+import com.github.fahjulian.stealth.core.scene.ALayer;
+import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.core.util.ResourcePool;
+import com.github.fahjulian.stealth.events.mouse.AMouseEvent.Button;
+import com.github.fahjulian.stealth.events.mouse.MouseDraggedEvent;
 import com.github.fahjulian.stealth.graphics.Spritesheet;
-import com.github.fahjulian.stealth.scene.ALayer;
-import com.github.fahjulian.stealth.util.ResourcePool;
 
 
 

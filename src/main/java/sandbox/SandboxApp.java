@@ -1,7 +1,7 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.AApplication;
-import com.github.fahjulian.stealth.scene.AScene;
+import com.github.fahjulian.stealth.core.AApplication;
+import com.github.fahjulian.stealth.core.scene.AScene;
 
 public class SandboxApp extends AApplication {
 

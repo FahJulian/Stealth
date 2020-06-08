@@ -3,7 +3,7 @@ package com.github.fahjulian.stealth.graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.fahjulian.stealth.core.Log;
+import com.github.fahjulian.stealth.core.util.Log;
 
 import org.joml.Vector2f;
 

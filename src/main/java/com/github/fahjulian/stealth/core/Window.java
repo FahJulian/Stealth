@@ -25,6 +25,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
@@ -40,16 +41,17 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.fahjulian.stealth.event.key.AKeyEvent.Key;
-import com.github.fahjulian.stealth.event.key.KeyPressedEvent;
-import com.github.fahjulian.stealth.event.key.KeyReleasedEvent;
-import com.github.fahjulian.stealth.event.mouse.AMouseEvent;
-import com.github.fahjulian.stealth.event.mouse.AMouseEvent.Button;
-import com.github.fahjulian.stealth.event.mouse.MouseButtonPressedEvent;
-import com.github.fahjulian.stealth.event.mouse.MouseButtonReleasedEvent;
-import com.github.fahjulian.stealth.event.mouse.MouseDraggedEvent;
-import com.github.fahjulian.stealth.event.mouse.MouseMovedEvent;
-import com.github.fahjulian.stealth.event.mouse.MouseScrolledEvent;
+import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.events.key.AKeyEvent.Key;
+import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
+import com.github.fahjulian.stealth.events.key.KeyReleasedEvent;
+import com.github.fahjulian.stealth.events.mouse.AMouseEvent;
+import com.github.fahjulian.stealth.events.mouse.AMouseEvent.Button;
+import com.github.fahjulian.stealth.events.mouse.MouseButtonPressedEvent;
+import com.github.fahjulian.stealth.events.mouse.MouseButtonReleasedEvent;
+import com.github.fahjulian.stealth.events.mouse.MouseDraggedEvent;
+import com.github.fahjulian.stealth.events.mouse.MouseMovedEvent;
+import com.github.fahjulian.stealth.events.mouse.MouseScrolledEvent;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -141,6 +143,13 @@ public final class Window {
      */
     public void pollEvents() {
         glfwPollEvents();
+    }
+
+    /** 
+     * Call glfwSwapBuffers
+     */
+    public void swapBuffers() {
+        glfwSwapBuffers(glfwID);
     }
 
     /**

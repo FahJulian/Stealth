@@ -1,12 +1,12 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.core.Log;
-import com.github.fahjulian.stealth.entity.component.AComponent;
-import com.github.fahjulian.stealth.entity.component.SpriteComponent;
-import com.github.fahjulian.stealth.event.key.AKeyEvent.Key;
-import com.github.fahjulian.stealth.event.key.KeyPressedEvent;
+import com.github.fahjulian.stealth.components.SpriteComponent;
+import com.github.fahjulian.stealth.core.entity.AComponent;
+import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.core.util.ResourcePool;
+import com.github.fahjulian.stealth.events.key.AKeyEvent.Key;
+import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.graphics.Spritesheet;
-import com.github.fahjulian.stealth.util.ResourcePool;
 
 public class SpriteSwitchingComponent extends AComponent {
 
@@ -16,7 +16,7 @@ public class SpriteSwitchingComponent extends AComponent {
     public void onInit() {
         if (!entity.hasComponent(SpriteComponent.class)) {
             Log.warn("Cant init SpriteSwitchingComponent on Entity %s without SpriteComponent", entity);
-            return;       
+            return;
         }
 
         addEventListener(KeyPressedEvent.class, this::onKeyPressed);
@@ -30,10 +30,5 @@ public class SpriteSwitchingComponent extends AComponent {
         }
 
         return false;
-    }
-
-    @Override
-    public String toString() {
-        return "Player Component";
     }
 }

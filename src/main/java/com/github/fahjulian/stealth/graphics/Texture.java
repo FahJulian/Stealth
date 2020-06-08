@@ -20,7 +20,7 @@ import static org.lwjgl.stb.STBImage.stbi_load;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import com.github.fahjulian.stealth.core.Log;
+import com.github.fahjulian.stealth.core.util.Log;
 
 import org.lwjgl.BufferUtils;
 

@@ -23,11 +23,11 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.fahjulian.stealth.AApplication;
-import com.github.fahjulian.stealth.core.Log;
-import com.github.fahjulian.stealth.entity.Transform;
-import com.github.fahjulian.stealth.entity.component.SpriteComponent;
-import com.github.fahjulian.stealth.util.ResourcePool;
+import com.github.fahjulian.stealth.components.SpriteComponent;
+import com.github.fahjulian.stealth.core.AApplication;
+import com.github.fahjulian.stealth.core.entity.Transform;
+import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.core.util.ResourcePool;
 
 import org.joml.Vector2f;
 

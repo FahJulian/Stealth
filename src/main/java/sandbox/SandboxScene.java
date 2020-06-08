@@ -1,6 +1,6 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.scene.AScene;
+import com.github.fahjulian.stealth.core.scene.AScene;
 
 public class SandboxScene extends AScene {
 
