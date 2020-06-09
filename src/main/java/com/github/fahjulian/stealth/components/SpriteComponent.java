@@ -4,16 +4,15 @@ import com.github.fahjulian.stealth.core.entity.AComponent;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Renderer2D;
+import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
 
-import org.joml.Vector4f;
-
-public class ColorComponent extends AComponent
+public class SpriteComponent extends AComponent
 {
-    private final Vector4f color;
+    private final Texture2D texture;
 
-    public ColorComponent(Vector4f color)
+    public SpriteComponent(Texture2D texture)
     {
-        this.color = color;
+        this.texture = texture;
     }
 
     @Override
@@ -25,7 +24,7 @@ public class ColorComponent extends AComponent
     private boolean onRender(RenderEvent event)
     {
         Transform t = entity.getTransform();
-        Renderer2D.drawRectangle(t.getPosition(), t.getScale(), t.getRotation(), color);
+        Renderer2D.drawTexturedRectangle(t.getPosition(), t.getScale(), t.getRotation(), texture);
         return false;
     }
 }

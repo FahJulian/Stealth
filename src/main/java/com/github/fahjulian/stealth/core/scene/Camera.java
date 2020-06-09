@@ -1,9 +1,9 @@
 package com.github.fahjulian.stealth.core.scene;
 
 import com.github.fahjulian.stealth.core.Window;
+import com.github.fahjulian.stealth.core.util.Maths;
 
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 /**
@@ -11,9 +11,9 @@ import org.joml.Vector3f;
  */
 public class Camera
 {
-    private final Vector2f position;
     private final Matrix4f projectionMatrix;
-    private final Matrix4f viewMatrix;
+    private final Vector3f position;
+    private final Vector3f rotation;
 
     /**
      * Construct a new camera
@@ -25,31 +25,32 @@ public class Camera
      */
     public Camera(float posX, float posY)
     {
-        this.position = new Vector2f(posX, posY);
+        this.position = new Vector3f(posX, posY, 0.0f);
+        this.rotation = new Vector3f();
         this.projectionMatrix = new Matrix4f();
-        this.viewMatrix = new Matrix4f();
         adjustProjection();
     }
 
     private void adjustProjection()
     {
         projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, Window.get().getWidth(), 0.0f, Window.get().getHeight(),
-                -10.0f, 10.0f);
+        projectionMatrix.ortho(0.0f, Window.get().getWidth(), 0.0f, Window.get().getHeight(), -10.0f, 10.0f);
     }
 
     public Matrix4f getViewMatrix()
     {
-        Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
-        Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
-        this.viewMatrix.identity();
-        this.viewMatrix.lookAt(new Vector3f(position.x, position.y, 20.0f),
-                cameraFront.add(position.x, position.y, 0.0f), cameraUp);
-        return this.viewMatrix;
+        return Maths.createTransformationMatrix(new Vector3f(-position.x, -position.y, -position.z),
+                new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-rotation.x, -rotation.y, -rotation.z));
     }
 
     public Matrix4f getProjectionMatrix()
     {
         return projectionMatrix;
+    }
+
+    public void setPosition(float posX, float posY)
+    {
+        this.position.x = posX;
+        this.position.y = posY;
     }
 }

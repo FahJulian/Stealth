@@ -2,7 +2,11 @@ package com.github.fahjulian.stealth.core;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
@@ -279,6 +283,14 @@ class GLFWInputListener
         {
         case GLFW_KEY_SPACE:
             return Key.SPACE;
+        case GLFW_KEY_W:
+            return Key.W;
+        case GLFW_KEY_A:
+            return Key.A;
+        case GLFW_KEY_S:
+            return Key.S;
+        case GLFW_KEY_D:
+            return Key.D;
         default:
             Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
             return Key.UNKNOWN;

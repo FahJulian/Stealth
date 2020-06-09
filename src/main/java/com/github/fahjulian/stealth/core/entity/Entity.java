@@ -44,8 +44,7 @@ public final class Entity
         {
             if (hasComponent(c.getClass()))
             {
-                Log.warn("(Entity) Cant add two Components of the same type to entity %s",
-                        this.name);
+                Log.warn("(Entity) Cant add two Components of the same type to entity %s", this.name);
                 continue;
             }
 
@@ -84,8 +83,7 @@ public final class Entity
     {
         if (hasComponent(c.getClass()))
         {
-            Log.warn("(Entity) Cant add two Components of type %s to entity %s", c.getClass(),
-                    this.name);
+            Log.warn("(Entity) Cant add two Components of type %s to entity %s", c.getClass(), this.name);
             return;
         }
 

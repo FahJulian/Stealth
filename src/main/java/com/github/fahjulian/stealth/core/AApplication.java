@@ -1,5 +1,7 @@
 package com.github.fahjulian.stealth.core;
 
+import static org.lwjgl.opengl.GL11.glFlush;
+
 import com.github.fahjulian.stealth.core.event.EventManager;
 import com.github.fahjulian.stealth.core.scene.AScene;
 import com.github.fahjulian.stealth.core.util.Log;
@@ -84,6 +86,7 @@ public abstract class AApplication
             window.clear();
             new RenderEvent();
             window.swapBuffers();
+            glFlush();
 
             final long endTime = System.nanoTime();
             deltaSeconds = (endTime - startTime) / 1.0e9f;
@@ -99,6 +102,11 @@ public abstract class AApplication
         this.scene = scene;
         if (initialized)
             scene.init();
+    }
+
+    public Window getWindow()
+    {
+        return window;
     }
 
     public AScene getScene()

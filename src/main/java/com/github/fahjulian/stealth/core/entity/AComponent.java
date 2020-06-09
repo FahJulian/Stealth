@@ -16,7 +16,7 @@ public abstract class AComponent
      * Initializes the Component. Sets up event listeners. Should only be called
      * after setting the entity and the entity's layer.
      */
-    abstract public void onInit();
+    abstract protected void onInit();
 
     /**
      * Set the Entity of the component. Should only be done once.

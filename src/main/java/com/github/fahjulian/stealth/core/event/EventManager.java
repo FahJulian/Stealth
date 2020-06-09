@@ -22,8 +22,7 @@ public final class EventManager
         private final IEventListenerCondition condition;
         private final int index;
 
-        private SortedEventListener(IEventListener<E> listener, IEventListenerCondition condition,
-                int index)
+        private SortedEventListener(IEventListener<E> listener, IEventListenerCondition condition, int index)
         {
             this.listener = listener;
             this.condition = condition;
@@ -45,11 +44,13 @@ public final class EventManager
 
     private final String name;
     private final Map<Class<? extends AEvent>, List<SortedEventListener<? extends AEvent>>> listeners;
+    private final List<SortedEventListener<AEvent>> subManagers;
 
     public EventManager(String name)
     {
         this.name = name;
         listeners = new HashMap<>();
+        subManagers = new ArrayList<>();
     }
 
     /**
@@ -80,6 +81,13 @@ public final class EventManager
             }
         }
 
+        for (SortedEventListener<AEvent> subManager : subManagers)
+        {
+            event.handled = subManager.onEvent(event);
+            if (event.handled)
+                return true;
+        }
+
         return false;
     }
 
@@ -96,8 +104,7 @@ public final class EventManager
      *                       The "importance" of the listener (Like a zIndex in
      *                       rendering)
      */
-    public <E extends AEvent> void addListener(Class<E> eventClass, IEventListener<E> listener,
-            int index)
+    public <E extends AEvent> void addListener(Class<E> eventClass, IEventListener<E> listener, int index)
     {
         addListener(eventClass, listener, () -> true, index);
     }
@@ -119,9 +126,17 @@ public final class EventManager
      *                       The "importance" of the listener (Like a zIndex in
      *                       rendering)
      */
+    @SuppressWarnings("unchecked")
     public <E extends AEvent> void addListener(Class<E> eventClass, IEventListener<E> listener,
             IEventListenerCondition condition, int index)
     {
+        if (eventClass.equals(AEvent.class))
+        {
+            subManagers.add((SortedEventListener<AEvent>) new SortedEventListener<E>(listener, condition, index));
+            Collections.sort(subManagers);
+            return;
+        }
+
         if (!listeners.containsKey(eventClass))
             listeners.put(eventClass, new ArrayList<>());
 

@@ -7,12 +7,12 @@ import com.github.fahjulian.stealth.events.mouse.MouseDraggedEvent;
 public class SandboxComponent extends AComponent
 {
     @Override
-    public void onInit()
+    protected void onInit()
     {
         addEventListener(MouseDraggedEvent.class, this::onMouseDragged);
     }
 
-    public boolean onMouseDragged(MouseDraggedEvent event)
+    private boolean onMouseDragged(MouseDraggedEvent event)
     {
         Log.info("Sandbox Componend registered %s", event);
         return false;

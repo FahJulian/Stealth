@@ -135,7 +135,9 @@ public final class Transform
 
     public void setPosition(float x, float y)
     {
-        setPosition(x, y, 0.0f);
+        position.x = x;
+        position.y = y;
+        new EntityTransformEvent(Type.POSITION, entity);
     }
 
     public void setPosition(float x, float y, float z)
@@ -146,7 +148,9 @@ public final class Transform
 
     public void setPosition(Vector2f position)
     {
-        setPosition(new Vector3f(position, 0.0f));
+        this.position.x = position.x;
+        this.position.y = position.y;
+        new EntityTransformEvent(Type.POSITION, entity);
     }
 
     public void setPosition(Vector3f position)
@@ -155,24 +159,29 @@ public final class Transform
         new EntityTransformEvent(Type.POSITION, entity);
     }
 
-    public void setRotationX(float x)
+    public void setPositionX(float x)
     {
-        setRotation(x, 0.0f, 0.0f);
+        position.x = x;
+        new EntityTransformEvent(Type.POSITION, entity);
     }
 
-    public void setRotationY(float y)
+    public void setPositionY(float y)
     {
-        setRotation(0.0f, y, 0.0f);
+        position.y = y;
+        new EntityTransformEvent(Type.POSITION, entity);
     }
 
-    public void setRotationZ(float z)
+    public void setPositionZ(float z)
     {
-        setRotation(0.0f, 0.0f, z);
+        position.z = z;
+        new EntityTransformEvent(Type.POSITION, entity);
     }
 
     public void setScale(float x, float y)
     {
-        setScale(x, y, 0.0f);
+        scale.x = x;
+        scale.y = y;
+        new EntityTransformEvent(Type.SCALE, entity);
     }
 
     public void setScale(float x, float y, float z)
@@ -183,7 +192,9 @@ public final class Transform
 
     public void setScale(Vector2f scale)
     {
-        setScale(new Vector3f(scale, 0.0f));
+        this.scale.x = scale.x;
+        this.scale.y = scale.y;
+        new EntityTransformEvent(Type.SCALE, entity);
     }
 
     public void setScale(Vector3f scale)
@@ -194,17 +205,20 @@ public final class Transform
 
     public void setScaleX(float x)
     {
-        setScale(x, 0.0f, 0.0f);
+        scale.x = x;
+        new EntityTransformEvent(Type.SCALE, entity);
     }
 
     public void setScaleY(float y)
     {
-        setScale(0.0f, y, 0.0f);
+        scale.y = y;
+        new EntityTransformEvent(Type.SCALE, entity);
     }
 
     public void setScaleZ(float z)
     {
-        setScale(0.0f, 0.0f, z);
+        scale.z = z;
+        new EntityTransformEvent(Type.SCALE, entity);
     }
 
     public void setRotation(float x, float y, float z)
@@ -219,19 +233,22 @@ public final class Transform
         new EntityTransformEvent(Type.ROTATION, entity);
     }
 
-    public void setPositionX(float x)
+    public void setRotationX(float x)
     {
-        setPosition(x, 0.0f, 0.0f);
+        rotation.x = x;
+        new EntityTransformEvent(Type.ROTATION, entity);
     }
 
-    public void setPositionY(float y)
+    public void setRotationY(float y)
     {
-        setPosition(0.0f, y, 0.0f);
+        rotation.y = y;
+        new EntityTransformEvent(Type.ROTATION, entity);
     }
 
-    public void setPositionZ(float z)
+    public void setRotationZ(float z)
     {
-        setPosition(0.0f, 0.0f, z);
+        rotation.z = z;
+        new EntityTransformEvent(Type.ROTATION, entity);
     }
 
     public Vector3f getPosition()

@@ -1,7 +1,6 @@
 package com.github.fahjulian.stealth.components;
 
 import com.github.fahjulian.stealth.core.entity.AComponent;
-import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
 
 public class RotationComponent extends AComponent
@@ -18,14 +17,13 @@ public class RotationComponent extends AComponent
     }
 
     @Override
-    public void onInit()
+    protected void onInit()
     {
         addEventListener(UpdateEvent.class, this::onUpdate);
     }
 
-    public boolean onUpdate(UpdateEvent event)
+    private boolean onUpdate(UpdateEvent event)
     {
-        Log.debug("" + event.getDeltaSeconds());
         entity.getTransform().setRotationZ(
                 entity.getTransform().getRotationZ() + speed * event.getDeltaSeconds());
         return false;

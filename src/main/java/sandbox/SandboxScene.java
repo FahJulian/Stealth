@@ -5,7 +5,7 @@ import com.github.fahjulian.stealth.core.scene.AScene;
 public class SandboxScene extends AScene
 {
     @Override
-    public void onInit()
+    protected void onInit()
     {
         add(new SandboxLayer());
     }

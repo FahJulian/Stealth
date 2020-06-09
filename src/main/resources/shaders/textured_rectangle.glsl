@@ -6,13 +6,14 @@ layout (location = 1) in vec2 vTextureCoords;
 
 out vec2 fTextureCoords;
 
-uniform mat4 uProjectionMatrix;
 uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uProjectionMatrix;
 
 void main()
 {
     fTextureCoords = vTextureCoords;
-    gl_Position = uProjectionMatrix * uModelMatrix * vec4(vPosition, 1.0);
+    gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(vPosition, 1.0);
 }
 
 

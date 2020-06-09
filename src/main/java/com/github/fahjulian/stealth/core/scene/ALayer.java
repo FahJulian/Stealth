@@ -40,8 +40,8 @@ public abstract class ALayer
         this.index = index;
 
         eventManager = new EventManager(String.format("EventManager of Layer %d", index));
-        AApplication.get().getMainEventManager().addListener(AEvent.class, eventManager::dispatch,
-                this::isActive, index);
+        AApplication.get().getMainEventManager().addListener(AEvent.class, eventManager::dispatch, this::isActive,
+                this.index);
 
         onInit();
 
@@ -64,7 +64,7 @@ public abstract class ALayer
      */
     public <E extends AEvent> void addEventListener(Class<E> eventClass, IEventListener<E> listener)
     {
-        eventManager.addListener(eventClass, listener, index);
+        eventManager.addListener(eventClass, listener, 1);
     }
 
     /**
