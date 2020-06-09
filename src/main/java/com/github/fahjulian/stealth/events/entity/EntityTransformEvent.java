@@ -7,7 +7,7 @@ public class EntityTransformEvent extends AEvent
 {
     public static enum Type
     {
-        POSITION, SCALE;
+        POSITION, SCALE, ROTATION;
     }
 
     private final Type type;

@@ -13,12 +13,19 @@ import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
 import static org.lwjgl.opengl.GL20.glGetProgrami;
 import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 import static org.lwjgl.opengl.GL20.glGetShaderi;
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glUniform4f;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
 import com.github.fahjulian.stealth.core.util.IO;
 import com.github.fahjulian.stealth.core.util.Log;
+
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
+import org.lwjgl.BufferUtils;
 
 public class Shader
 {
@@ -69,6 +76,18 @@ public class Shader
     public void unbind()
     {
         glUseProgram(0);
+    }
+
+    public void setUniform(String uniformName, Vector4f value)
+    {
+        int location = glGetUniformLocation(this.ID, uniformName);
+        glUniform4f(location, value.x, value.y, value.z, value.w);
+    }
+
+    public void setUniform(String uniformName, Matrix4f value)
+    {
+        int location = glGetUniformLocation(this.ID, uniformName);
+        glUniformMatrix4fv(location, false, value.get(BufferUtils.createFloatBuffer(4 * 4)));
     }
 
     private String[] splitSourceCode(String sourceCode)

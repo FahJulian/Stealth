@@ -38,6 +38,8 @@ public final class Entity
         this.components = new ArrayList<>();
         this.initialized = false;
 
+        this.transform.setEntity(this);
+
         for (AComponent c : components)
         {
             if (hasComponent(c.getClass()))

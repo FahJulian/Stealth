@@ -8,29 +8,33 @@ import com.github.fahjulian.stealth.graphics.opengl.ElementBuffer;
 import com.github.fahjulian.stealth.graphics.opengl.VertexArray;
 import com.github.fahjulian.stealth.graphics.opengl.VertexBuffer;
 
-public class RawModel
+public class BatchedTexturedModel
 {
     private final VertexArray vao;
     private final int vertexCount;
 
-    public RawModel(float[] positions, int[] indices)
+    public BatchedTexturedModel(float[] positions, float[] textureCoords, float[] textureIDs,
+            int[] indices)
     {
         this.vao = new VertexArray();
         this.vertexCount = indices.length;
 
-        VertexBuffer vbo = new VertexBuffer(positions, 3);
-        vao.addVBO(vbo);
-        vbo.unbind();
+        VertexBuffer positionVBO = new VertexBuffer(positions, 3);
+        vao.addVBO(positionVBO);
+        positionVBO.unbind();
+
+        VertexBuffer textureCoordsVBO = new VertexBuffer(textureCoords, 2);
+        vao.addVBO(textureCoordsVBO);
+        textureCoordsVBO.unbind();
+
+        VertexBuffer textureIDsVBO = new VertexBuffer(textureIDs, 1);
+        vao.addVBO(textureIDsVBO);
+        textureCoordsVBO.unbind();
 
         ElementBuffer ebo = new ElementBuffer(indices);
         ebo.unbind();
 
         vao.unbind();
-    }
-
-    void draw()
-    {
-        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
     }
 
     void bind()
@@ -41,5 +45,10 @@ public class RawModel
     void unbind()
     {
         vao.unbind();
+    }
+
+    void draw()
+    {
+        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
     }
 }

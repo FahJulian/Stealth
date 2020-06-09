@@ -15,6 +15,7 @@ public final class Transform
     private Entity entity;
     private final Vector3f position;
     private final Vector3f scale;
+    private final Vector3f rotation;
 
     /**
      * Construct a new emtpy transform
@@ -91,26 +92,6 @@ public final class Transform
     /**
      * Construct a transform with a position, scale and zIndex
      * 
-     * @param posX
-     *                   The x coordinate to initialize with
-     * @param posY
-     *                   The y coordinate to initialize with
-     * @param scaleX
-     *                   The width to initialize with
-     * @param scaleY
-     *                   The height to initialize with
-     * @param zIndex
-     *                   The zIndex to initialized with (The higher the closer to
-     *                   the camera)
-     */
-    public Transform(float posX, float posY, float posZ, float scaleX, float scaleY, float scaleZ)
-    {
-        this(new Vector3f(posX, posY, posZ), new Vector3f(scaleX, scaleY, scaleZ));
-    }
-
-    /**
-     * Construct a transform with a position, scale and zIndex
-     * 
      * @param position
      *                     The position to initialize with
      * @param scale
@@ -121,8 +102,14 @@ public final class Transform
      */
     public Transform(Vector3f position, Vector3f scale)
     {
+        this(position, scale, new Vector3f());
+    }
+
+    public Transform(Vector3f position, Vector3f scale, Vector3f rotation)
+    {
         this.position = position;
         this.scale = scale;
+        this.rotation = rotation;
     }
 
     void setEntity(Entity entity)
@@ -133,7 +120,7 @@ public final class Transform
     @Override
     public Transform clone()
     {
-        return new Transform(position, scale);
+        return new Transform(position, scale, rotation);
     }
 
     @Override
@@ -168,6 +155,21 @@ public final class Transform
         new EntityTransformEvent(Type.POSITION, entity);
     }
 
+    public void setRotationX(float x)
+    {
+        setRotation(x, 0.0f, 0.0f);
+    }
+
+    public void setRotationY(float y)
+    {
+        setRotation(0.0f, y, 0.0f);
+    }
+
+    public void setRotationZ(float z)
+    {
+        setRotation(0.0f, 0.0f, z);
+    }
+
     public void setScale(float x, float y)
     {
         setScale(x, y, 0.0f);
@@ -190,13 +192,105 @@ public final class Transform
         new EntityTransformEvent(Type.SCALE, entity);
     }
 
+    public void setScaleX(float x)
+    {
+        setScale(x, 0.0f, 0.0f);
+    }
+
+    public void setScaleY(float y)
+    {
+        setScale(0.0f, y, 0.0f);
+    }
+
+    public void setScaleZ(float z)
+    {
+        setScale(0.0f, 0.0f, z);
+    }
+
+    public void setRotation(float x, float y, float z)
+    {
+        this.rotation.set(x, y, z);
+        new EntityTransformEvent(Type.ROTATION, entity);
+    }
+
+    public void setRotation(Vector3f rotation)
+    {
+        this.rotation.set(rotation);
+        new EntityTransformEvent(Type.ROTATION, entity);
+    }
+
+    public void setPositionX(float x)
+    {
+        setPosition(x, 0.0f, 0.0f);
+    }
+
+    public void setPositionY(float y)
+    {
+        setPosition(0.0f, y, 0.0f);
+    }
+
+    public void setPositionZ(float z)
+    {
+        setPosition(0.0f, 0.0f, z);
+    }
+
     public Vector3f getPosition()
     {
         return position;
     }
 
+    public float getPositionX()
+    {
+        return position.x;
+    }
+
+    public float getPositionY()
+    {
+        return position.y;
+    }
+
+    public float getPositionZ()
+    {
+        return position.z;
+    }
+
     public Vector3f getScale()
     {
         return scale;
+    }
+
+    public float getScaleX()
+    {
+        return scale.x;
+    }
+
+    public float getScaleY()
+    {
+        return scale.y;
+    }
+
+    public float getScaleZ()
+    {
+        return scale.z;
+    }
+
+    public Vector3f getRotation()
+    {
+        return rotation;
+    }
+
+    public float getRotationX()
+    {
+        return rotation.x;
+    }
+
+    public float getRotationY()
+    {
+        return rotation.y;
+    }
+
+    public float getRotationZ()
+    {
+        return rotation.z;
     }
 }

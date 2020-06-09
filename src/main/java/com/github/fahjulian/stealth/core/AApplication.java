@@ -61,11 +61,13 @@ public abstract class AApplication
     {
         running = true;
 
-        final float sPerUpdate = 1.0f / 30.0f;
+        final float sPerUpdate = 1.0f / 60.0f;
         float deltaSeconds = 0.0f;
         float dueUpdates = 0.0f;
 
         long startTime = System.nanoTime();
+        long lastUpdate = startTime;
+
         while (!window.isClosed())
         {
             window.pollEvents();
@@ -73,16 +75,17 @@ public abstract class AApplication
             dueUpdates += deltaSeconds / sPerUpdate;
             while (dueUpdates >= 1)
             {
-                new UpdateEvent(deltaSeconds);
+                final float updateDeltaSeconds = (startTime - lastUpdate) / 1.0e9f;
+                new UpdateEvent(updateDeltaSeconds);
+                lastUpdate = startTime;
                 dueUpdates--;
             }
 
             window.clear();
             new RenderEvent();
-            Renderer2D.endFrame();
             window.swapBuffers();
 
-            long endTime = System.nanoTime();
+            final long endTime = System.nanoTime();
             deltaSeconds = (endTime - startTime) / 1.0e9f;
             startTime = endTime;
         }

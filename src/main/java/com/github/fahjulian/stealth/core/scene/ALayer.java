@@ -8,7 +8,6 @@ import com.github.fahjulian.stealth.core.entity.Entity;
 import com.github.fahjulian.stealth.core.event.AEvent;
 import com.github.fahjulian.stealth.core.event.EventManager;
 import com.github.fahjulian.stealth.core.event.IEventListener;
-import com.github.fahjulian.stealth.events.application.RenderEvent;
 
 public abstract class ALayer
 {
@@ -46,8 +45,6 @@ public abstract class ALayer
 
         onInit();
 
-        eventManager.addListener(RenderEvent.class, this::onRender, Integer.MAX_VALUE - index);
-
         for (Entity e : entities)
             e.init();
 
@@ -68,11 +65,6 @@ public abstract class ALayer
     public <E extends AEvent> void addEventListener(Class<E> eventClass, IEventListener<E> listener)
     {
         eventManager.addListener(eventClass, listener, index);
-    }
-
-    private boolean onRender(RenderEvent event)
-    {
-        return false;
     }
 
     /**

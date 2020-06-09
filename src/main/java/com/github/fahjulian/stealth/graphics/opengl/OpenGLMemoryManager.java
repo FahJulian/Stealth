@@ -1,5 +1,6 @@
 package com.github.fahjulian.stealth.graphics.opengl;
 
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL20.glDeleteProgram;
 import static org.lwjgl.opengl.GL20.glDeleteShader;
@@ -15,6 +16,7 @@ public class OpenGLMemoryManager
     static final List<Integer> loadedPrograms = new ArrayList<>();
     static final List<Integer> loadedVertexArrays = new ArrayList<>();
     static final List<Integer> loadedVertexBuffers = new ArrayList<>();
+    static final List<Integer> loadedTextures = new ArrayList<>();
 
     public static void destroyAll()
     {
@@ -29,5 +31,8 @@ public class OpenGLMemoryManager
 
         for (int id : loadedVertexBuffers)
             glDeleteBuffers(id);
+
+        for (int id : loadedTextures)
+            glDeleteTextures(id);
     }
 }
