@@ -5,6 +5,7 @@
 .vscode/
 .classpath
 .project
+eclipse-formatter.xml
 
 target/
 test/

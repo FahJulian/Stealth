@@ -31,9 +31,11 @@ import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -56,22 +58,26 @@ import com.github.fahjulian.stealth.events.mouse.MouseScrolledEvent;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
-public final class Window {
-    
+public final class Window
+{
+
     private String title;
     private int width, height;
     public long glfwID;
 
     private static Window instance;
 
-    private Window() {
+    private Window()
+    {
     }
 
     /**
      * Retrieve the Window instance
+     * 
      * @return The Window instance
      */
-    public static Window get() {
+    public static Window get()
+    {
         if (instance == null)
             instance = new Window();
 
@@ -80,31 +86,40 @@ public final class Window {
 
     /**
      * Initialize the Window instance
-     * @param title The title of the GLFW Window
-     * @param width The width of the GLFW Window
-     * @param height The height of the GLFW Window
+     * 
+     * @param title
+     *                   The title of the GLFW Window
+     * @param width
+     *                   The width of the GLFW Window
+     * @param height
+     *                   The height of the GLFW Window
      */
-    public void init(String title, int width, int height) {
+    public void init(String title, int width, int height)
+    {
         this.title = title;
         this.width = width;
         this.height = height;
 
-        glfwSetErrorCallback((error, description) -> {
-            Log.error("(GLFW) Error: [%s]: %s", Integer.toHexString(error), GLFWErrorCallback.getDescription(description));
+        glfwSetErrorCallback((error, description) ->
+        {
+            Log.error("(GLFW) Error: [%s]: %s", Integer.toHexString(error),
+                    GLFWErrorCallback.getDescription(description));
         });
 
-        if (!glfwInit()) {
+        if (!glfwInit())
+        {
             Log.error("(Window) Unable to initialized GLFW.");
             return;
         }
 
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);         // TODO Add window resizing
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // TODO Add window resizing
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 
         glfwID = glfwCreateWindow(width, height, title, NULL, NULL);
-        if (glfwID == NULL) {
+        if (glfwID == NULL)
+        {
             Log.error("(Window) Failed to create GLFW Window.");
             return;
         }
@@ -130,7 +145,8 @@ public final class Window {
     /**
      * Free all memory allocated to GLFW
      */
-    public void delete() {
+    public void destroy()
+    {
         glfwFreeCallbacks(glfwID);
         glfwDestroyWindow(glfwID);
         glfwTerminate();
@@ -138,107 +154,134 @@ public final class Window {
     }
 
     /**
-     * Allow GLFW Events to be polled.
-     * Should be called in the main loop.
+     * Allow GLFW Events to be polled. Should be called in the main loop.
      */
-    public void pollEvents() {
+    public void pollEvents()
+    {
         glfwPollEvents();
     }
 
-    /** 
+    /**
      * Call glfwSwapBuffers
      */
-    public void swapBuffers() {
+    public void swapBuffers()
+    {
         glfwSwapBuffers(glfwID);
+    }
+
+    public void clear()
+    {
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     /**
      * Check if a close event has been called in GLFW
+     * 
      * @return Whether or not the window should close
      */
-    public boolean isClosed() {
+    public boolean isClosed()
+    {
         return glfwWindowShouldClose(glfwID);
     }
 
-    public String getInitialTitle() {
+    public String getInitialTitle()
+    {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(String title)
+    {
         glfwSetWindowTitle(glfwID, title);
-    }   
+    }
 
-    public int getWidth() {
+    public int getWidth()
+    {
         return width;
     }
 
-    public int getHeight() {
+    public int getHeight()
+    {
         return height;
     }
 }
 
-
-class GLFWInputListener {
+class GLFWInputListener
+{
 
     private float posX, posY;
     private List<AMouseEvent.Button> pressedButtons = new ArrayList<>();
 
-    public void cursorPosCallback(long windowID, double posX, double posY) {
+    public void cursorPosCallback(long windowID, double posX, double posY)
+    {
         this.posX = (float) posX;
         this.posY = (float) posY;
 
-        for (AMouseEvent.Button button : pressedButtons) 
+        for (AMouseEvent.Button button : pressedButtons)
             new MouseDraggedEvent(this.posX, this.posY, button);
 
         new MouseMovedEvent(this.posX, this.posY);
     }
 
-    public void mouseButtonCallback(long windowID, int buttonID, int action, int mods) {
+    public void mouseButtonCallback(long windowID, int buttonID, int action, int mods)
+    {
         Button button = translateMouseButton(buttonID);
 
-        if (action == GLFW_PRESS) {
+        if (action == GLFW_PRESS)
+        {
             pressedButtons.add(button);
             new MouseButtonPressedEvent(this.posX, this.posY, button);
-        } else if (action == GLFW_RELEASE) {
+        }
+        else if (action == GLFW_RELEASE)
+        {
             pressedButtons.remove(button);
             new MouseButtonReleasedEvent(this.posX, this.posY, button);
         }
     }
 
-    public void scrollCallback(long windowID, double offsetX, double offsetY) {
+    public void scrollCallback(long windowID, double offsetX, double offsetY)
+    {
         new MouseScrolledEvent(this.posX, this.posY, (float) offsetX, (float) offsetY);
     }
 
-    public void keyCallback(long window, int keyID, int scancode, int action, int mods) {
+    public void keyCallback(long window, int keyID, int scancode, int action, int mods)
+    {
         Key key = translateKey(keyID);
 
-        if (action == GLFW_PRESS) {
+        if (action == GLFW_PRESS)
+        {
             new KeyPressedEvent(key);
-        } else if (action == GLFW_RELEASE) {
+        }
+        else if (action == GLFW_RELEASE)
+        {
             new KeyReleasedEvent(key);
         }
     }
 
-    private Button translateMouseButton(int glfwButtonID) {
-        switch (glfwButtonID) {
-            case GLFW_MOUSE_BUTTON_1: 
-                return Button.LEFT;
-            case GLFW_MOUSE_BUTTON_2:
-                return Button.RIGHT;
-            case GLFW_MOUSE_BUTTON_3:
-                return Button.MIDDLE;
-            default:
-                Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
-                return Button.UNKNOWN;
+    private Button translateMouseButton(int glfwButtonID)
+    {
+        switch (glfwButtonID)
+        {
+        case GLFW_MOUSE_BUTTON_1:
+            return Button.LEFT;
+        case GLFW_MOUSE_BUTTON_2:
+            return Button.RIGHT;
+        case GLFW_MOUSE_BUTTON_3:
+            return Button.MIDDLE;
+        default:
+            Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
+            return Button.UNKNOWN;
         }
     }
 
-    private Key translateKey(int glfwKeyID) {
-        switch(glfwKeyID) {
-            case GLFW_KEY_SPACE: return Key.SPACE;
-            default: 
-                Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
-                return Key.UNKNOWN;
+    private Key translateKey(int glfwKeyID)
+    {
+        switch (glfwKeyID)
+        {
+        case GLFW_KEY_SPACE:
+            return Key.SPACE;
+        default:
+            Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
+            return Key.UNKNOWN;
         }
     }
 }

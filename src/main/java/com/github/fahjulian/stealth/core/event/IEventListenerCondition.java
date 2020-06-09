@@ -1,8 +1,7 @@
 package com.github.fahjulian.stealth.core.event;
 
 @FunctionalInterface
-public interface IEventListenerCondition {
-    
+public interface IEventListenerCondition
+{
     boolean shouldEventListenerBeCalled();
-    
 }

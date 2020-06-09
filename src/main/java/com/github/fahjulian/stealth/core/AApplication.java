@@ -1,16 +1,14 @@
 package com.github.fahjulian.stealth.core;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
-
 import com.github.fahjulian.stealth.core.event.EventManager;
 import com.github.fahjulian.stealth.core.scene.AScene;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
+import com.github.fahjulian.stealth.graphics.Renderer2D;
 
-public abstract class AApplication {
-
+public abstract class AApplication
+{
     protected Window window;
     private AScene scene;
     private EventManager mainEventManager;
@@ -23,7 +21,8 @@ public abstract class AApplication {
 
     private static AApplication instance;
 
-    protected AApplication(String title, int width, int height, String logDir, boolean debug) {
+    protected AApplication(String title, int width, int height, String logDir, boolean debug)
+    {
         instance = this;
 
         this.title = title;
@@ -37,17 +36,19 @@ public abstract class AApplication {
         init();
     }
 
-    public static AApplication get() {
+    public static AApplication get()
+    {
         return instance;
     }
 
     abstract protected AScene onInit();
 
-    public void init() {
+    public void init()
+    {
         Log.init(logDir, debug);
         window = Window.get();
         window.init(title, width, height);
-        
+
         mainEventManager = new EventManager("Main EventManager");
 
         scene = onInit();
@@ -56,25 +57,29 @@ public abstract class AApplication {
         initialized = true;
     }
 
-    public void run() {
+    public void run()
+    {
         running = true;
 
         final float sPerUpdate = 1.0f / 30.0f;
         float deltaSeconds = 0.0f;
         float dueUpdates = 0.0f;
-        
+
         long startTime = System.nanoTime();
-        while (!window.isClosed()) {
+        while (!window.isClosed())
+        {
             window.pollEvents();
 
             dueUpdates += deltaSeconds / sPerUpdate;
-            while (dueUpdates >= 1) {
+            while (dueUpdates >= 1)
+            {
                 new UpdateEvent(deltaSeconds);
                 dueUpdates--;
             }
 
-            glClear(GL_COLOR_BUFFER_BIT);
+            window.clear();
             new RenderEvent();
+            Renderer2D.endFrame();
             window.swapBuffers();
 
             long endTime = System.nanoTime();
@@ -82,23 +87,29 @@ public abstract class AApplication {
             startTime = endTime;
         }
 
-        Window.get().delete();
+        Renderer2D.destroy();
+        Window.get().destroy();
     }
 
-    public void setScene(AScene scene) {
+    public void setScene(AScene scene)
+    {
         this.scene = scene;
-        if (initialized) scene.init();
+        if (initialized)
+            scene.init();
     }
 
-    public AScene getScene() {
+    public AScene getScene()
+    {
         return scene;
     }
 
-    public EventManager getMainEventManager() {
+    public EventManager getMainEventManager()
+    {
         return mainEventManager;
     }
 
-    public boolean isRunning() {
+    public boolean isRunning()
+    {
         return running;
     }
 }
