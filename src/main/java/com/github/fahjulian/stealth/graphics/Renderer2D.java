@@ -2,7 +2,7 @@ package com.github.fahjulian.stealth.graphics;
 
 import static org.lwjgl.opengl.GL11.glFlush;
 
-import com.github.fahjulian.stealth.core.AApplication;
+import com.github.fahjulian.stealth.core.AbstractApp;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.graphics.opengl.OpenGLMemoryManager;
 import com.github.fahjulian.stealth.graphics.opengl.Shader;
@@ -65,7 +65,7 @@ public class Renderer2D
 
     public static void endFrame()
     {
-        Camera camera = AApplication.get().getScene().getCamera();
+        Camera camera = AbstractApp.get().getCurrentScene().getCamera();
         drawColoredRects(camera);
         drawTexturedRects(camera);
         glFlush();

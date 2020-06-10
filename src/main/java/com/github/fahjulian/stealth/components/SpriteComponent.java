@@ -1,12 +1,13 @@
 package com.github.fahjulian.stealth.components;
 
-import com.github.fahjulian.stealth.core.entity.AComponent;
+import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Renderer2D;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
 
-public class SpriteComponent extends AComponent
+/** Renders a given sprite at the entities position */
+public class SpriteComponent extends AbstractComponent
 {
     private final Texture2D texture;
 
@@ -18,14 +19,15 @@ public class SpriteComponent extends AComponent
     @Override
     protected void onInit()
     {
-        addEventListener(RenderEvent.class, this::onRender);
+        registerEventListener(RenderEvent.class, this::onRender);
     }
 
-    private boolean onRender(RenderEvent event)
+    private void onRender(RenderEvent event)
     {
         Transform t = entity.getTransform();
         Renderer2D.drawRectangle(t.getPositionX(), t.getPositionY(), t.getPositionZ(), t.getScaleX(), t.getScaleY(),
                 texture);
-        return false;
+
+        entity.getLayer().blockEvent(RenderEvent.class);
     }
 }

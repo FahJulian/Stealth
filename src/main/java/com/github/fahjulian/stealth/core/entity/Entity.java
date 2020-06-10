@@ -3,10 +3,8 @@ package com.github.fahjulian.stealth.core.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.fahjulian.stealth.core.event.AEvent;
-import com.github.fahjulian.stealth.core.event.EventManager;
-import com.github.fahjulian.stealth.core.scene.ALayer;
-import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.core.event.EventDispatcher;
+import com.github.fahjulian.stealth.core.scene.AbstractLayer;
 
 /**
  * Stealth features a component based entity system. An Entity just holds a
@@ -16,22 +14,23 @@ public final class Entity
 {
     private final String name;
     private final Transform transform;
-    private final List<AComponent> components;
-    private EventManager eventManager;
-    private ALayer layer;
-    private boolean initialized, active;
+    private final List<AbstractComponent> components;
+    private EventDispatcher eventDispatcher;
+    private AbstractLayer layer;
+    private boolean initialized;
 
     /**
-     * Construct a new Entity with a name, transform and possible initial components
+     * Construct a new Entity with a name for debugging, a Transform and optional
+     * initial components
      * 
      * @param name
      *                       The Name of the entity. Mostly for debugging purposes
      * @param transform
      *                       The Transform of the entity.
      * @param components
-     *                       Possible initial components of the Entity
+     *                       Optional initial components of the Entity
      */
-    public Entity(String name, Transform transform, AComponent... components)
+    public Entity(String name, Transform transform, AbstractComponent... components)
     {
         this.name = name;
         this.transform = transform;
@@ -40,17 +39,8 @@ public final class Entity
 
         this.transform.setEntity(this);
 
-        for (AComponent c : components)
-        {
-            if (hasComponent(c.getClass()))
-            {
-                Log.warn("(Entity) Cant add two Components of the same type to entity %s", this.name);
-                continue;
-            }
-
-            this.components.add(c);
-            c.setEntity(this);
-        }
+        for (AbstractComponent c : components)
+            addComponent(c);
     }
 
     /**
@@ -64,9 +54,9 @@ public final class Entity
      * @return The found component or null
      */
     @SuppressWarnings("unchecked")
-    public <C extends AComponent> C getComponent(Class<C> componentClass)
+    public <C extends AbstractComponent> C getComponent(Class<C> componentClass)
     {
-        for (AComponent c : components)
+        for (AbstractComponent c : components)
             if (componentClass.isAssignableFrom(c.getClass()))
                 return (C) c;
 
@@ -79,87 +69,51 @@ public final class Entity
      * @param c
      *              The component to add
      */
-    public void addComponent(AComponent c)
+    public void addComponent(AbstractComponent c)
     {
-        if (hasComponent(c.getClass()))
-        {
-            Log.warn("(Entity) Cant add two Components of type %s to entity %s", c.getClass(), this.name);
-            return;
-        }
-
         components.add(c);
-        c.setEntity(this);
         if (initialized)
-            c.init();
+            c.init(this);
     }
 
     /**
-     * Initialize all components the entity holds Should only be called after
-     * setting the {@link #layer}
+     * Initialize the Entity and all components it holds.
+     * 
+     * @param layer
+     *                  The Layer to initialize the Entity on.
      */
-    public void init()
+    public void init(AbstractLayer layer)
     {
-        if (layer == null)
-        {
-            Log.warn("(Entity) Entity %s must be assigned to a layer before init().", name);
-            return;
-        }
+        this.layer = layer;
 
-        eventManager = new EventManager("EventManager of entity " + toString());
-        layer.getEventManager().addListener(AEvent.class, eventManager::dispatch, 0);
+        eventDispatcher = new EventDispatcher(layer.getScene());
+        layer.getEventDispatcher().registerSubDispatcher(layer, eventDispatcher);
 
-        for (AComponent c : components)
-            c.init();
+        for (AbstractComponent c : components)
+            c.init(this);
 
         initialized = true;
-        active = true;
     }
 
     /**
-     * Remove the component of type type
+     * Remove the component of the given class from the entity
      * 
      * @param componentClass
-     *                           The class of component ot remove
+     *                           The class of the component ot remove
      */
-    public void removeComponent(Class<? extends AComponent> componentClass)
+    public void removeComponent(Class<? extends AbstractComponent> componentClass)
     {
-        for (AComponent c : components)
-            if (componentClass.isAssignableFrom(c.getClass()))
+        for (AbstractComponent c : components)
+            if (componentClass.isInstance(c))
                 components.remove(c);
     }
 
-    /**
-     * Check if the entiy holds a component of the specified type
-     * 
-     * @param componentClass
-     *                           The class of component to check for
-     * @return Whether or not a component of the specified type has been found
-     */
-    public boolean hasComponent(Class<?> componentClass)
+    public EventDispatcher getEventDispatcher()
     {
-        for (AComponent c : components)
-            if (componentClass.isAssignableFrom(c.getClass()))
-                return true;
-
-        return false;
+        return eventDispatcher;
     }
 
-    public EventManager getEventManager()
-    {
-        return eventManager;
-    }
-
-    public boolean isActive()
-    {
-        return active;
-    }
-
-    public void setLayer(ALayer layer)
-    {
-        this.layer = layer;
-    }
-
-    public ALayer getLayer()
+    public AbstractLayer getLayer()
     {
         return layer;
     }

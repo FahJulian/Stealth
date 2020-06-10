@@ -7,14 +7,14 @@ import com.github.fahjulian.stealth.components.ThirdPersonCameraComponent;
 import com.github.fahjulian.stealth.core.entity.Entity;
 import com.github.fahjulian.stealth.core.entity.IEntityFactory;
 import com.github.fahjulian.stealth.core.entity.Transform;
-import com.github.fahjulian.stealth.core.scene.ALayer;
+import com.github.fahjulian.stealth.core.scene.AbstractLayer;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.Renderer2D;
 
 import org.joml.Vector3f;
 
-public class SandboxLayer extends ALayer
+public class SandboxLayer extends AbstractLayer
 {
     static class Factories
     {
@@ -31,10 +31,10 @@ public class SandboxLayer extends ALayer
         add(Factories.player
                 .create(new Transform(new Vector3f(100.0f, 100.0f, 2.0f), new Vector3f(160.0f, 160.0f, 0.0f))));
 
-        addEventListener(RenderEvent.class, this::onRender);
+        registerEventListener(RenderEvent.class, this::onRender);
     }
 
-    private boolean onRender(RenderEvent event)
+    private void onRender(RenderEvent event)
     {
         for (int y = 0; y < 316; y++)
         {
@@ -44,7 +44,5 @@ public class SandboxLayer extends ALayer
                 Renderer2D.drawRectangle(x * 100.0f, y * 100.0f, 100.0f, 100.0f, color);
             }
         }
-
-        return false;
     }
 }

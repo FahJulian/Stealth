@@ -1,20 +1,19 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.core.entity.AComponent;
+import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.mouse.MouseDraggedEvent;
 
-public class SandboxComponent extends AComponent
+public class SandboxComponent extends AbstractComponent
 {
     @Override
     protected void onInit()
     {
-        addEventListener(MouseDraggedEvent.class, this::onMouseDragged);
+        registerEventListener(MouseDraggedEvent.class, this::onMouseDragged);
     }
 
-    private boolean onMouseDragged(MouseDraggedEvent event)
+    private void onMouseDragged(MouseDraggedEvent event)
     {
         Log.info("Sandbox Componend registered %s", event);
-        return false;
     }
 }

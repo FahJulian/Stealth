@@ -1,9 +1,9 @@
 package com.github.fahjulian.stealth.events.entity;
 
 import com.github.fahjulian.stealth.core.entity.Entity;
-import com.github.fahjulian.stealth.core.event.AEvent;
+import com.github.fahjulian.stealth.core.event.AbstractEvent;
 
-public class EntityTransformEvent extends AEvent
+public class EntityTransformEvent extends AbstractEvent
 {
     public static enum Type
     {
@@ -15,7 +15,7 @@ public class EntityTransformEvent extends AEvent
     public EntityTransformEvent(Type type, Entity entity)
     {
         this.type = type;
-        this.manager = entity.getEventManager();
+        this.dispatcher = entity.getEventDispatcher();
         dispatch();
     }
 

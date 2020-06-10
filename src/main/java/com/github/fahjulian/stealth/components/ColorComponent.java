@@ -1,12 +1,15 @@
 package com.github.fahjulian.stealth.components;
 
-import com.github.fahjulian.stealth.core.entity.AComponent;
+import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.Renderer2D;
 
-public class ColorComponent extends AComponent
+/**
+ * Renderes a 2D Rectangle in a given color at the entities position
+ */
+public class ColorComponent extends AbstractComponent
 {
     private final Color color;
 
@@ -18,14 +21,13 @@ public class ColorComponent extends AComponent
     @Override
     protected void onInit()
     {
-        addEventListener(RenderEvent.class, this::onRender);
+        registerEventListener(RenderEvent.class, this::onRender);
     }
 
-    private boolean onRender(RenderEvent event)
+    private void onRender(RenderEvent event)
     {
         Transform t = entity.getTransform();
         Renderer2D.drawRectangle(t.getPositionX(), t.getPositionY(), t.getPositionZ(), t.getScaleX(), t.getScaleY(),
                 color);
-        return false;
     }
 }

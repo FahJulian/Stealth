@@ -1,8 +1,8 @@
 package com.github.fahjulian.stealth.events.key;
 
-import com.github.fahjulian.stealth.core.event.AEvent;
+import com.github.fahjulian.stealth.core.event.AbstractEvent;
 
-public abstract class AKeyEvent extends AEvent
+public abstract class AKeyEvent extends AbstractEvent
 {
 
     protected final Key key;

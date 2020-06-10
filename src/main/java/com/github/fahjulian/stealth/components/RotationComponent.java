@@ -1,9 +1,10 @@
 package com.github.fahjulian.stealth.components;
 
-import com.github.fahjulian.stealth.core.entity.AComponent;
+import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
 
-public class RotationComponent extends AComponent
+/** Rotates the entity at a given speed on the z-Axis */
+public class RotationComponent extends AbstractComponent
 {
     private final float speed;
 
@@ -19,13 +20,11 @@ public class RotationComponent extends AComponent
     @Override
     protected void onInit()
     {
-        addEventListener(UpdateEvent.class, this::onUpdate);
+        registerEventListener(UpdateEvent.class, this::onUpdate);
     }
 
-    private boolean onUpdate(UpdateEvent event)
+    private void onUpdate(UpdateEvent event)
     {
-        entity.getTransform().setRotationZ(
-                entity.getTransform().getRotationZ() + speed * event.getDeltaSeconds());
-        return false;
+        entity.getTransform().setRotationZ(entity.getTransform().getRotationZ() + speed * event.getDeltaSeconds());
     }
 }

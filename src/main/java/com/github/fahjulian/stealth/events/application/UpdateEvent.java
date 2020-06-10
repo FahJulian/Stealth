@@ -1,9 +1,9 @@
 package com.github.fahjulian.stealth.events.application;
 
-import com.github.fahjulian.stealth.core.event.AEvent;
+import com.github.fahjulian.stealth.core.event.AbstractEvent;
 
 /** Event thrown every time the app should be updated */
-public class UpdateEvent extends AEvent
+public class UpdateEvent extends AbstractEvent
 {
     private final float deltaSeconds;
     private final int updateCount;

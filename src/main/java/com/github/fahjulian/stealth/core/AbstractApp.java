@@ -2,62 +2,39 @@ package com.github.fahjulian.stealth.core;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
-import com.github.fahjulian.stealth.core.event.EventManager;
-import com.github.fahjulian.stealth.core.scene.AScene;
+import com.github.fahjulian.stealth.core.event.AbstractEvent;
+import com.github.fahjulian.stealth.core.scene.AbstractScene;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
 import com.github.fahjulian.stealth.graphics.Renderer2D;
 
-public abstract class AApplication
+public abstract class AbstractApp
 {
     protected Window window;
-    private AScene scene;
-    private EventManager mainEventManager;
-    private boolean running;
+    private AbstractScene currentScene;
     private boolean initialized;
-    private String title;
-    private int width, height;
-    protected boolean debug;
-    protected String logDir;
+    private boolean running;
 
-    private static AApplication instance;
+    private static AbstractApp instance;
 
-    protected AApplication(String title, int width, int height, String logDir, boolean debug)
+    protected AbstractApp(String title, int width, int height, String logDir, boolean debug)
     {
-        instance = this;
+        AbstractApp.instance = this;
 
-        this.title = title;
-        this.width = width;
-        this.height = height;
-        this.debug = debug;
-        this.logDir = logDir;
-        this.running = false;
-        this.initialized = false;
-
-        init();
-    }
-
-    public static AApplication get()
-    {
-        return instance;
-    }
-
-    abstract protected AScene onInit();
-
-    public void init()
-    {
         Log.init(logDir, debug);
         window = Window.get();
         window.init(title, width, height);
 
-        mainEventManager = new EventManager("Main EventManager");
-
-        scene = onInit();
-        scene.init();
+        currentScene = onInit();
+        currentScene.init();
+        AbstractEvent.setDefaultDispatcher(currentScene.getEventDispatcher());
 
         initialized = true;
+        running = false;
     }
+
+    abstract protected AbstractScene onInit();
 
     public void run()
     {
@@ -109,11 +86,18 @@ public abstract class AApplication
         Window.get().destroy();
     }
 
-    public void setScene(AScene scene)
+    public static AbstractApp get()
     {
-        this.scene = scene;
+        return instance;
+    }
+
+    public void setScene(AbstractScene scene)
+    {
+        this.currentScene = scene;
         if (initialized)
             scene.init();
+
+        AbstractEvent.setDefaultDispatcher(currentScene.getEventDispatcher());
     }
 
     public Window getWindow()
@@ -121,14 +105,9 @@ public abstract class AApplication
         return window;
     }
 
-    public AScene getScene()
+    public AbstractScene getCurrentScene()
     {
-        return scene;
-    }
-
-    public EventManager getMainEventManager()
-    {
-        return mainEventManager;
+        return currentScene;
     }
 
     public boolean isRunning()

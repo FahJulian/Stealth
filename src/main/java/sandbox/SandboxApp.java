@@ -1,9 +1,9 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.core.AApplication;
-import com.github.fahjulian.stealth.core.scene.AScene;
+import com.github.fahjulian.stealth.core.AbstractApp;
+import com.github.fahjulian.stealth.core.scene.AbstractScene;
 
-public class SandboxApp extends AApplication
+public class SandboxApp extends AbstractApp
 {
     protected SandboxApp(String title, int width, int height)
     {
@@ -11,7 +11,7 @@ public class SandboxApp extends AApplication
     }
 
     @Override
-    protected AScene onInit()
+    protected AbstractScene onInit()
     {
         return new SandboxScene();
     }

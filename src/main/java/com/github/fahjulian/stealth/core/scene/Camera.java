@@ -9,7 +9,7 @@ import org.joml.Vector3f;
 /**
  * The Camera holds matricies defining what area of the screen gets rendered.
  */
-public class Camera
+public final class Camera
 {
     private final Matrix4f projectionMatrix;
     private final Vector3f position;
@@ -29,14 +29,9 @@ public class Camera
         this.position = new Vector3f(posX, posY, 0.0f);
         this.rotation = new Vector3f();
         this.projectionMatrix = new Matrix4f();
-        updateViewMatrix();
-        adjustProjection();
-    }
 
-    private void adjustProjection()
-    {
-        projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, Window.get().getWidth(), 0.0f, Window.get().getHeight(), -10.0f, 10.0f);
+        updateProjectionMatrix();
+        updateViewMatrix();
     }
 
     public Matrix4f getViewMatrix()
@@ -60,5 +55,11 @@ public class Camera
     {
         viewMatrix = Maths.createTransformationMatrix(new Vector3f(-position.x, -position.y, -position.z),
                 new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-rotation.x, -rotation.y, -rotation.z));
+    }
+
+    private void updateProjectionMatrix()
+    {
+        projectionMatrix.identity();
+        projectionMatrix.ortho(0.0f, Window.get().getWidth(), 0.0f, Window.get().getHeight(), -10.0f, 10.0f);
     }
 }

@@ -1,8 +1,8 @@
 package com.github.fahjulian.stealth.events.mouse;
 
-import com.github.fahjulian.stealth.core.event.AEvent;
+import com.github.fahjulian.stealth.core.event.AbstractEvent;
 
-public abstract class AMouseEvent extends AEvent
+public abstract class AMouseEvent extends AbstractEvent
 {
     protected final float x, y;
 

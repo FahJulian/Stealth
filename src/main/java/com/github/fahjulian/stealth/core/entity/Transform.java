@@ -7,7 +7,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 /**
- * A Transform is a data set that hold information about an entities position
+ * A Transform is a data set that holds information about an entities position
  * and scale.
  */
 public final class Transform
@@ -17,20 +17,11 @@ public final class Transform
     private final Vector3f scale;
     private final Vector3f rotation;
 
-    /**
-     * Construct a new emtpy transform
-     */
     public Transform()
     {
         this(new Vector3f(), new Vector3f());
     }
 
-    /**
-     * Construct a transform with a position but no scale
-     * 
-     * @param position
-     *                     The position to initialize with
-     */
     public Transform(Vector2f position)
     {
         this(new Vector3f(position, 0.0f), new Vector3f());
@@ -46,60 +37,21 @@ public final class Transform
         this(new Vector3f(posX, posY, 0.0f), new Vector3f());
     }
 
-    /**
-     * Construct a transform with a position but not scale
-     * 
-     * @param posX
-     *                 The x coordinate to initialize with
-     * @param posY
-     *                 The y coordinate to initialize with
-     */
     public Transform(float posX, float posY, float posZ)
     {
         this(new Vector3f(posX, posY, posZ), new Vector3f());
     }
 
-    /**
-     * Construct a transform with a position and scale
-     * 
-     * @param position
-     *                     The position to initialize with
-     * @param scale
-     *                     The scale to initialize with
-     */
     public Transform(Vector2f position, Vector2f scale)
     {
         this(new Vector3f(position, 0.0f), new Vector3f(scale, 0.0f));
     }
 
-    /**
-     * Construct a transform with a position and scale
-     * 
-     * @param posX
-     *                   The x coordinate to initialize with
-     * @param posY
-     *                   The y coordinate to initialize with
-     * @param scaleX
-     *                   The width to initialize with
-     * @param scaleY
-     *                   The height to initialize with
-     */
     public Transform(float posX, float posY, float scaleX, float scaleY)
     {
         this(new Vector3f(posX, posY, 0.0f), new Vector3f(scaleX, scaleY, 0.0f));
     }
 
-    /**
-     * Construct a transform with a position, scale and zIndex
-     * 
-     * @param position
-     *                     The position to initialize with
-     * @param scale
-     *                     The scale to initialize with
-     * @param zIndex
-     *                     The zIndex to initialized with (The higher the closer to
-     *                     the camera)
-     */
     public Transform(Vector3f position, Vector3f scale)
     {
         this(position, scale, new Vector3f());

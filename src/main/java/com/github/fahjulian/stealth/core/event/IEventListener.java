@@ -1,14 +1,11 @@
 package com.github.fahjulian.stealth.core.event;
 
 /**
- * An event listener is a function that receives an Event and returs whether or
- * not the event should be viewed as handled afterwards.
- * 
- * @param <E>
- *                The type of event the function listens to
+ * An Event Listener gets notified if an Event is Dispatched by an Event
+ * Dispatcher if it is registered at the Dispatcher.
  */
 @FunctionalInterface
-public interface IEventListener<E extends AEvent>
+public interface IEventListener<E extends AbstractEvent>
 {
-    boolean onEvent(E event);
+    void onEvent(E event);
 }

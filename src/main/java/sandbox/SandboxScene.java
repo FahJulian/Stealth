@@ -1,8 +1,8 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.core.scene.AScene;
+import com.github.fahjulian.stealth.core.scene.AbstractScene;
 
-public class SandboxScene extends AScene
+public class SandboxScene extends AbstractScene
 {
     @Override
     protected void onInit()
