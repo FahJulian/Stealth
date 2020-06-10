@@ -1,7 +1,5 @@
 package com.github.fahjulian.stealth.core;
 
-import static org.lwjgl.opengl.GL11.glFlush;
-
 import com.github.fahjulian.stealth.core.event.EventManager;
 import com.github.fahjulian.stealth.core.scene.AScene;
 import com.github.fahjulian.stealth.core.util.Log;
@@ -66,6 +64,8 @@ public abstract class AApplication
         final float sPerUpdate = 1.0f / 60.0f;
         float deltaSeconds = 0.0f;
         float dueUpdates = 0.0f;
+        long fpsTimer = System.currentTimeMillis();
+        int fps = 0, ups = 0;
 
         long startTime = System.nanoTime();
         long lastUpdate = startTime;
@@ -81,12 +81,22 @@ public abstract class AApplication
                 new UpdateEvent(updateDeltaSeconds);
                 lastUpdate = startTime;
                 dueUpdates--;
+                ups++;
             }
 
             window.clear();
+            Renderer2D.startFrame();
             new RenderEvent();
+            Renderer2D.endFrame();
             window.swapBuffers();
-            glFlush();
+            fps++;
+
+            if (System.currentTimeMillis() - fpsTimer > 1000)
+            {
+                fpsTimer += 1000;
+                window.setTitle(String.format("%s  |  %d FPS, %d UPS", window.getInitialTitle(), fps, ups));
+                fps = ups = 0;
+            }
 
             final long endTime = System.nanoTime();
             deltaSeconds = (endTime - startTime) / 1.0e9f;

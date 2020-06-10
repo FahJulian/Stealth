@@ -9,9 +9,8 @@ import com.github.fahjulian.stealth.core.entity.IEntityFactory;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.core.scene.ALayer;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
+import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.Renderer2D;
-
-import org.joml.Vector4f;
 
 public class SandboxLayer extends ALayer
 {
@@ -25,19 +24,18 @@ public class SandboxLayer extends ALayer
     @Override
     protected void onInit()
     {
-        add(Factories.player.create(new Transform(160.f, 160.f, 152.f, 152.f)));
+        add(Factories.player.create(new Transform(160.0f, 160.0f, 152.0f, 152.0f)));
 
         addEventListener(RenderEvent.class, this::onRender);
     }
 
     private boolean onRender(RenderEvent event)
     {
-        for (int y = 0; y < 20; y++)
+        for (int y = 0; y < 80; y++)
         {
-            for (int x = 0; x < 20; x++)
+            for (int x = 0; x < 80; x++)
             {
-                Vector4f color = (x + y) % 2 == 0 ? new Vector4f(0.7f, 0.7f, 0.7f, 1.0f)
-                        : new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+                Color color = (x + y) % 2 == 0 ? Color.LIGHT_GREY : Color.WHITE;
                 Renderer2D.drawRectangle(x * 100.0f, y * 100.0f, 100.0f, 100.0f, color);
             }
         }

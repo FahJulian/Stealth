@@ -14,6 +14,7 @@ public class Camera
     private final Matrix4f projectionMatrix;
     private final Vector3f position;
     private final Vector3f rotation;
+    private Matrix4f viewMatrix;
 
     /**
      * Construct a new camera
@@ -28,6 +29,7 @@ public class Camera
         this.position = new Vector3f(posX, posY, 0.0f);
         this.rotation = new Vector3f();
         this.projectionMatrix = new Matrix4f();
+        updateViewMatrix();
         adjustProjection();
     }
 
@@ -39,8 +41,7 @@ public class Camera
 
     public Matrix4f getViewMatrix()
     {
-        return Maths.createTransformationMatrix(new Vector3f(-position.x, -position.y, -position.z),
-                new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-rotation.x, -rotation.y, -rotation.z));
+        return viewMatrix;
     }
 
     public Matrix4f getProjectionMatrix()
@@ -52,5 +53,12 @@ public class Camera
     {
         this.position.x = posX;
         this.position.y = posY;
+        updateViewMatrix();
+    }
+
+    private void updateViewMatrix()
+    {
+        viewMatrix = Maths.createTransformationMatrix(new Vector3f(-position.x, -position.y, -position.z),
+                new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-rotation.x, -rotation.y, -rotation.z));
     }
 }

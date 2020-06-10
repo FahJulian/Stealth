@@ -13,6 +13,7 @@ import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
+import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImage.stbi_load;
 import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
 
@@ -28,13 +29,11 @@ public class Texture2D
     class Data
     {
         private final int width, height;
-        private final ByteBuffer pixels;
 
-        private Data(int width, int height, ByteBuffer pixels)
+        private Data(int width, int height)
         {
             this.width = width;
             this.height = height;
-            this.pixels = pixels;
         }
     }
 
@@ -103,9 +102,10 @@ public class Texture2D
         if (pixels == null)
             return null;
 
-        Data data = new Data(width.get(0), height.get(0), pixels);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.width, data.height, 0, GL_RGBA,
-                GL_UNSIGNED_BYTE, data.pixels);
+        Data data = new Data(width.get(0), height.get(0));
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.width, data.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+        stbi_image_free(pixels);
 
         return data;
     }

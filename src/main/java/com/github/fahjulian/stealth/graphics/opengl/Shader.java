@@ -16,6 +16,7 @@ import static org.lwjgl.opengl.GL20.glGetShaderi;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glUniform1f;
 import static org.lwjgl.opengl.GL20.glUniform4f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
@@ -38,8 +39,7 @@ public class Shader
         String[] splitCode = splitSourceCode(sourceCode);
         if (splitCode == null)
         {
-            Log.error("(Shader) Could not load shader %s. Please check shader type declerations.'",
-                    glslPath);
+            Log.error("(Shader) Could not load shader %s. Please check shader type declerations.'", glslPath);
             this.ID = 0;
             return;
         }
@@ -63,8 +63,7 @@ public class Shader
         this.ID = linkToProgram(vertexID, fragmentID);
         if (!checkForErrors(this.ID, vertexID, fragmentID))
         {
-            Log.error("(Shader) Failed to compile or link Shader with files %s and %s", vertexPath,
-                    fragmentPath);
+            Log.error("(Shader) Failed to compile or link Shader with files %s and %s", vertexPath, fragmentPath);
         }
     }
 
@@ -88,6 +87,12 @@ public class Shader
     {
         int location = glGetUniformLocation(this.ID, uniformName);
         glUniformMatrix4fv(location, false, value.get(BufferUtils.createFloatBuffer(4 * 4)));
+    }
+
+    public void setUniform(String uniformName, float value)
+    {
+        int location = glGetUniformLocation(this.ID, uniformName);
+        glUniform1f(location, value);
     }
 
     private String[] splitSourceCode(String sourceCode)

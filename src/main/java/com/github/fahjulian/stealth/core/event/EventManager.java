@@ -15,7 +15,7 @@ public final class EventManager
      * Utility class to make EventListeners comparable
      */
     private static class SortedEventListener<E extends AEvent>
-            implements IEventListener<E>, Comparable<SortedEventListener<E>>
+            implements IEventListener<E>, Comparable<SortedEventListener<?>>
     {
 
         private final IEventListener<E> listener;
@@ -36,14 +36,14 @@ public final class EventManager
         }
 
         @Override
-        public int compareTo(SortedEventListener<E> o)
+        public int compareTo(SortedEventListener<?> o)
         {
             return Integer.compare(o.index, this.index);
         }
     }
 
     private final String name;
-    private final Map<Class<? extends AEvent>, List<SortedEventListener<? extends AEvent>>> listeners;
+    private final Map<Class<? extends AEvent>, List<SortedEventListener<?>>> listeners;
     private final List<SortedEventListener<AEvent>> subManagers;
 
     public EventManager(String name)
@@ -64,9 +64,6 @@ public final class EventManager
     @SuppressWarnings("unchecked")
     public <E extends AEvent> boolean dispatch(E event)
     {
-        if (name.startsWith("EventManager of entity"))
-            assert (event.handled) : "";
-
         for (Class<?> key : listeners.keySet())
         {
             if (key.isInstance(event))

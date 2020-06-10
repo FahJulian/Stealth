@@ -24,10 +24,18 @@ in vec2 fTextureCoords;
 
 out vec4 color;
 
+uniform float uIsTextured;
 uniform sampler2D uTexture;
+uniform vec4 uColor;
 
 void main()
 {
-    // color = vec4(1.0, 0.0, 0.0, 1.0);
-    color = texture(uTexture, fTextureCoords);
+    if (uIsTextured > 0.5)
+    {
+        color = texture(uTexture, fTextureCoords);
+    }
+    else
+    {
+        color = uColor;
+    }
 }
