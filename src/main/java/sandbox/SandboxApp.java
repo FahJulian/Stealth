@@ -1,22 +1,23 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.AApplication;
-import com.github.fahjulian.stealth.scene.AScene;
+import com.github.fahjulian.stealth.core.AbstractApp;
+import com.github.fahjulian.stealth.core.scene.AbstractScene;
 
-public class SandboxApp extends AApplication {
-
-    protected SandboxApp(String title, int width, int height) {
+public class SandboxApp extends AbstractApp
+{
+    protected SandboxApp(String title, int width, int height)
+    {
         super(title, width, height, ".log/", true);
     }
 
     @Override
-    protected AScene onInit() {
+    protected AbstractScene onInit()
+    {
         return new SandboxScene();
     }
 
-    public static void main(String... args) {
+    public static void main(String... args)
+    {
         new SandboxApp("Sandbox App", 1000, 1000 * 9 / 16).run();
     }
 }
-
-

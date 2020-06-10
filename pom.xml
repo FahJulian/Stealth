@@ -117,7 +117,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>sandbox.Main</mainClass>
+							<mainClass>sandbox.SandboxApp</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
