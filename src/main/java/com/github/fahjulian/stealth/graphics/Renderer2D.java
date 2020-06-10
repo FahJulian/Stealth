@@ -3,113 +3,100 @@ package com.github.fahjulian.stealth.graphics;
 import static org.lwjgl.opengl.GL11.glFlush;
 
 import com.github.fahjulian.stealth.core.AApplication;
-import com.github.fahjulian.stealth.core.util.Maths;
+import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.graphics.opengl.OpenGLMemoryManager;
 import com.github.fahjulian.stealth.graphics.opengl.Shader;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
 
-import org.joml.Vector3f;
-
 public class Renderer2D
 {
-    private static final TexturedModel RECTANGLE_MODEL;
-    private static final Shader RECTANGLE_SHADER;
     public static final Texture2D PLAYER_TEXTURE;
+
+    private static final int MAX_COLORED_RECTS;
+    private static final BatchedColoredModel COLORED_RECTS_MODEL;
+    private static final Shader COLORED_RECTS_SHADER;
+
+    private static final int MAX_TEXTURED_RECTS;
+    private static final BatchedTexturedModel TEXTURED_RECTS_MODEL;
+    private static final Shader TEXTURED_RECTS_SHADER;
 
     static
     {
-        float[] positions = {
-                -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
-        };
-
-        float[] textureCoords = {
-                1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f
-        };
-
-        int[] indices = {
-                0, 1, 2, 2, 3, 0
-        };
-
-        RECTANGLE_MODEL = new TexturedModel(positions, textureCoords, indices);
-        RECTANGLE_SHADER = new Shader("src/main/resources/shaders/textured_rectangle.glsl");
-
         PLAYER_TEXTURE = new Texture2D("src/main/resources/textures/player.png");
+
+        MAX_COLORED_RECTS = 100000;
+        COLORED_RECTS_MODEL = new BatchedColoredModel(MAX_COLORED_RECTS);
+        COLORED_RECTS_SHADER = new Shader("src/main/resources/shaders/batched_colored_rectangle.glsl");
+
+        MAX_TEXTURED_RECTS = 100000;
+        TEXTURED_RECTS_MODEL = new BatchedTexturedModel(MAX_TEXTURED_RECTS);
+        TEXTURED_RECTS_SHADER = new Shader("src/main/resources/shaders/batched_textured_rectangle.glsl");
     }
 
     private Renderer2D()
     {
     }
 
+    public static void drawRectangle(float x, float y, float width, float height, Texture2D texture)
+    {
+        drawRectangle(x, y, 0.0f, width, height, texture);
+    }
+
+    public static void drawRectangle(float x, float y, float z, float width, float height, Texture2D texture)
+    {
+        TEXTURED_RECTS_MODEL.addRect(x, y, z, width, height);
+    }
+
     public static void drawRectangle(float x, float y, float width, float height, Color color)
     {
-        drawRectangle(new Vector3f(x, y, 0.0f), new Vector3f(width, height, 1.0f), new Vector3f(), color);
+        drawRectangle(x, y, 0.0f, width, height, color);
     }
 
-    public static void drawRectangle(float x, float y, float width, float height, float rotation, Color color)
+    public static void drawRectangle(float x, float y, float z, float width, float height, Color color)
     {
-        drawRectangle(new Vector3f(x, y, 0.0f), new Vector3f(width, height, 1.0f), new Vector3f(0.0f, 0.0f, rotation),
-                color);
-    }
-
-    public static void drawTexturedRectangle(float x, float y, float width, float height, Texture2D texture)
-    {
-        drawTexturedRectangle(new Vector3f(x, y, 0.0f), new Vector3f(width, height, 1.0f), new Vector3f(), texture);
-    }
-
-    public static void drawTexturedRectangle(float x, float y, float width, float height, float rotation,
-            Texture2D texture)
-    {
-        drawTexturedRectangle(new Vector3f(x, y, 0.0f), new Vector3f(width, height, 1.0f),
-                new Vector3f(0.0f, 0.0f, rotation), texture);
+        COLORED_RECTS_MODEL.addRect(x, y, z, width, height, color);
     }
 
     public static void startFrame()
     {
-        RECTANGLE_SHADER.bind();
-        RECTANGLE_MODEL.bind();
-        RECTANGLE_SHADER.setUniform("uViewMatrix", AApplication.get().getScene().getCamera().getViewMatrix());
-        RECTANGLE_SHADER.setUniform("uProjectionMatrix",
-                AApplication.get().getScene().getCamera().getProjectionMatrix());
+        COLORED_RECTS_MODEL.clear();
+        TEXTURED_RECTS_MODEL.clear();
     }
 
     public static void endFrame()
     {
-        RECTANGLE_MODEL.unbind();
-        RECTANGLE_SHADER.unbind();
+        Camera camera = AApplication.get().getScene().getCamera();
+        drawColoredRects(camera);
+        drawTexturedRects(camera);
         glFlush();
-    }
-
-    private static void drawTexturedRectangle(Vector3f position, Vector3f size, Vector3f rotation, Texture2D texture)
-    {
-        position.x += size.x / 2.0f;
-        position.y += size.y / 2.0f;
-        position.z += size.z / 2.0f;
-
-        texture.bind();
-
-        RECTANGLE_SHADER.setUniform("uIsTextured", 1.0f);
-        RECTANGLE_SHADER.setUniform("uModelMatrix", Maths.createTransformationMatrix(position, size, rotation));
-
-        RECTANGLE_MODEL.draw();
-
-        texture.unbind();
-    }
-
-    private static void drawRectangle(Vector3f position, Vector3f size, Vector3f rotation, Color color)
-    {
-        position.x += size.x / 2.0f;
-        position.y += size.y / 2.0f;
-        position.z += size.z / 2.0f;
-
-        RECTANGLE_SHADER.setUniform("uIsTextured", 0.0f);
-        RECTANGLE_SHADER.setUniform("uColor", color);
-        RECTANGLE_SHADER.setUniform("uModelMatrix", Maths.createTransformationMatrix(position, size, rotation));
-
-        RECTANGLE_MODEL.draw();
     }
 
     public static void destroy()
     {
         OpenGLMemoryManager.destroyAll();
+    }
+
+    private static void drawColoredRects(Camera camera)
+    {
+        COLORED_RECTS_SHADER.bind();
+        COLORED_RECTS_MODEL.bind();
+        COLORED_RECTS_SHADER.setUniform("uViewMatrix", camera.getViewMatrix());
+        COLORED_RECTS_SHADER.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
+        COLORED_RECTS_MODEL.draw();
+        COLORED_RECTS_MODEL.unbind();
+        COLORED_RECTS_SHADER.unbind();
+    }
+
+    private static void drawTexturedRects(Camera camera)
+    {
+        TEXTURED_RECTS_SHADER.bind();
+        TEXTURED_RECTS_MODEL.bind();
+        TEXTURED_RECTS_SHADER.setUniform("uViewMatrix", camera.getViewMatrix());
+        TEXTURED_RECTS_SHADER.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
+        PLAYER_TEXTURE.bind();
+        TEXTURED_RECTS_MODEL.draw();
+        PLAYER_TEXTURE.unbind();
+        TEXTURED_RECTS_MODEL.unbind();
+        TEXTURED_RECTS_SHADER.unbind();
     }
 }

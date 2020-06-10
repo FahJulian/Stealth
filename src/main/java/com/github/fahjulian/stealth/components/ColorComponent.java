@@ -24,7 +24,7 @@ public class ColorComponent extends AComponent
     private boolean onRender(RenderEvent event)
     {
         Transform t = entity.getTransform();
-        Renderer2D.drawRectangle(t.getPositionX(), t.getPositionY(), t.getScaleX(), t.getScaleY(), t.getRotationZ(),
+        Renderer2D.drawRectangle(t.getPositionX(), t.getPositionY(), t.getPositionZ(), t.getScaleX(), t.getScaleY(),
                 color);
         return false;
     }

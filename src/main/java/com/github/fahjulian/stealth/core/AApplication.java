@@ -1,5 +1,7 @@
 package com.github.fahjulian.stealth.core;
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
+
 import com.github.fahjulian.stealth.core.event.EventManager;
 import com.github.fahjulian.stealth.core.scene.AScene;
 import com.github.fahjulian.stealth.core.util.Log;
@@ -64,11 +66,11 @@ public abstract class AApplication
         final float sPerUpdate = 1.0f / 60.0f;
         float deltaSeconds = 0.0f;
         float dueUpdates = 0.0f;
-        long fpsTimer = System.currentTimeMillis();
+        int fpsTimer = 0;
         int fps = 0, ups = 0;
 
-        long startTime = System.nanoTime();
-        long lastUpdate = startTime;
+        float startTime = 0.0f;
+        float lastUpdate = startTime;
 
         while (!window.isClosed())
         {
@@ -77,7 +79,7 @@ public abstract class AApplication
             dueUpdates += deltaSeconds / sPerUpdate;
             while (dueUpdates >= 1)
             {
-                final float updateDeltaSeconds = (startTime - lastUpdate) / 1.0e9f;
+                final float updateDeltaSeconds = startTime - lastUpdate;
                 new UpdateEvent(updateDeltaSeconds);
                 lastUpdate = startTime;
                 dueUpdates--;
@@ -91,16 +93,16 @@ public abstract class AApplication
             window.swapBuffers();
             fps++;
 
-            if (System.currentTimeMillis() - fpsTimer > 1000)
+            final float endTime = (float) glfwGetTime();
+            deltaSeconds = endTime - startTime;
+            startTime = endTime;
+
+            if (endTime - fpsTimer > 1)
             {
-                fpsTimer += 1000;
+                fpsTimer++;
                 window.setTitle(String.format("%s  |  %d FPS, %d UPS", window.getInitialTitle(), fps, ups));
                 fps = ups = 0;
             }
-
-            final long endTime = System.nanoTime();
-            deltaSeconds = (endTime - startTime) / 1.0e9f;
-            startTime = endTime;
         }
 
         Renderer2D.destroy();

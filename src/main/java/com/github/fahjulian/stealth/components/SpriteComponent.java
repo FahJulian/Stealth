@@ -24,8 +24,8 @@ public class SpriteComponent extends AComponent
     private boolean onRender(RenderEvent event)
     {
         Transform t = entity.getTransform();
-        Renderer2D.drawTexturedRectangle(t.getPositionX(), t.getPositionY(), t.getScaleX(), t.getScaleY(),
-                t.getRotationZ(), texture);
+        Renderer2D.drawRectangle(t.getPositionX(), t.getPositionY(), t.getPositionZ(), t.getScaleX(), t.getScaleY(),
+                texture);
         return false;
     }
 }

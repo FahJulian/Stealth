@@ -3,16 +3,16 @@
 
 layout (location = 0) in vec3 vPosition;
 layout (location = 1) in vec2 vTextureCoords;
-layout (location = 2) in float vTextureID;
 
 out vec2 fTextureCoords;
-out int fTextureID;
+
+uniform mat4 uViewMatrix;
+uniform mat4 uProjectionMatrix;
 
 void main()
 {
     fTextureCoords = vTextureCoords;
-    fTextureID = int(vTextureID);
-    gl_Position = vec4(vPosition, 1.0);
+    gl_Position = uProjectionMatrix * uViewMatrix * vec4(vPosition, 1.0);
 }
 
 
@@ -20,13 +20,12 @@ void main()
 # version 400 core
 
 in vec2 fTextureCoords;
-in int fTextureID;
 
 out vec4 color;
 
-uniform sampler2D uTextures[8];
+uniform sampler2D uTexture;
 
 void main()
 {
-    color = texture(uTextures[fTextureID], fTextureCoords);
+    color = texture(uTexture, fTextureCoords);
 }

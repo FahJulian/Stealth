@@ -12,7 +12,7 @@ import org.lwjgl.BufferUtils;
 
 public class VertexBuffer
 {
-	private final int ID;
+	protected final int ID;
 	final int vertexSize;
 
 	public VertexBuffer(float[] data, int vertexSize)
@@ -22,6 +22,13 @@ public class VertexBuffer
 
 		this.bind();
 		buffer(data);
+	}
+
+	protected VertexBuffer(int vertexSize)
+	{
+		this.ID = create();
+		this.vertexSize = vertexSize;
+		this.bind();
 	}
 
 	public void buffer(float[] data)
@@ -40,14 +47,14 @@ public class VertexBuffer
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	private int create()
+	protected int create()
 	{
 		int ID = glGenBuffers();
 		OpenGLMemoryManager.loadedVertexBuffers.add(ID);
 		return ID;
 	}
 
-	private FloatBuffer toFloatBuffer(float[] data)
+	protected FloatBuffer toFloatBuffer(float[] data)
 	{
 		return BufferUtils.createFloatBuffer(data.length).put(data).flip();
 	}
