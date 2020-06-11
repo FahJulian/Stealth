@@ -16,6 +16,7 @@ import org.joml.Vector3f;
 
 public class SandboxLayer extends AbstractLayer
 {
+
     static class Factories
     {
         static final IEntityFactory player = (transform) -> new Entity("Player", transform,

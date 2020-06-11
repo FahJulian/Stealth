@@ -86,8 +86,8 @@ public final class Entity
     {
         this.layer = layer;
 
-        eventDispatcher = new EventDispatcher(layer.getScene());
-        layer.getEventDispatcher().registerSubDispatcher(layer, eventDispatcher);
+        eventDispatcher = new EventDispatcher(null);
+        layer.getEventDispatcher().registerSubDispatcher(eventDispatcher);
 
         for (AbstractComponent c : components)
             c.init(this);

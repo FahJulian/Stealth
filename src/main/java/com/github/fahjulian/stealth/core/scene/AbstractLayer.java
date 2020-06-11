@@ -40,8 +40,7 @@ public abstract class AbstractLayer implements IEventLayer
         this.scene = scene;
 
         eventDispatcher = new EventDispatcher(scene);
-        scene.getEventDispatcher().registerSubDispatcher(this, eventDispatcher);
-
+        scene.getEventDispatcher().registerSubLayer(this);
         onInit();
 
         for (Entity e : entities)
@@ -104,6 +103,7 @@ public abstract class AbstractLayer implements IEventLayer
         return scene;
     }
 
+    @Override
     public EventDispatcher getEventDispatcher()
     {
         return eventDispatcher;

@@ -6,7 +6,9 @@ import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Renderer2D;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
 
-/** Renders a given sprite at the entities position */
+/**
+ * Renders a given sprite at the entities position
+ */
 public class SpriteComponent extends AbstractComponent
 {
     private final Texture2D texture;
@@ -27,7 +29,5 @@ public class SpriteComponent extends AbstractComponent
         Transform t = entity.getTransform();
         Renderer2D.drawRectangle(t.getPositionX(), t.getPositionY(), t.getPositionZ(), t.getScaleX(), t.getScaleY(),
                 texture);
-
-        entity.getLayer().blockEvent(RenderEvent.class);
     }
 }

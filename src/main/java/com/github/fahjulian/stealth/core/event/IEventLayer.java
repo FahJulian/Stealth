@@ -22,4 +22,6 @@ public interface IEventLayer
      *                       The type of Event to block
      */
     void blockEvent(Class<? extends AbstractEvent> eventClass);
+
+    EventDispatcher getEventDispatcher();
 }
