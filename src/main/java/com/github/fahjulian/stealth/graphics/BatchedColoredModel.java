@@ -1,9 +1,5 @@
 package com.github.fahjulian.stealth.graphics;
 
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDrawElements;
-
 import com.github.fahjulian.stealth.graphics.opengl.DynamicVertexBuffer;
 import com.github.fahjulian.stealth.graphics.opengl.ElementBuffer;
 import com.github.fahjulian.stealth.graphics.opengl.VertexArray;
@@ -74,7 +70,7 @@ public class BatchedColoredModel
         rectCount++;
     }
 
-    void draw()
+    void rebuffer()
     {
         positionsVBO.bind();
         positionsVBO.buffer(positions);
@@ -83,8 +79,6 @@ public class BatchedColoredModel
         colorsVBO.bind();
         colorsVBO.buffer(colors);
         colorsVBO.unbind();
-
-        glDrawElements(GL_TRIANGLES, rectCount * 6, GL_UNSIGNED_INT, 0);
     }
 
     private int[] generateIndices(int maxRects)
@@ -101,5 +95,10 @@ public class BatchedColoredModel
         }
 
         return indices;
+    }
+
+    int getVertexCount()
+    {
+        return rectCount * 6;
     }
 }

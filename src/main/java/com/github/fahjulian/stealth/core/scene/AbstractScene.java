@@ -3,9 +3,11 @@ package com.github.fahjulian.stealth.core.scene;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.fahjulian.stealth.core.event.AbstractEvent;
 import com.github.fahjulian.stealth.core.event.EventDispatcher;
 import com.github.fahjulian.stealth.core.event.IEventLayer;
 import com.github.fahjulian.stealth.core.event.IEventLayerStack;
+import com.github.fahjulian.stealth.core.event.IEventListener;
 
 /**
  * A Scene holds (is) a Layerstack and an EventDispatcher that gets notified by
@@ -18,7 +20,7 @@ public abstract class AbstractScene implements IEventLayerStack
     private final Camera camera;
     private boolean initialized;
 
-    protected AbstractScene()
+    protected <S extends AbstractScene> AbstractScene()
     {
         this.eventDispatcher = new EventDispatcher(this);
         layers = new ArrayList<>();
@@ -57,6 +59,11 @@ public abstract class AbstractScene implements IEventLayerStack
         layers.add(layer);
         if (initialized)
             layer.init(this);
+    }
+
+    protected <E extends AbstractEvent> void registerEventListener(Class<E> eventClass, IEventListener<E> listener)
+    {
+        eventDispatcher.registerEventListener(eventClass, listener);
     }
 
     @Override

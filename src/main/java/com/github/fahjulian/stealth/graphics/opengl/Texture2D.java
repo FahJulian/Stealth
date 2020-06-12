@@ -13,6 +13,8 @@ import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImage.stbi_load;
 import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
@@ -28,10 +30,12 @@ public class Texture2D
 {
     class Data
     {
+        private final String name;
         private final int width, height;
 
-        private Data(int width, int height)
+        private Data(String name, int width, int height)
         {
+            this.name = name;
             this.width = width;
             this.height = height;
         }
@@ -44,7 +48,7 @@ public class Texture2D
     {
         this.ID = create();
 
-        bind();
+        bind(0);
         setOpenGLParams();
         this.data = load(imagePath);
 
@@ -55,13 +59,15 @@ public class Texture2D
         }
     }
 
-    public void bind()
+    public void bind(int slot)
     {
+        glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, this.ID);
     }
 
-    public void unbind()
+    public void unbind(int slot)
     {
+        glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
@@ -102,11 +108,17 @@ public class Texture2D
         if (pixels == null)
             return null;
 
-        Data data = new Data(width.get(0), height.get(0));
+        Data data = new Data(imagePath, width.get(0), height.get(0));
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.width, data.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
         stbi_image_free(pixels);
 
         return data;
+    }
+
+    @Override
+    public String toString()
+    {
+        return data.name;
     }
 }

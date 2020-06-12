@@ -1,6 +1,7 @@
 package com.github.fahjulian.stealth.components;
 
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
+import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Renderer2D;
@@ -11,6 +12,22 @@ import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
  */
 public class SpriteComponent extends AbstractComponent
 {
+    public static final class Blueprint implements IComponentBlueprint<SpriteComponent>
+    {
+        private final Texture2D texture;
+
+        public Blueprint(Texture2D texture)
+        {
+            this.texture = texture;
+        }
+
+        @Override
+        public SpriteComponent createComponent()
+        {
+            return new SpriteComponent(texture);
+        }
+    }
+
     private final Texture2D texture;
 
     public SpriteComponent(Texture2D texture)

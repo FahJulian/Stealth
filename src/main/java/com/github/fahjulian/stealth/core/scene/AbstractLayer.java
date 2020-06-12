@@ -17,16 +17,16 @@ public abstract class AbstractLayer implements IEventLayer
 {
     private final List<Entity> entities;
     private final List<Class<? extends AbstractEvent>> currentlyBlockedEvents;
-
-    private AbstractScene scene;
     private EventDispatcher eventDispatcher;
     private boolean initialized;
 
+    protected AbstractScene scene;
+
     public AbstractLayer()
     {
-        entities = new ArrayList<>();
-        currentlyBlockedEvents = new ArrayList<>();
-        initialized = false;
+        this.entities = new ArrayList<>();
+        this.currentlyBlockedEvents = new ArrayList<>();
+        this.initialized = false;
     }
 
     /**
@@ -37,8 +37,6 @@ public abstract class AbstractLayer implements IEventLayer
 
     void init(AbstractScene scene)
     {
-        this.scene = scene;
-
         eventDispatcher = new EventDispatcher(scene);
         scene.getEventDispatcher().registerSubLayer(this);
         onInit();

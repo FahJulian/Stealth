@@ -1,40 +1,71 @@
 package com.github.fahjulian.stealth.graphics;
 
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_ONE;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glFlush;
 
-import com.github.fahjulian.stealth.core.AbstractApp;
+import java.util.Arrays;
+
 import com.github.fahjulian.stealth.core.scene.Camera;
+import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.opengl.OpenGLMemoryManager;
 import com.github.fahjulian.stealth.graphics.opengl.Shader;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
 
 public class Renderer2D
 {
-    public static final Texture2D PLAYER_TEXTURE;
+    static Camera camera;
 
-    private static final int MAX_COLORED_RECTS;
-    private static final BatchedColoredModel COLORED_RECTS_MODEL;
-    private static final Shader COLORED_RECTS_SHADER;
+    static Texture2D[] registeredTextures;
+    static int registeredTexturesCount;
 
-    private static final int MAX_TEXTURED_RECTS;
-    private static final BatchedTexturedModel TEXTURED_RECTS_MODEL;
-    private static final Shader TEXTURED_RECTS_SHADER;
+    static final int MAX_COLORED_RECTS;
+    static BatchedColoredModel coloredRectsModel;
+    static Shader coloredRectsShader;
 
-    static
-    {
-        PLAYER_TEXTURE = new Texture2D("src/main/resources/textures/player.png");
-
-        MAX_COLORED_RECTS = 100000;
-        COLORED_RECTS_MODEL = new BatchedColoredModel(MAX_COLORED_RECTS);
-        COLORED_RECTS_SHADER = new Shader("src/main/resources/shaders/batched_colored_rectangle.glsl");
-
-        MAX_TEXTURED_RECTS = 100000;
-        TEXTURED_RECTS_MODEL = new BatchedTexturedModel(MAX_TEXTURED_RECTS);
-        TEXTURED_RECTS_SHADER = new Shader("src/main/resources/shaders/batched_textured_rectangle.glsl");
-    }
+    static final int MAX_TEXTURED_RECTS;
+    static BatchedTexturedModel texturedRectsModel;
+    static Shader texturedRectsShader;
 
     private Renderer2D()
     {
+    }
+
+    static
+    {
+        MAX_COLORED_RECTS = 100000;
+        MAX_TEXTURED_RECTS = 100000;
+        registeredTexturesCount = 0;
+        registeredTextures = new Texture2D[16];
+    }
+
+    public static void init(Camera camera)
+    {
+        Renderer2D.camera = camera;
+
+        glEnable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+        glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
+
+        coloredRectsModel = new BatchedColoredModel(MAX_COLORED_RECTS);
+        coloredRectsShader = new Shader("src/main/resources/shaders/batched_colored_rectangle.glsl");
+
+        texturedRectsModel = new BatchedTexturedModel(MAX_TEXTURED_RECTS);
+        texturedRectsShader = new Shader("src/main/resources/shaders/batched_textured_rectangle.glsl");
+
+        Log.info("(Renderer2D) Initialized Renderer.");
     }
 
     public static void drawRectangle(float x, float y, float width, float height, Texture2D texture)
@@ -44,7 +75,15 @@ public class Renderer2D
 
     public static void drawRectangle(float x, float y, float z, float width, float height, Texture2D texture)
     {
-        TEXTURED_RECTS_MODEL.addRect(x, y, z, width, height);
+        int textureSlot = Arrays.asList(registeredTextures).indexOf(texture);
+        if (textureSlot == -1)
+        {
+            Log.warn("(Renderer2D) Could not draw Rectangle with texture %s. Must first register this texture.",
+                    texture);
+            return;
+        }
+
+        texturedRectsModel.addRect(x, y, z, width, height, textureSlot);
     }
 
     public static void drawRectangle(float x, float y, float width, float height, Color color)
@@ -54,20 +93,34 @@ public class Renderer2D
 
     public static void drawRectangle(float x, float y, float z, float width, float height, Color color)
     {
-        COLORED_RECTS_MODEL.addRect(x, y, z, width, height, color);
+        coloredRectsModel.addRect(x, y, z, width, height, color);
+    }
+
+    public static void drawTileMap(TileMap2D map)
+    {
+        map.getModel().bind();
+        texturedRectsShader.bind();
+        texturedRectsShader.setUniform("uViewMatrix", camera.getViewMatrix());
+        texturedRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
+        map.bindTextures();
+
+        glDrawElements(GL_TRIANGLES, map.getModel().getVertexCount(), GL_UNSIGNED_INT, 0);
+
+        map.unbindTextures();
+        map.getModel().unbind();
+        texturedRectsShader.unbind();
     }
 
     public static void startFrame()
     {
-        COLORED_RECTS_MODEL.clear();
-        TEXTURED_RECTS_MODEL.clear();
+        coloredRectsModel.clear();
+        texturedRectsModel.clear();
     }
 
     public static void endFrame()
     {
-        Camera camera = AbstractApp.get().getCurrentScene().getCamera();
-        drawColoredRects(camera);
-        drawTexturedRects(camera);
+        drawColoredRects();
+        drawTexturedRects();
         glFlush();
     }
 
@@ -76,27 +129,59 @@ public class Renderer2D
         OpenGLMemoryManager.destroyAll();
     }
 
-    private static void drawColoredRects(Camera camera)
+    public static void registerTexture(Texture2D texture)
     {
-        COLORED_RECTS_SHADER.bind();
-        COLORED_RECTS_MODEL.bind();
-        COLORED_RECTS_SHADER.setUniform("uViewMatrix", camera.getViewMatrix());
-        COLORED_RECTS_SHADER.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
-        COLORED_RECTS_MODEL.draw();
-        COLORED_RECTS_MODEL.unbind();
-        COLORED_RECTS_SHADER.unbind();
+        if (registeredTexturesCount == 32)
+        {
+            Log.warn("(Renderer2D) Can not register texture %s. For now only 16 total Textures are suported.", texture);
+            return;
+        }
+
+        if (Arrays.asList(registeredTextures).contains(texture))
+            return;
+
+        registeredTextures[registeredTexturesCount++] = texture;
     }
 
-    private static void drawTexturedRects(Camera camera)
+    private static void drawColoredRects()
     {
-        TEXTURED_RECTS_SHADER.bind();
-        TEXTURED_RECTS_MODEL.bind();
-        TEXTURED_RECTS_SHADER.setUniform("uViewMatrix", camera.getViewMatrix());
-        TEXTURED_RECTS_SHADER.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
-        PLAYER_TEXTURE.bind();
-        TEXTURED_RECTS_MODEL.draw();
-        PLAYER_TEXTURE.unbind();
-        TEXTURED_RECTS_MODEL.unbind();
-        TEXTURED_RECTS_SHADER.unbind();
+        coloredRectsShader.bind();
+        coloredRectsModel.bind();
+        coloredRectsShader.setUniform("uViewMatrix", camera.getViewMatrix());
+        coloredRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
+
+        coloredRectsModel.rebuffer();
+        glDrawElements(GL_TRIANGLES, coloredRectsModel.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+        coloredRectsModel.unbind();
+        coloredRectsShader.unbind();
+    }
+
+    private static void drawTexturedRects()
+    {
+        texturedRectsShader.bind();
+        texturedRectsModel.bind();
+        texturedRectsShader.setUniform("uViewMatrix", camera.getViewMatrix());
+        texturedRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
+        texturedRectsShader.setUniform("uTextures", new int[] {
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+        });
+
+        for (int i = 0; i < registeredTexturesCount; i++)
+            registeredTextures[i].bind(i);
+
+        texturedRectsModel.rebuffer();
+        glDrawElements(GL_TRIANGLES, texturedRectsModel.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+        for (int i = 0; i < registeredTexturesCount; i++)
+            registeredTextures[i].unbind(i);
+
+        texturedRectsModel.unbind();
+        texturedRectsShader.unbind();
+    }
+
+    public static void setCamera(Camera camera)
+    {
+        Renderer2D.camera = camera;
     }
 }

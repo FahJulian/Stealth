@@ -1,6 +1,7 @@
 package com.github.fahjulian.stealth.components;
 
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
+import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Color;
@@ -11,6 +12,21 @@ import com.github.fahjulian.stealth.graphics.Renderer2D;
  */
 public class ColorComponent extends AbstractComponent
 {
+    public static final class Blueprint implements IComponentBlueprint<ColorComponent>
+    {
+        private final Color color;
+
+        public Blueprint(Color color)
+        {
+            this.color = color;
+        }
+
+        public ColorComponent createComponent()
+        {
+            return new ColorComponent(color);
+        }
+    }
+
     private final Color color;
 
     public ColorComponent(Color color)

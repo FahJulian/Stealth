@@ -1,9 +1,5 @@
 package com.github.fahjulian.stealth.graphics;
 
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDrawElements;
-
 import com.github.fahjulian.stealth.graphics.opengl.DynamicVertexBuffer;
 import com.github.fahjulian.stealth.graphics.opengl.ElementBuffer;
 import com.github.fahjulian.stealth.graphics.opengl.VertexArray;
@@ -13,10 +9,12 @@ public class BatchedTexturedModel
     private final VertexArray vao;
     private final DynamicVertexBuffer positionsVBO;
     private final DynamicVertexBuffer textureCoordsVBO;
+    private final DynamicVertexBuffer textureSlotsVBO;
     private final int maxRects;
     private int rectCount;
     private float[] positions;
     private float[] textureCoords;
+    private float[] textureSlots;
 
     BatchedTexturedModel(final int maxRects)
     {
@@ -25,6 +23,7 @@ public class BatchedTexturedModel
         this.rectCount = 0;
         this.positions = new float[maxRects * 4 * 3];
         this.textureCoords = new float[maxRects * 4 * 2];
+        this.textureSlots = new float[maxRects * 4 * 1];
 
         positionsVBO = new DynamicVertexBuffer(positions.length, 3);
         vao.addVBO(positionsVBO);
@@ -34,9 +33,12 @@ public class BatchedTexturedModel
         vao.addVBO(textureCoordsVBO);
         textureCoordsVBO.unbind();
 
+        textureSlotsVBO = new DynamicVertexBuffer(textureSlots.length, 1);
+        vao.addVBO(textureSlotsVBO);
+        textureSlotsVBO.unbind();
+
         int[] indices = generateIndices(maxRects);
-        ElementBuffer ebo = new ElementBuffer(indices);
-        ebo.unbind();
+        new ElementBuffer(indices).unbind();
 
         vao.unbind();
     }
@@ -45,6 +47,7 @@ public class BatchedTexturedModel
     {
         positions = new float[maxRects * 4 * 3];
         textureCoords = new float[maxRects * 4 * 2];
+        textureSlots = new float[maxRects * 4 * 1];
         rectCount = 0;
     }
 
@@ -58,7 +61,7 @@ public class BatchedTexturedModel
         vao.unbind();
     }
 
-    void addRect(float x, float y, float z, float width, float height)
+    void addRect(float x, float y, float z, float width, float height, int textureSlot)
     {
         for (int i = 0; i < 4; i++)
         {
@@ -67,12 +70,13 @@ public class BatchedTexturedModel
             positions[rectCount * (4 * 3) + i * 3 + 2] = z;
             textureCoords[rectCount * (4 * 2) + i * 2 + 0] = i % 2 == 0 ? 1 : 0;
             textureCoords[rectCount * (4 * 2) + i * 2 + 1] = i / 2 == 0 ? 1 : 0;
+            textureSlots[rectCount * (4 * 1) + i * 1 + 0] = (float) textureSlot;
         }
 
         rectCount++;
     }
 
-    void draw()
+    void rebuffer()
     {
         positionsVBO.bind();
         positionsVBO.buffer(positions);
@@ -82,7 +86,9 @@ public class BatchedTexturedModel
         textureCoordsVBO.buffer(textureCoords);
         textureCoordsVBO.unbind();
 
-        glDrawElements(GL_TRIANGLES, rectCount * 6, GL_UNSIGNED_INT, 0);
+        textureSlotsVBO.bind();
+        textureSlotsVBO.buffer(textureSlots);
+        textureSlotsVBO.unbind();
     }
 
     private int[] generateIndices(int maxRects)
@@ -99,5 +105,10 @@ public class BatchedTexturedModel
         }
 
         return indices;
+    }
+
+    int getVertexCount()
+    {
+        return rectCount * 6;
     }
 }

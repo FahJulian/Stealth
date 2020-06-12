@@ -1,9 +1,5 @@
 package com.github.fahjulian.stealth.graphics;
 
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDrawElements;
-
 import com.github.fahjulian.stealth.graphics.opengl.ElementBuffer;
 import com.github.fahjulian.stealth.graphics.opengl.VertexArray;
 import com.github.fahjulian.stealth.graphics.opengl.VertexBuffer;
@@ -42,8 +38,8 @@ public class ColoredModel
         vao.unbind();
     }
 
-    void draw()
+    int getVertexCount()
     {
-        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+        return vertexCount;
     }
 }
