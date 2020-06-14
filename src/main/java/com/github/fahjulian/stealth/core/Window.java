@@ -14,7 +14,6 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_3;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
@@ -36,7 +35,10 @@ import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.util.ArrayList;
@@ -59,7 +61,6 @@ import org.lwjgl.opengl.GL;
 
 public final class Window
 {
-
     private String title;
     private int width, height;
     public long glfwID;
@@ -112,7 +113,7 @@ public final class Window
         }
 
         glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // TODO Add window resizing
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 
@@ -134,6 +135,12 @@ public final class Window
         glfwShowWindow(glfwID);
 
         GL.createCapabilities();
+
+        // glEnable(GL_BLEND);
+        // glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_DEPTH_TEST);
+
+        glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
 
         Log.info("(Window) Initialized window.");
     }
@@ -190,12 +197,12 @@ public final class Window
         glfwSetWindowTitle(glfwID, title);
     }
 
-    public int getWidth()
+    public float getWidth()
     {
         return width;
     }
 
-    public int getHeight()
+    public float getHeight()
     {
         return height;
     }
@@ -210,7 +217,7 @@ class GLFWInputListener
     public void cursorPosCallback(long windowID, double posX, double posY)
     {
         this.posX = (float) posX;
-        this.posY = (float) posY;
+        this.posY = Window.get().getHeight() - (float) posY;
 
         for (AMouseEvent.Button button : pressedButtons)
             new MouseDraggedEvent(this.posX, this.posY, button);

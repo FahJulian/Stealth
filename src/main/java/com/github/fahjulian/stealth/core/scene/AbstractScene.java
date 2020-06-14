@@ -15,7 +15,7 @@ import com.github.fahjulian.stealth.core.event.IEventListener;
  */
 public abstract class AbstractScene implements IEventLayerStack
 {
-    private final List<AbstractLayer> layers;
+    private final List<AbstractLayer<?>> layers;
     private final EventDispatcher eventDispatcher;
     private final Camera camera;
     private boolean initialized;
@@ -41,7 +41,7 @@ public abstract class AbstractScene implements IEventLayerStack
     {
         onInit();
 
-        for (AbstractLayer layer : layers)
+        for (AbstractLayer<?> layer : layers)
             layer.init(this);
 
         initialized = true;
@@ -54,7 +54,7 @@ public abstract class AbstractScene implements IEventLayerStack
      * @param layer
      *                  The Layer to add
      */
-    public void add(AbstractLayer layer)
+    public void add(AbstractLayer<?> layer)
     {
         layers.add(layer);
         if (initialized)

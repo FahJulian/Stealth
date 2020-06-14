@@ -16,7 +16,7 @@ public final class Entity
     private final Transform transform;
     private final List<AbstractComponent> components;
     private EventDispatcher eventDispatcher;
-    private AbstractLayer layer;
+    private AbstractLayer<?> layer;
     private boolean initialized;
 
     /**
@@ -82,7 +82,7 @@ public final class Entity
      * @param layer
      *                  The Layer to initialize the Entity on.
      */
-    public void init(AbstractLayer layer)
+    public void init(AbstractLayer<?> layer)
     {
         this.layer = layer;
 
@@ -113,7 +113,7 @@ public final class Entity
         return eventDispatcher;
     }
 
-    public AbstractLayer getLayer()
+    public AbstractLayer<?> getLayer()
     {
         return layer;
     }

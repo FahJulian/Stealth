@@ -7,6 +7,11 @@ public class SandboxScene extends AbstractScene
     @Override
     protected void onInit()
     {
-        add(new SandboxLayer());
+        add(new SandboxLayer(this));
+    }
+
+    void test()
+    {
+
     }
 }

@@ -8,22 +8,24 @@ import com.github.fahjulian.stealth.core.event.AbstractEvent;
 import com.github.fahjulian.stealth.core.event.EventDispatcher;
 import com.github.fahjulian.stealth.core.event.IEventLayer;
 import com.github.fahjulian.stealth.core.event.IEventListener;
+import com.github.fahjulian.stealth.core.util.Log;
 
 /**
  * A Layer is part of a Scene and can block events from being passed to lower
  * layers. It holds Entities.
  */
-public abstract class AbstractLayer implements IEventLayer
+public abstract class AbstractLayer<S extends AbstractScene> implements IEventLayer
 {
     private final List<Entity> entities;
     private final List<Class<? extends AbstractEvent>> currentlyBlockedEvents;
     private EventDispatcher eventDispatcher;
     private boolean initialized;
 
-    protected AbstractScene scene;
+    protected S scene;
 
-    public AbstractLayer()
+    public AbstractLayer(S scene)
     {
+        this.scene = scene;
         this.entities = new ArrayList<>();
         this.currentlyBlockedEvents = new ArrayList<>();
         this.initialized = false;
@@ -35,8 +37,14 @@ public abstract class AbstractLayer implements IEventLayer
      */
     abstract protected void onInit();
 
-    void init(AbstractScene scene)
+    public void init(AbstractScene scene)
     {
+        if (!(scene == this.scene))
+        {
+            Log.error("(AbstractLayer) Layers must be added to the same scene they were constructed with.");
+            return;
+        }
+
         eventDispatcher = new EventDispatcher(scene);
         scene.getEventDispatcher().registerSubLayer(this);
         onInit();
@@ -96,7 +104,7 @@ public abstract class AbstractLayer implements IEventLayer
             entity.init(this);
     }
 
-    public AbstractScene getScene()
+    public S getScene()
     {
         return scene;
     }

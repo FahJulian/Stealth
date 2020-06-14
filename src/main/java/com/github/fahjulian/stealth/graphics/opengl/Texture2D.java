@@ -2,6 +2,7 @@ package com.github.fahjulian.stealth.graphics.opengl;
 
 import static org.lwjgl.opengl.GL11.GL_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_REPEAT;
+import static org.lwjgl.opengl.GL11.GL_RGB;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
@@ -41,8 +42,8 @@ public class Texture2D
         }
     }
 
-    private final int ID;
-    private final Data data;
+    private int ID;
+    private Data data;
 
     public Texture2D(String imagePath)
     {
@@ -51,10 +52,12 @@ public class Texture2D
         bind(0);
         setOpenGLParams();
         this.data = load(imagePath);
+        unbind(0);
 
         if (this.data == null)
         {
-            Log.error("Texture2D) Could not load texture from file %s.", imagePath);
+            Log.error("(Texture2D) Could not load texture from file %s.", imagePath);
+            this.ID = 0;
             return;
         }
     }
@@ -103,17 +106,32 @@ public class Texture2D
         IntBuffer channels = BufferUtils.createIntBuffer(1);
 
         stbi_set_flip_vertically_on_load(true);
-        ByteBuffer pixels = stbi_load(imagePath, width, height, channels, 4);
+        ByteBuffer pixels = stbi_load(imagePath, width, height, channels, 0);
 
         if (pixels == null)
             return null;
 
         Data data = new Data(imagePath, width.get(0), height.get(0));
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.width, data.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+        int format = channels.get(0) == 3 ? GL_RGB : GL_RGBA;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, data.width, data.height, 0, format, GL_UNSIGNED_BYTE, pixels);
 
         stbi_image_free(pixels);
 
         return data;
+    }
+
+    public boolean loadedSuccesfully()
+    {
+        return ID != 0;
+    }
+
+    @Override
+    public boolean equals(Object t)
+    {
+        if (t == null || !(t instanceof Texture2D))
+            return false;
+
+        return ((Texture2D) t).data.name == this.data.name;
     }
 
     @Override
