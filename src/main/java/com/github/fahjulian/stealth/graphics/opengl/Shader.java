@@ -17,6 +17,7 @@ import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
 import static org.lwjgl.opengl.GL20.glUniform1f;
+import static org.lwjgl.opengl.GL20.glUniform1iv;
 import static org.lwjgl.opengl.GL20.glUniform4f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
@@ -93,6 +94,12 @@ public class Shader
     {
         int location = glGetUniformLocation(this.ID, uniformName);
         glUniform1f(location, value);
+    }
+
+    public void setUniform(String uniformName, int[] value)
+    {
+        int location = glGetUniformLocation(this.ID, uniformName);
+        glUniform1iv(location, value);
     }
 
     private String[] splitSourceCode(String sourceCode)

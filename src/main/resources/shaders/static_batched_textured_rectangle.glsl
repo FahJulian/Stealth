@@ -8,14 +8,13 @@ layout (location = 2) in float vTextureSlot;
 out vec2 fTextureCoords;
 out float fTextureSlot;
 
-uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 
 void main()
 {
     fTextureCoords = vTextureCoords;
     fTextureSlot = vTextureSlot;
-    gl_Position = uProjectionMatrix * uViewMatrix * vec4(vPosition, 1.0);
+    gl_Position = uProjectionMatrix * vec4(vPosition, 1.0);
 }
 
 

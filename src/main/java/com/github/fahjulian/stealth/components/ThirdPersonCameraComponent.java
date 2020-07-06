@@ -2,6 +2,7 @@ package com.github.fahjulian.stealth.components;
 
 import com.github.fahjulian.stealth.core.AbstractApp;
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
+import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.events.entity.EntityTransformEvent;
 import com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type;
@@ -13,6 +14,15 @@ import org.joml.Vector2f;
  */
 public class ThirdPersonCameraComponent extends AbstractComponent
 {
+    public static final class Blueprint implements IComponentBlueprint<ThirdPersonCameraComponent>
+    {
+        @Override
+        public ThirdPersonCameraComponent createComponent()
+        {
+            return new ThirdPersonCameraComponent();
+        }
+    }
+
     private Vector2f offsetFromEntity;
 
     @Override

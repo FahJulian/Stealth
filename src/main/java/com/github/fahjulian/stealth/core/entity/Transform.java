@@ -19,22 +19,22 @@ public final class Transform
 
     public Transform()
     {
-        this(new Vector3f(), new Vector3f());
+        this(new Vector3f(), new Vector3f(), new Vector3f());
     }
 
     public Transform(Vector2f position)
     {
-        this(new Vector3f(position, 0.0f), new Vector3f());
+        this(new Vector3f(position, 0.0f), new Vector3f(), new Vector3f());
     }
 
     public Transform(Vector3f position)
     {
-        this(position, new Vector3f());
+        this(position, new Vector3f(), new Vector3f());
     }
 
     public Transform(float posX, float posY)
     {
-        this(new Vector3f(posX, posY, 0.0f), new Vector3f());
+        this(new Vector3f(posX, posY, 0.0f), new Vector3f(), new Vector3f());
     }
 
     public Transform(float posX, float posY, float posZ)
@@ -44,12 +44,22 @@ public final class Transform
 
     public Transform(Vector2f position, Vector2f scale)
     {
-        this(new Vector3f(position, 0.0f), new Vector3f(scale, 0.0f));
+        this(new Vector3f(position, 0.0f), new Vector3f(scale, 0.0f), new Vector3f());
     }
 
     public Transform(float posX, float posY, float scaleX, float scaleY)
     {
-        this(new Vector3f(posX, posY, 0.0f), new Vector3f(scaleX, scaleY, 0.0f));
+        this(new Vector3f(posX, posY, 0.0f), new Vector3f(scaleX, scaleY, 0.0f), new Vector3f());
+    }
+
+    public Transform(float posX, float posY, float posZ, float scaleX, float scaleY)
+    {
+        this(new Vector3f(posX, posY, posZ), new Vector3f(scaleX, scaleY, 0.0f), new Vector3f());
+    }
+
+    public Transform(Vector3f position, Vector2f scale)
+    {
+        this(position, new Vector3f(scale, 0.0f), new Vector3f());
     }
 
     public Transform(Vector3f position, Vector3f scale)
@@ -57,11 +67,22 @@ public final class Transform
         this(position, scale, new Vector3f());
     }
 
+    public Transform(float posX, float posY, float posZ, float scaleX, float scaleY, float scaleZ)
+    {
+        this(new Vector3f(posX, posY, posZ), new Vector3f(scaleX, scaleY, scaleZ), new Vector3f());
+    }
+
     public Transform(Vector3f position, Vector3f scale, Vector3f rotation)
     {
         this.position = position;
         this.scale = scale;
         this.rotation = rotation;
+    }
+
+    public Transform(float posX, float posY, float posZ, float scaleX, float scaleY, float scaleZ, float rotX,
+            float rotY, float rotZ)
+    {
+        this(new Vector3f(posX, posY, posZ), new Vector3f(scaleX, scaleY, scaleZ), new Vector3f(rotX, rotY, rotZ));
     }
 
     void setEntity(Entity entity)

@@ -34,6 +34,28 @@ public final class Camera
         updateViewMatrix();
     }
 
+    private void updateViewMatrix()
+    {
+        viewMatrix = Maths.createTransformationMatrix(new Vector3f(-position.x, -position.y, -position.z),
+                new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-rotation.x, -rotation.y, -rotation.z));
+    }
+
+    private void updateProjectionMatrix()
+    {
+        projectionMatrix.identity();
+        projectionMatrix.ortho(0.0f, Window.get().getWidth(), 0.0f, Window.get().getHeight(), -10.0f, 10.0f);
+    }
+
+    public float getPositionX()
+    {
+        return this.position.x;
+    }
+
+    public float getPositionY()
+    {
+        return this.position.y;
+    }
+
     public Matrix4f getViewMatrix()
     {
         return viewMatrix;
@@ -49,17 +71,5 @@ public final class Camera
         this.position.x = posX;
         this.position.y = posY;
         updateViewMatrix();
-    }
-
-    private void updateViewMatrix()
-    {
-        viewMatrix = Maths.createTransformationMatrix(new Vector3f(-position.x, -position.y, -position.z),
-                new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-rotation.x, -rotation.y, -rotation.z));
-    }
-
-    private void updateProjectionMatrix()
-    {
-        projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, Window.get().getWidth(), 0.0f, Window.get().getHeight(), -10.0f, 10.0f);
     }
 }
