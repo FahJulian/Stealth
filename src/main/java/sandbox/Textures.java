@@ -1,7 +1,7 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.graphics.Renderer2D;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 
 public class Textures
 {

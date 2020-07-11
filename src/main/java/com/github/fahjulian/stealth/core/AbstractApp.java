@@ -7,7 +7,7 @@ import com.github.fahjulian.stealth.core.scene.AbstractScene;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
-import com.github.fahjulian.stealth.graphics.Renderer2D;
+import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 
 public abstract class AbstractApp
 {

@@ -1,74 +1,23 @@
-package com.github.fahjulian.stealth.graphics.models;
+package com.github.fahjulian.stealth.graphics.tilemap;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 
+import com.github.fahjulian.stealth.core.util.Toolbox;
 import com.github.fahjulian.stealth.graphics.opengl.StaticVertexBuffer;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.graphics.renderer.AbstractModel;
 
 public class TileMapModel extends AbstractModel
 {
-    public static class MapData
-    {
-        public int width, height;
-        public float tileSize;
-        public float posZ;
-        public Texture2D[] textures;
-        public int[] textureIndices;
-
-        public MapData()
-        {
-        }
-
-        public MapData(int width, int height, float tileSize, float posZ, Texture2D[] textures, int[] textureIndices)
-        {
-            this.width = width;
-            this.height = height;
-            this.tileSize = tileSize;
-            this.posZ = posZ;
-            this.textures = textures;
-            this.textureIndices = textureIndices;
-        }
-
-        public int getWidth()
-        {
-            return width;
-        }
-
-        public int getHeight()
-        {
-            return height;
-        }
-
-        public float getTileSize()
-        {
-            return tileSize;
-        }
-
-        public float getPosZ()
-        {
-            return posZ;
-        }
-
-        public int[] getTextureIndices()
-        {
-            return textureIndices;
-        }
-
-        public Texture2D[] getTextures()
-        {
-            return textures;
-        }
-    }
-
     private final Texture2D[] textures;
 
     public TileMapModel(MapData data)
     {
         float[] positions = calculatePositions(data.tileSize, data.width, data.height, data.posZ);
         float[] textureCoords = calculateTextureCoords(data.width, data.height);
-        float[] textureSlots = calculateTextureSlots(data.width, data.height, data.textureIndices);
+        float[] textureSlots = calculateTextureSlots(data.width, data.height, data.textures, data.tiles);
         int[] indices = calculateIndices(data.width, data.height);
 
         new StaticVertexBuffer(positions, 3, vao);
@@ -135,7 +84,7 @@ public class TileMapModel extends AbstractModel
         return textureCoords;
     }
 
-    private float[] calculateTextureSlots(int width, int height, int[] tileTextureSlots)
+    private float[] calculateTextureSlots(int width, int height, Texture2D[] textures, MapTile[] tiles)
     {
         float[] textureSlots = new float[width * height * 4 * 1];
         {
@@ -145,8 +94,8 @@ public class TileMapModel extends AbstractModel
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        textureSlots[(x + y * width) * 4 * 1 + i * 1 + 0] = tileTextureSlots[tileTextureSlots.length - 1
-                                - (x + y * width)]; // FIXME: This is bad
+                        textureSlots[(x + y * width) * 4 * 1 + i * 1 + 0] = (float) Toolbox.indexOf(textures,
+                                tiles[tiles.length - 1 - (x + y * width)].getTexture());
                     }
                 }
             }

@@ -5,7 +5,7 @@ import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Color;
-import com.github.fahjulian.stealth.graphics.Renderer2D;
+import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 
 /**
  * Renderes a 2D Rectangle in a given color at the entities position

@@ -1,4 +1,4 @@
-package com.github.fahjulian.stealth.graphics;
+package com.github.fahjulian.stealth.graphics.renderer;
 
 import static org.lwjgl.opengl.GL11.glFlush;
 
@@ -6,11 +6,11 @@ import java.util.Arrays;
 
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.core.util.Log;
-import com.github.fahjulian.stealth.graphics.models.BatchedColoredModel;
-import com.github.fahjulian.stealth.graphics.models.BatchedTexturedModel;
+import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.opengl.OpenGLMemoryManager;
 import com.github.fahjulian.stealth.graphics.opengl.Shader;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.graphics.tilemap.TileMap;
 
 public class Renderer2D
 {
@@ -140,7 +140,7 @@ public class Renderer2D
         texturedRectsShader.setUniform("uTextures", textureSlots);
 
         map.getModel().draw();
-        
+
         texturedRectsShader.unbind();
     }
 
@@ -178,6 +178,11 @@ public class Renderer2D
             return;
 
         registeredTextures[registeredTexturesCount++] = texture;
+    }
+
+    public static void drawModel(AbstractModel model)
+    {
+        model.draw();
     }
 
     private static void drawStaticColoredRects()

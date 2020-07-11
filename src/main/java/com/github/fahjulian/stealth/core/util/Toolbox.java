@@ -44,4 +44,18 @@ public final class Toolbox
 
         return sb.toString();
     }
+
+    public static String stripXmlTags(String s, String tagName)
+    {
+        return s.replace("<" + tagName + ">", "").replace("</" + tagName + ">", "");
+    }
+
+    public static <T> int indexOf(T[] array, T obj)
+    {
+        for (int i = 0; i < array.length; i++)
+            if (array[i].equals(obj))
+                return i;
+
+        return -1;
+    }
 }

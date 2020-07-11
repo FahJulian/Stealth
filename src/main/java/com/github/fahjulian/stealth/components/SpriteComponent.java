@@ -4,8 +4,8 @@ import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
-import com.github.fahjulian.stealth.graphics.Renderer2D;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 
 /**
  * Renders a given sprite at the entities position

@@ -1,4 +1,4 @@
-package com.github.fahjulian.stealth.graphics.models;
+package com.github.fahjulian.stealth.graphics.renderer;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;

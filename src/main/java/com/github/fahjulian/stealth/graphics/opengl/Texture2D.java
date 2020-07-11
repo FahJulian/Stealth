@@ -126,6 +126,11 @@ public class Texture2D
         return ((Texture2D) t).data.name == this.data.name;
     }
 
+    public String getName()
+    {
+        return data.name;
+    }
+
     @Override
     public String toString()
     {

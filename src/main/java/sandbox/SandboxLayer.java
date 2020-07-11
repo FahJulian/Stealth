@@ -6,9 +6,9 @@ import com.github.fahjulian.stealth.core.Window;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.core.scene.AbstractLayer;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
-import com.github.fahjulian.stealth.graphics.Renderer2D;
-import com.github.fahjulian.stealth.graphics.TileMap;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
+import com.github.fahjulian.stealth.graphics.tilemap.TileMap;
 
 @SuppressWarnings("unused")
 public class SandboxLayer extends AbstractLayer<SandboxScene>
@@ -26,7 +26,7 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
         scene.test();
         add(Blueprints.player.create(new Transform(0.0f, 0.0f, 0.1f, 160.0f, 160.0f)));
 
-        map = new TileMap("Some Map", 10, 10, 160.0f, 0.0f, createMap(10, 10));
+        map = new TileMap("/home/julian/dev/java/Stealth/.maps/SomeMap.stealthMap.xml");
         map.saveToFile("/home/julian/dev/java/Stealth/.maps/");
 
         registerEventListener(RenderEvent.class, this::onRender);
