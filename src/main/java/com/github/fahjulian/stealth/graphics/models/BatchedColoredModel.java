@@ -1,12 +1,11 @@
-package com.github.fahjulian.stealth.graphics;
+package com.github.fahjulian.stealth.graphics.models;
 
+import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.opengl.DynamicVertexBuffer;
-import com.github.fahjulian.stealth.graphics.opengl.ElementBuffer;
-import com.github.fahjulian.stealth.graphics.opengl.VertexArray;
 
-public class BatchedColoredModel
+public class BatchedColoredModel extends AbstractModel
 {
-    private final VertexArray vao;
     private final DynamicVertexBuffer positionsVBO;
     private final DynamicVertexBuffer colorsVBO;
     private final int maxRects;
@@ -14,48 +13,35 @@ public class BatchedColoredModel
     private float[] positions;
     private float[] colors;
 
-    BatchedColoredModel(final int maxRects)
+    public BatchedColoredModel(final int maxRects)
     {
-        this.vao = new VertexArray();
         this.maxRects = maxRects;
         this.rectCount = 0;
+
         this.positions = new float[maxRects * 4 * 3];
         this.colors = new float[maxRects * 4 * 4];
 
-        positionsVBO = new DynamicVertexBuffer(positions.length, 3);
-        vao.addVBO(positionsVBO);
-        positionsVBO.unbind();
+        positionsVBO = new DynamicVertexBuffer(positions, 3, vao);
+        colorsVBO = new DynamicVertexBuffer(colors, 4, vao);
 
-        colorsVBO = new DynamicVertexBuffer(colors.length, 4);
-        vao.addVBO(colorsVBO);
-        colorsVBO.unbind();
-
-        int[] indices = generateIndices(maxRects);
-        ElementBuffer ebo = new ElementBuffer(indices);
-        ebo.unbind();
-
-        vao.unbind();
+        setIndicesBuffer(generateIndices(maxRects));
     }
 
-    void clear()
+    public void clear()
     {
         positions = new float[maxRects * 4 * 3];
         colors = new float[maxRects * 4 * 4];
         rectCount = 0;
     }
 
-    void bind()
+    public void addRect(float x, float y, float z, float width, float height, Color color)
     {
-        vao.bind();
-    }
+        if (rectCount == maxRects)
+        {
+            Log.warn("(BatchedTexturedModel) Maximum rect amount reached.");
+            return;
+        }
 
-    void unbind()
-    {
-        vao.unbind();
-    }
-
-    void addRect(float x, float y, float z, float width, float height, Color color)
-    {
         for (int i = 0; i < 4; i++)
         {
             positions[rectCount * (4 * 3) + i * 3 + 0] = x + (i % 2 == 0 ? width : 0);
@@ -70,14 +56,12 @@ public class BatchedColoredModel
         rectCount++;
     }
 
-    void rebuffer()
+    public void rebuffer()
     {
-        positionsVBO.bind();
-        positionsVBO.buffer(positions);
+        positionsVBO.rebuffer();
         positionsVBO.unbind();
 
-        colorsVBO.bind();
-        colorsVBO.buffer(colors);
+        colorsVBO.rebuffer();
         colorsVBO.unbind();
     }
 
@@ -97,8 +81,8 @@ public class BatchedColoredModel
         return indices;
     }
 
-    int getVertexCount()
+    public int getRectCount()
     {
-        return rectCount * 6;
+        return rectCount;
     }
 }

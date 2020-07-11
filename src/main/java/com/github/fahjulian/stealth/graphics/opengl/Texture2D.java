@@ -11,7 +11,6 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -47,7 +46,7 @@ public class Texture2D
 
     public Texture2D(String imagePath)
     {
-        this.ID = create();
+        this.ID = OpenGLMemoryManager.createTexture();
 
         bind(0);
         setOpenGLParams();
@@ -82,13 +81,6 @@ public class Texture2D
     public int getHeight()
     {
         return data.height;
-    }
-
-    private int create()
-    {
-        int ID = glGenTextures();
-        OpenGLMemoryManager.loadedTextures.add(ID);
-        return ID;
     }
 
     private void setOpenGLParams()

@@ -1,25 +1,27 @@
-package com.github.fahjulian.stealth.graphics;
+package com.github.fahjulian.stealth.graphics.models;
 
-import com.github.fahjulian.stealth.graphics.opengl.ElementBuffer;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+
+import com.github.fahjulian.stealth.graphics.opengl.StaticVertexBuffer;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
-import com.github.fahjulian.stealth.graphics.opengl.VertexArray;
-import com.github.fahjulian.stealth.graphics.opengl.VertexBuffer;
 
-public class TileMapModel
+public class TileMapModel extends AbstractModel
 {
     public static class MapData
     {
-        int width, height;
-        float tileSize;
-        float posZ;
-        Texture2D[] textures;
-        int[] textureIndices;
+        public int width, height;
+        public float tileSize;
+        public float posZ;
+        public Texture2D[] textures;
+        public int[] textureIndices;
 
-        MapData()
+        public MapData()
         {
         }
 
-        MapData(int width, int height, float tileSize, float posZ, Texture2D[] textures, int[] textureIndices)
+        public MapData(int width, int height, float tileSize, float posZ, Texture2D[] textures, int[] textureIndices)
         {
             this.width = width;
             this.height = height;
@@ -60,56 +62,39 @@ public class TileMapModel
         }
     }
 
-    private final VertexArray vao;
-    private final int vertexCount;
     private final Texture2D[] textures;
 
-    TileMapModel(MapData data)
+    public TileMapModel(MapData data)
     {
         float[] positions = calculatePositions(data.tileSize, data.width, data.height, data.posZ);
         float[] textureCoords = calculateTextureCoords(data.width, data.height);
         float[] textureSlots = calculateTextureSlots(data.width, data.height, data.textureIndices);
         int[] indices = calculateIndices(data.width, data.height);
 
-        this.vao = new VertexArray();
-        this.vertexCount = indices.length;
-
-        VertexBuffer positionsVBO = new VertexBuffer(positions, 3);
-        vao.addVBO(positionsVBO);
-        positionsVBO.unbind();
-
-        VertexBuffer textureCoordsVBO = new VertexBuffer(textureCoords, 2);
-        vao.addVBO(textureCoordsVBO);
-        textureCoordsVBO.unbind();
-
-        VertexBuffer textureSlotsVBO = new VertexBuffer(textureSlots, 1);
-        vao.addVBO(textureSlotsVBO);
-        textureCoordsVBO.unbind();
-
-        ElementBuffer ebo = new ElementBuffer(indices);
-        ebo.unbind();
-
-        vao.unbind();
+        new StaticVertexBuffer(positions, 3, vao);
+        new StaticVertexBuffer(textureCoords, 2, vao);
+        new StaticVertexBuffer(textureSlots, 1, vao);
+        setIndicesBuffer(indices);
 
         this.textures = new Texture2D[16];
         for (int i = 0; i < data.textures.length; i++)
             this.textures[i] = data.textures[i];
     }
 
-    void bind()
+    @Override
+    public void draw()
     {
         vao.bind();
 
         for (int i = 0; i < textures.length && textures[i] != null; i++)
             textures[i].bind(i);
-    }
 
-    void unbind()
-    {
-        vao.unbind();
+        glDrawElements(GL_TRIANGLES, ebo.getSize(), GL_UNSIGNED_INT, 0);
 
         for (int i = 0; i < textures.length && textures[i] != null; i++)
             textures[i].unbind(i);
+
+        vao.unbind();
     }
 
     private float[] calculatePositions(float tileSize, int width, int height, float posZ)
@@ -184,10 +169,5 @@ public class TileMapModel
         }
 
         return indices;
-    }
-
-    int getVertexCount()
-    {
-        return vertexCount;
     }
 }

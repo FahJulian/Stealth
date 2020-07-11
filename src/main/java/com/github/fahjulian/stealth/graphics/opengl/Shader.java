@@ -7,8 +7,6 @@ import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 import static org.lwjgl.opengl.GL20.glAttachShader;
 import static org.lwjgl.opengl.GL20.glCompileShader;
-import static org.lwjgl.opengl.GL20.glCreateProgram;
-import static org.lwjgl.opengl.GL20.glCreateShader;
 import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
 import static org.lwjgl.opengl.GL20.glGetProgrami;
 import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
@@ -118,20 +116,18 @@ public class Shader
 
     private int createShader(int type, String sourceCode)
     {
-        int ID = glCreateShader(type);
+        int ID = OpenGLMemoryManager.createShader(type);
         glShaderSource(ID, sourceCode);
         glCompileShader(ID);
-        OpenGLMemoryManager.loadedShaders.add(ID);
         return ID;
     }
 
     private int linkToProgram(int vertexID, int fragmentID)
     {
-        int ID = glCreateProgram();
+        int ID = OpenGLMemoryManager.createProgram();
         glAttachShader(ID, vertexID);
         glAttachShader(ID, fragmentID);
         glLinkProgram(ID);
-        OpenGLMemoryManager.loadedPrograms.add(ID);
         return ID;
     }
 

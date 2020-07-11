@@ -15,7 +15,7 @@ public class Blueprints
                         new ColorComponent.Blueprint(Color.DARK_GREY));
 
         static final EntityBlueprint player = new EntityBlueprint("Player",
-                        new KeyboardControlledMovementComponent.Blueprint(250.0f),
+                        new KeyboardControlledMovementComponent.Blueprint(320.0f),
                         new SpriteComponent.Blueprint(Textures.PLAYER_TEXTURE), //
                         new ThirdPersonCameraComponent.Blueprint());
 }

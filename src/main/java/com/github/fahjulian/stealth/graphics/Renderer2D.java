@@ -1,14 +1,13 @@
 package com.github.fahjulian.stealth.graphics;
 
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glFlush;
 
 import java.util.Arrays;
 
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.graphics.models.BatchedColoredModel;
+import com.github.fahjulian.stealth.graphics.models.BatchedTexturedModel;
 import com.github.fahjulian.stealth.graphics.opengl.OpenGLMemoryManager;
 import com.github.fahjulian.stealth.graphics.opengl.Shader;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
@@ -139,11 +138,9 @@ public class Renderer2D
         texturedRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
         texturedRectsShader.setUniform("uViewMatrix", camera.getViewMatrix());
         texturedRectsShader.setUniform("uTextures", textureSlots);
-        map.getModel().bind();
 
-        glDrawElements(GL_TRIANGLES, map.getModel().getVertexCount(), GL_UNSIGNED_INT, 0);
-
-        map.getModel().unbind();
+        map.getModel().draw();
+        
         texturedRectsShader.unbind();
     }
 
@@ -185,25 +182,20 @@ public class Renderer2D
 
     private static void drawStaticColoredRects()
     {
-        if (staticColoredRectsModel.getVertexCount() == 0)
+        if (staticColoredRectsModel.getRectCount() == 0)
             return;
 
         staticColoredRectsModel.rebuffer();
         staticColoredRectsShader.bind();
         staticColoredRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
-        staticColoredRectsModel.bind();
 
-        glDrawElements(GL_TRIANGLES, staticColoredRectsModel.getVertexCount(), GL_UNSIGNED_INT, 0);
+        staticColoredRectsModel.draw();
 
-        staticColoredRectsModel.unbind();
         staticColoredRectsShader.unbind();
     }
 
     private static void drawStaticTexturedRects()
     {
-        if (staticTexturedRectsModel.getVertexCount() == 0)
-            return;
-
         staticTexturedRectsModel.rebuffer();
         staticTexturedRectsShader.bind();
         staticTexturedRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
@@ -212,11 +204,7 @@ public class Renderer2D
         for (int i = 0; i < registeredTexturesCount; i++)
             registeredTextures[i].bind(i);
 
-        staticTexturedRectsModel.bind();
-
-        glDrawElements(GL_TRIANGLES, staticTexturedRectsModel.getVertexCount(), GL_UNSIGNED_INT, 0);
-
-        staticTexturedRectsModel.unbind();
+        staticTexturedRectsModel.draw();
 
         for (int i = 0; i < registeredTexturesCount; i++)
             registeredTextures[i].unbind(i);
@@ -226,26 +214,21 @@ public class Renderer2D
 
     private static void drawColoredRects()
     {
-        if (coloredRectsModel.getVertexCount() == 0)
+        if (coloredRectsModel.getRectCount() == 0)
             return;
 
         coloredRectsModel.rebuffer();
         coloredRectsShader.bind();
         coloredRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
         coloredRectsShader.setUniform("uViewMatrix", camera.getViewMatrix());
-        coloredRectsModel.bind();
 
-        glDrawElements(GL_TRIANGLES, coloredRectsModel.getVertexCount(), GL_UNSIGNED_INT, 0);
+        coloredRectsModel.draw();
 
-        coloredRectsModel.unbind();
         coloredRectsShader.unbind();
     }
 
     private static void drawTexturedRects()
     {
-        if (texturedRectsModel.getVertexCount() == 0)
-            return;
-
         texturedRectsModel.rebuffer();
         texturedRectsShader.bind();
         texturedRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
@@ -255,11 +238,7 @@ public class Renderer2D
         for (int i = 0; i < registeredTexturesCount; i++)
             registeredTextures[i].bind(i);
 
-        texturedRectsModel.bind();
-
-        glDrawElements(GL_TRIANGLES, texturedRectsModel.getVertexCount(), GL_UNSIGNED_INT, 0);
-
-        texturedRectsModel.unbind();
+        texturedRectsModel.draw();
 
         for (int i = 0; i < registeredTexturesCount; i++)
             registeredTextures[i].unbind(i);

@@ -1,12 +1,10 @@
-package com.github.fahjulian.stealth.graphics;
+package com.github.fahjulian.stealth.graphics.models;
 
+import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.opengl.DynamicVertexBuffer;
-import com.github.fahjulian.stealth.graphics.opengl.ElementBuffer;
-import com.github.fahjulian.stealth.graphics.opengl.VertexArray;
 
-public class BatchedTexturedModel
+public class BatchedTexturedModel extends AbstractModel
 {
-    private final VertexArray vao;
     private final DynamicVertexBuffer positionsVBO;
     private final DynamicVertexBuffer textureCoordsVBO;
     private final DynamicVertexBuffer textureSlotsVBO;
@@ -16,53 +14,39 @@ public class BatchedTexturedModel
     private float[] textureCoords;
     private float[] textureSlots;
 
-    BatchedTexturedModel(final int maxRects)
+    public BatchedTexturedModel(final int maxRects)
     {
-        this.vao = new VertexArray();
         this.maxRects = maxRects;
         this.rectCount = 0;
+
         this.positions = new float[maxRects * 4 * 3];
         this.textureCoords = new float[maxRects * 4 * 2];
         this.textureSlots = new float[maxRects * 4 * 1];
 
-        positionsVBO = new DynamicVertexBuffer(positions.length, 3);
-        vao.addVBO(positionsVBO);
-        positionsVBO.unbind();
+        positionsVBO = new DynamicVertexBuffer(positions, 3, vao);
+        textureCoordsVBO = new DynamicVertexBuffer(textureCoords, 2, vao);
+        textureSlotsVBO = new DynamicVertexBuffer(textureSlots, 1, vao);
 
-        textureCoordsVBO = new DynamicVertexBuffer(textureCoords.length, 2);
-        vao.addVBO(textureCoordsVBO);
-        textureCoordsVBO.unbind();
-
-        textureSlotsVBO = new DynamicVertexBuffer(textureSlots.length, 1);
-        vao.addVBO(textureSlotsVBO);
-        textureSlotsVBO.unbind();
-
-        int[] indices = generateIndices(maxRects);
-        new ElementBuffer(indices).unbind();
-
-        vao.unbind();
+        setIndicesBuffer(generateIndices(maxRects));
     }
 
-    void clear()
+    public void clear()
     {
-        positions = new float[maxRects * 4 * 3];
-        textureCoords = new float[maxRects * 4 * 2];
-        textureSlots = new float[maxRects * 4 * 1];
+        positionsVBO.clear();
+        textureCoordsVBO.clear();
+        textureSlotsVBO.clear();
+
         rectCount = 0;
     }
 
-    void bind()
+    public void addRect(float x, float y, float z, float width, float height, int textureSlot)
     {
-        vao.bind();
-    }
+        if (rectCount == maxRects)
+        {
+            Log.warn("(BatchedTexturedModel) Maximum rect amount reached.");
+            return;
+        }
 
-    void unbind()
-    {
-        vao.unbind();
-    }
-
-    void addRect(float x, float y, float z, float width, float height, int textureSlot)
-    {
         for (int i = 0; i < 4; i++)
         {
             positions[rectCount * (4 * 3) + i * 3 + 0] = x + (i % 2 == 0 ? width : 0);
@@ -76,18 +60,15 @@ public class BatchedTexturedModel
         rectCount++;
     }
 
-    void rebuffer()
+    public void rebuffer()
     {
-        positionsVBO.bind();
-        positionsVBO.buffer(positions);
+        positionsVBO.rebuffer();
         positionsVBO.unbind();
 
-        textureCoordsVBO.bind();
-        textureCoordsVBO.buffer(textureCoords);
+        textureCoordsVBO.rebuffer();
         textureCoordsVBO.unbind();
 
-        textureSlotsVBO.bind();
-        textureSlotsVBO.buffer(textureSlots);
+        textureSlotsVBO.rebuffer();
         textureSlotsVBO.unbind();
     }
 
@@ -105,10 +86,5 @@ public class BatchedTexturedModel
         }
 
         return indices;
-    }
-
-    int getVertexCount()
-    {
-        return rectCount * 6;
     }
 }

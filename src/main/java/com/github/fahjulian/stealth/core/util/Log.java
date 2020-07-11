@@ -11,8 +11,8 @@ import java.util.Date;
  */
 public final class Log
 {
-    private static final String ANSI_RESET = "\u001B[0m", ANSI_RED = "\033[1;31m",
-            ANSI_GREEN = "\033[1;32m", ANSI_YELLOW = "\033[1;33m", ANSI_BLUE = "\033[1;34m";
+    private static final String ANSI_RESET = "\u001B[0m", ANSI_RED = "\033[1;31m", ANSI_GREEN = "\033[1;32m",
+            ANSI_YELLOW = "\033[1;33m", ANSI_BLUE = "\033[1;34m";
 
     private File file;
     private boolean debug;
@@ -21,8 +21,7 @@ public final class Log
 
     private static enum Level
     {
-        INFO("INFO", ANSI_GREEN), WARNING("WARNING", ANSI_YELLOW), ERROR("ERROR",
-                ANSI_RED), DEBUG("DEBUG", ANSI_BLUE);
+        INFO("INFO", ANSI_GREEN), WARNING("WARNING", ANSI_YELLOW), ERROR("ERROR", ANSI_RED), DEBUG("DEBUG", ANSI_BLUE);
 
         public String name, colorCode;
 
@@ -80,11 +79,13 @@ public final class Log
      * @param args
      *                    Arguments to pass to the jave formatter
      */
-    public static void info(String message, Object... args)
+    public static String info(String message, Object... args)
     {
         message = String.format(message, args);
         get().write(Level.INFO, message);
         get().print(Level.INFO, message);
+
+        return message;
     }
 
     /**
@@ -95,11 +96,13 @@ public final class Log
      * @param args
      *                    Arguments to pass to the jave formatter
      */
-    public static void warn(String message, Object... args)
+    public static String warn(String message, Object... args)
     {
         message = String.format(message, args);
         get().write(Level.WARNING, message);
         get().print(Level.WARNING, message);
+
+        return message;
     }
 
     /**
@@ -110,11 +113,13 @@ public final class Log
      * @param args
      *                    Arguments to pass to the jave formatter
      */
-    public static void error(String message, Object... args)
+    public static String error(String message, Object... args)
     {
         message = String.format(message, args);
         get().write(Level.ERROR, message);
         get().print(Level.ERROR, message);
+
+        return message;
     }
 
     /**
@@ -125,7 +130,7 @@ public final class Log
      * @param args
      *                    Arguments to pass to the jave formatter
      */
-    public static void debug(String message, Object... args)
+    public static String debug(String message, Object... args)
     {
         message = String.format(message, args);
         if (get().debug)
@@ -133,22 +138,23 @@ public final class Log
             get().write(Level.DEBUG, message);
             get().print(Level.DEBUG, message);
         }
+
+        return message;
     }
 
     private void write(Level level, String message)
     {
         if (file == null)
         {
-            print(Level.WARNING,
-                    "(Log) Cannot write to log file. Logger may not have been initialized.");
+            print(Level.WARNING, "(Log) Cannot write to log file. Logger may not have been initialized.");
             return;
         }
 
         try
         {
             FileWriter writer = new FileWriter(file, true);
-            writer.write(String.format("[%s] %s: %s%n", level.name,
-                    new SimpleDateFormat("HH:mm:ss").format(new Date()), message));
+            writer.write(String.format("[%s] %s: %s%n", level.name, new SimpleDateFormat("HH:mm:ss").format(new Date()),
+                    message));
             writer.close();
         }
         catch (IOException ex)
@@ -159,7 +165,6 @@ public final class Log
 
     private void print(Level level, String message)
     {
-        System.out.println(
-                String.format("%s[%s]%s %s", level.colorCode, level.name, ANSI_RESET, message));
+        System.out.println(String.format("%s[%s]%s %s", level.colorCode, level.name, ANSI_RESET, message));
     }
 }

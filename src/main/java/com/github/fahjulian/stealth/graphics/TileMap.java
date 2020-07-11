@@ -9,7 +9,8 @@ import java.util.Scanner;
 
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.core.util.Toolbox;
-import com.github.fahjulian.stealth.graphics.TileMapModel.MapData;
+import com.github.fahjulian.stealth.graphics.models.TileMapModel;
+import com.github.fahjulian.stealth.graphics.models.TileMapModel.MapData;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
 
 public class TileMap
