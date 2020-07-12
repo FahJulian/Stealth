@@ -20,7 +20,7 @@ public abstract class AbstractScene implements IEventLayerStack
     private final Camera camera;
     private boolean initialized;
 
-    protected <S extends AbstractScene> AbstractScene()
+    protected AbstractScene()
     {
         this.eventDispatcher = new EventDispatcher(this);
         layers = new ArrayList<>();
