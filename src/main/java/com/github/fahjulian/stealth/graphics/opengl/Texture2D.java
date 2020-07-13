@@ -23,39 +23,58 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.resources.IResource;
+import com.github.fahjulian.stealth.resources.IResourceBlueprint;
 
 import org.lwjgl.BufferUtils;
 
-public class Texture2D
+public class Texture2D implements IResource
 {
-    class Data
+    public static class Blueprint implements IResourceBlueprint<Texture2D>
     {
-        private final String name;
-        private final int width, height;
+        private final String filePath;
 
-        private Data(String name, int width, int height)
+        public Blueprint(String filePath)
         {
-            this.name = name;
-            this.width = width;
-            this.height = height;
+            this.filePath = filePath;
+        }
+
+        @Override
+        public boolean equals(IResourceBlueprint<Texture2D> blueprint)
+        {
+            return ((Blueprint) blueprint).filePath == this.filePath;
+        }
+
+        @Override
+        public Texture2D create()
+        {
+            return new Texture2D(this);
+        }
+
+        @Override
+        public Class<? extends Texture2D> getResourceClass()
+        {
+            return Texture2D.class;
         }
     }
 
+    private final Blueprint blueprint;
+    private final int width, height; // Pixels
     private final int ID;
-    private final Data data;
-    private final String filePath;
 
-    public Texture2D(String filePath)
+    public Texture2D(Blueprint blueprint)
     {
+        this.blueprint = blueprint;
         this.ID = OpenGLMemoryManager.createTexture();
-        this.filePath = filePath;
 
         this.bind(0);
         this.setOpenGLParams();
-        this.data = load(filePath);
-        this.unbind(0);
 
-        assert this.data != null : Log.error("(Texture2D) Could not load texture from file %s.", filePath);
+        int[] size = this.load(blueprint.filePath);
+        this.width = size[0];
+        this.height = size[1];
+
+        this.unbind(0);
     }
 
     public void bind(int slot)
@@ -70,19 +89,28 @@ public class Texture2D
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public int getWidth()
+    private int[] load(String imagePath)
     {
-        return data.width;
-    }
+        IntBuffer width = BufferUtils.createIntBuffer(1);
+        IntBuffer height = BufferUtils.createIntBuffer(1);
+        IntBuffer channels = BufferUtils.createIntBuffer(1);
 
-    public int getHeight()
-    {
-        return data.height;
-    }
+        stbi_set_flip_vertically_on_load(true);
+        ByteBuffer pixels = stbi_load(imagePath, width, height, channels, 0);
 
-    public String getFilePath()
-    {
-        return filePath;
+        assert pixels != null : Log.error("(Texture2D) Could not load texture from file %s.", blueprint.filePath);
+        if (pixels == null)
+            return null;
+
+        int format = channels.get(0) == 3 ? GL_RGB : GL_RGBA;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width.get(0), height.get(0), 0, format, GL_UNSIGNED_BYTE, pixels);
+
+        stbi_image_free(pixels);
+
+        return new int[] {
+                width.get(0), //
+                height.get(0)
+        };
     }
 
     private void setOpenGLParams()
@@ -93,49 +121,30 @@ public class Texture2D
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
-    private Data load(String imagePath)
+    public int getWidth()
     {
-        IntBuffer width = BufferUtils.createIntBuffer(1);
-        IntBuffer height = BufferUtils.createIntBuffer(1);
-        IntBuffer channels = BufferUtils.createIntBuffer(1);
-
-        stbi_set_flip_vertically_on_load(true);
-        ByteBuffer pixels = stbi_load(imagePath, width, height, channels, 0);
-
-        if (pixels == null)
-            return null;
-
-        Data data = new Data(imagePath, width.get(0), height.get(0));
-        int format = channels.get(0) == 3 ? GL_RGB : GL_RGBA;
-        glTexImage2D(GL_TEXTURE_2D, 0, format, data.width, data.height, 0, format, GL_UNSIGNED_BYTE, pixels);
-
-        stbi_image_free(pixels);
-
-        return data;
+        return width;
     }
 
-    public boolean loadedSuccesfully()
+    public int getHeight()
     {
-        return ID != 0;
+        return height;
     }
 
-    @Override
-    public boolean equals(Object t)
+    public String getFilePath()
     {
-        if (t == null || !(t instanceof Texture2D))
-            return false;
-
-        return ((Texture2D) t).data.name == this.data.name;
-    }
-
-    public String getName()
-    {
-        return data.name;
+        return blueprint.filePath;
     }
 
     @Override
     public String toString()
     {
-        return data.name;
+        return blueprint.filePath;
+    }
+
+    @Override
+    public IResourceBlueprint<? extends Texture2D> getBlueprint()
+    {
+        return blueprint;
     }
 }

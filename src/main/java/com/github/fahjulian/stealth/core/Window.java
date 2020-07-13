@@ -18,6 +18,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
@@ -192,6 +193,14 @@ public final class Window
     public boolean isClosed()
     {
         return glfwWindowShouldClose(glfwID);
+    }
+
+    /**
+     * @return The time in seconds that has passed since window creation
+     */
+    public float getTime()
+    {
+        return (float) glfwGetTime();
     }
 
     public String getInitialTitle()

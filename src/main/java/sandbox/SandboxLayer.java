@@ -29,7 +29,7 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
         add(Blueprints.player.create(new Transform(0.0f, 0.0f, 0.1f, 160.0f, 160.0f)));
 
         map = new TileMap("/home/julian/dev/java/Stealth/.maps/GeneratedMap.stealthMap.xml");
-        // map = createMap(500, 500);
+        // map = createMap(100, 100);
 
         registerEventListener(RenderEvent.class, this::onRender);
         registerEventListener(WindowCloseEvent.class, this::onWindowClose);

@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL11.glFlush;
 
 import java.util.Arrays;
 
+import com.github.fahjulian.stealth.core.Window;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
@@ -15,6 +16,9 @@ import com.github.fahjulian.stealth.graphics.tilemap.TileMap;
 
 public class Renderer2D
 {
+    static float frameStartTime;
+    static float fpsTimer;
+
     static Camera camera;
 
     static Texture2D[] registeredTextures;
@@ -151,6 +155,8 @@ public class Renderer2D
         staticTexturedRectsModel.clear();
         coloredRectsModel.clear();
         texturedRectsModel.clear();
+
+        frameStartTime = Window.get().getTime();
     }
 
     public static void endFrame()
@@ -160,6 +166,15 @@ public class Renderer2D
         drawStaticColoredRects();
         drawStaticTexturedRects();
         glFlush();
+
+        float now = Window.get().getTime();
+        float delta = now - frameStartTime;
+        if (now - fpsTimer > 0.5f)
+        {
+            Window.get()
+                    .setTitle(String.format("%s | %d FPS", Window.get().getInitialTitle(), (int) Math.ceil(1 / delta)));
+            fpsTimer += 0.2f;
+        }
     }
 
     public static void destroy()

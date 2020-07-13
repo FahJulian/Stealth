@@ -1,7 +1,5 @@
 package com.github.fahjulian.stealth.core;
 
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
-
 import com.github.fahjulian.stealth.core.event.AbstractEvent;
 import com.github.fahjulian.stealth.core.scene.AbstractScene;
 import com.github.fahjulian.stealth.core.util.Log;
@@ -47,8 +45,6 @@ public abstract class AbstractApp
         final float sPerUpdate = 1.0f / 60.0f;
         float deltaSeconds = 0.0f;
         float dueUpdates = 0.0f;
-        int fpsTimer = 0;
-        int fps = 0, ups = 0;
 
         float startTime = 0.0f;
         float lastUpdate = startTime;
@@ -64,7 +60,6 @@ public abstract class AbstractApp
                 new UpdateEvent(updateDeltaSeconds);
                 lastUpdate = startTime;
                 dueUpdates--;
-                ups++;
             }
 
             window.clear();
@@ -72,18 +67,10 @@ public abstract class AbstractApp
             new RenderEvent();
             Renderer2D.endFrame();
             window.swapBuffers();
-            fps++;
 
-            final float endTime = (float) glfwGetTime();
+            final float endTime = Window.get().getTime();
             deltaSeconds = endTime - startTime;
             startTime = endTime;
-
-            if (endTime - fpsTimer > 1)
-            {
-                fpsTimer++;
-                window.setTitle(String.format("%s  |  %d FPS, %d UPS", window.getInitialTitle(), fps, ups));
-                fps = ups = 0;
-            }
         }
 
         Renderer2D.destroy();

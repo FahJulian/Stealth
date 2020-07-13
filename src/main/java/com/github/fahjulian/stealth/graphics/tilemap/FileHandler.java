@@ -12,6 +12,7 @@ import com.github.fahjulian.stealth.core.util.Toolbox;
 import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.Spritesheet;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.resources.ResourcePool;
 
 public class FileHandler
 {
@@ -200,9 +201,10 @@ public class FileHandler
         }
 
         if (isSpritesheet)
-            return new Spritesheet(path, width, height, spriteWidth, spriteHeight, padding);
+            return ResourcePool.getOrCreateResource(
+                    new Spritesheet.Blueprint(path, width, height, spriteWidth, spriteHeight, padding));
         else
-            return new Texture2D(path);
+            return ResourcePool.getOrCreateResource(new Texture2D.Blueprint(path));
     }
 
     private static String serializeTile(Tile tile, Texture2D[] textures)
@@ -239,12 +241,12 @@ public class FileHandler
 
         if (isSpritesheet)
         {
-            Spritesheet spritesheet = (Spritesheet) texture;
-            sb.append(String.format("        <width>%d</width>%n", spritesheet.getWidth()));
-            sb.append(String.format("        <height>%d</height>%n", spritesheet.getHeight()));
-            sb.append(String.format("        <spriteWidth>%d</spriteWidth>%n", spritesheet.getSpriteWidth()));
-            sb.append(String.format("        <spriteHeight>%d</spriteHeight>%n", spritesheet.getSpriteHeight()));
-            sb.append(String.format("        <padding>%d</padding>%n", spritesheet.getPadding()));
+            Spritesheet.Blueprint spritesheetBlueprint = ((Spritesheet) texture).getBlueprint();
+            sb.append(String.format("        <width>%d</width>%n", spritesheetBlueprint.width));
+            sb.append(String.format("        <height>%d</height>%n", spritesheetBlueprint.height));
+            sb.append(String.format("        <spriteWidth>%d</spriteWidth>%n", spritesheetBlueprint.spriteWidth));
+            sb.append(String.format("        <spriteHeight>%d</spriteHeight>%n", spritesheetBlueprint.spriteHeight));
+            sb.append(String.format("        <padding>%d</padding>%n", spritesheetBlueprint.padding));
         }
 
         sb.append(String.format("    </texture>%n"));

@@ -3,38 +3,68 @@ package com.github.fahjulian.stealth.graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.resources.IResourceBlueprint;
 
 public class Spritesheet extends Texture2D
 {
-    private final List<Sprite> sprites;
-    private final int width, height; // Number of sprites
-    private final int spriteWidth, spriteHeight;
-    private final int padding;
-
-    public Spritesheet(String filePath, int width, int height, int spriteWidth, int spriteHeight, int padding)
+    public static class Blueprint implements IResourceBlueprint<Spritesheet>
     {
-        super(filePath);
-        assert super.loadedSuccesfully() : Log
-                .error("(Spritesheet) Error constructing Spritesheet: Texture did not load succesfully.");
+        public final String filePath;
+        public final int width, height; // Number of sprites
+        public final int spriteWidth, spriteHeight;
+        public final int padding;
 
-        this.width = width;
-        this.height = height;
-        this.spriteWidth = spriteWidth;
-        this.spriteHeight = spriteHeight;
-        this.padding = padding;
+        public Blueprint(String filePath, int width, int height, int spriteWidth, int spriteHeight, int padding)
+        {
+            this.filePath = filePath;
+            this.width = width;
+            this.height = height;
+            this.spriteWidth = spriteWidth;
+            this.spriteHeight = spriteHeight;
+            this.padding = padding;
+        }
+
+        @Override
+        public boolean equals(IResourceBlueprint<Spritesheet> blueprint)
+        {
+            Blueprint b = (Blueprint) blueprint;
+            return filePath == b.filePath && width == b.width && height == b.height && spriteWidth == b.spriteWidth
+                    && spriteHeight == b.spriteHeight && padding == b.padding;
+        }
+
+        @Override
+        public Spritesheet create()
+        {
+            return new Spritesheet(this);
+        }
+
+        @Override
+        public Class<Spritesheet> getResourceClass()
+        {
+            return Spritesheet.class;
+        }
+    }
+
+    private final Blueprint blueprint;
+    private final List<Sprite> sprites;
+
+    public Spritesheet(Blueprint blueprint)
+    {
+        super(new Texture2D.Blueprint(blueprint.filePath));
+
+        this.blueprint = blueprint;
         this.sprites = new ArrayList<>();
 
         // Extract sprites
-        for (int y = this.height; y > 0; y--)
+        for (int y = blueprint.height; y > 0; y--)
         {
-            for (int x = 0; x < this.width; x++)
+            for (int x = 0; x < blueprint.width; x++)
             {
-                float x0 = x * (spriteWidth + padding) / (float) super.getWidth();
-                float y1 = y * (spriteHeight + padding) / (float) super.getHeight();
-                float x1 = x0 + spriteWidth / (float) super.getWidth();
-                float y0 = y1 - spriteHeight / (float) super.getHeight();
+                float x0 = x * (blueprint.spriteWidth + blueprint.padding) / (float) super.getWidth();
+                float y1 = y * (blueprint.spriteHeight + blueprint.padding) / (float) super.getHeight();
+                float x1 = x0 + blueprint.spriteWidth / (float) super.getWidth();
+                float y0 = y1 - blueprint.spriteHeight / (float) super.getHeight();
 
                 float[] textureCoords = new float[] {
                         x1, y1, //
@@ -50,42 +80,21 @@ public class Spritesheet extends Texture2D
 
     public Sprite getSpriteAt(int x, int y)
     {
-        return sprites.get(x + y * width);
+        return sprites.get(x + y * blueprint.width);
     }
 
     public int[] posOf(Sprite sprite)
     {
         final int i = sprites.indexOf(sprite);
         return new int[] {
-                i % width, //
-                i / width
+                i % blueprint.width, //
+                i / blueprint.width
         };
     }
 
     @Override
-    public int getWidth()
+    public Blueprint getBlueprint()
     {
-        return width;
-    }
-
-    @Override
-    public int getHeight()
-    {
-        return height;
-    }
-
-    public int getSpriteWidth()
-    {
-        return spriteWidth;
-    }
-
-    public int getSpriteHeight()
-    {
-        return spriteHeight;
-    }
-
-    public int getPadding()
-    {
-        return padding;
+        return blueprint;
     }
 }
