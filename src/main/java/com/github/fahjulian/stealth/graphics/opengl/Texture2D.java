@@ -41,24 +41,21 @@ public class Texture2D
         }
     }
 
-    private int ID;
-    private Data data;
+    private final int ID;
+    private final Data data;
+    private final String filePath;
 
-    public Texture2D(String imagePath)
+    public Texture2D(String filePath)
     {
         this.ID = OpenGLMemoryManager.createTexture();
+        this.filePath = filePath;
 
-        bind(0);
-        setOpenGLParams();
-        this.data = load(imagePath);
-        unbind(0);
+        this.bind(0);
+        this.setOpenGLParams();
+        this.data = load(filePath);
+        this.unbind(0);
 
-        if (this.data == null)
-        {
-            Log.error("(Texture2D) Could not load texture from file %s.", imagePath);
-            this.ID = 0;
-            return;
-        }
+        assert this.data != null : Log.error("(Texture2D) Could not load texture from file %s.", filePath);
     }
 
     public void bind(int slot)
@@ -81,6 +78,11 @@ public class Texture2D
     public int getHeight()
     {
         return data.height;
+    }
+
+    public String getFilePath()
+    {
+        return filePath;
     }
 
     private void setOpenGLParams()

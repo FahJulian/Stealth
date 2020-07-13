@@ -6,7 +6,7 @@ package com.github.fahjulian.stealth.core.event;
 public abstract class AbstractEvent
 {
     private static EventDispatcher defaultDispatcher;
-    
+
     /**
      * The dispatcher to pass the event to. Can be modified by subclasses during
      * construction.

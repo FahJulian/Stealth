@@ -9,28 +9,28 @@ import java.nio.FloatBuffer;
 
 public class StaticVertexBuffer
 {
-	private final int ID;
+    private final int ID;
 
-	public StaticVertexBuffer(float[] data, int strideSize, VertexArray vao)
-	{
-		this.ID = OpenGLMemoryManager.createVertexBuffer();
+    public StaticVertexBuffer(float[] data, int strideSize, VertexArray vao)
+    {
+        this.ID = OpenGLMemoryManager.createVertexBuffer();
 
-		vao.bind();
-		this.bind();
-		FloatBuffer buffer = OpenGLMemoryManager.toFloatBuffer(data);
-		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-		vao.addVBO(strideSize);
-		this.unbind();
-		vao.unbind();
-	}
+        vao.bind();
+        this.bind();
+        FloatBuffer buffer = OpenGLMemoryManager.toFloatBuffer(data);
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        vao.addVBO(strideSize);
+        this.unbind();
+        vao.unbind();
+    }
 
-	public void bind()
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, this.ID);
-	}
+    public void bind()
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, this.ID);
+    }
 
-	public void unbind()
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
+    public void unbind()
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
 }

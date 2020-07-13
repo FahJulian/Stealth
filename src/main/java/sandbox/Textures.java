@@ -1,24 +1,18 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.graphics.Spritesheet;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 
 public class Textures
 {
-        public static final Texture2D PLAYER_TEXTURE, //
-                        GREEN_TEXTURE, //
-                        RED_TEXTURE, //
-                        MARIO_TEXTURE;
+    public static final Spritesheet MARIO_SHEET, //
+            TILES_SHEET;
 
-        static
-        {
-                Renderer2D.registerTexture(PLAYER_TEXTURE = new Texture2D(
-                                "/home/julian/dev/java/Stealth/src/main/resources/textures/player.png"));
-                Renderer2D.registerTexture(GREEN_TEXTURE = new Texture2D(
-                                "/home/julian/dev/java/Stealth/src/main/resources/textures/green.png"));
-                Renderer2D.registerTexture(RED_TEXTURE = new Texture2D(
-                                "/home/julian/dev/java/Stealth/src/main/resources/textures/red.png"));
-                Renderer2D.registerTexture(MARIO_TEXTURE = new Texture2D(
-                                "/home/julian/dev/java/Stealth/src/main/resources/textures/mario.png"));
-        }
+    static
+    {
+        Renderer2D.registerTexture(MARIO_SHEET = new Spritesheet(
+                "/home/julian/dev/java/Stealth/src/main/resources/textures/mario.png", 14, 1, 16, 16, 1));
+        Renderer2D.registerTexture(TILES_SHEET = new Spritesheet(
+                "/home/julian/dev/java/Stealth/src/main/resources/textures/tiles.png", 33, 8, 16, 16, 0));
+    }
 }

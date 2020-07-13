@@ -4,10 +4,8 @@ import com.github.fahjulian.stealth.core.util.Log;
 
 public class TileMap
 {
-    private static final String FILE_EXTENSION = ".stealthMap.xml";
-
-    private final MapData data;
-    private final TileMapModel model;
+    private final Data data;
+    private final Model model;
 
     /**
      * Create a map from given map data
@@ -15,7 +13,7 @@ public class TileMap
      * @param data
      *                 The data to construct the map of
      */
-    public TileMap(MapData data)
+    public TileMap(Data data)
     {
         assert data.textures.length == data.width * data.height : Log
                 .error("(TileMap) Cant create Tile Map: The amount of textures does not fit to the size of the map.");
@@ -23,7 +21,7 @@ public class TileMap
                 .error("(TileMap) Cant create Tile Map: Maximum amount of Textures is 16.");
 
         this.data = data;
-        this.model = new TileMapModel(data);
+        this.model = new Model(data);
     }
 
     /**
@@ -34,21 +32,21 @@ public class TileMap
      */
     public TileMap(String filePath)
     {
-        this.data = TileMapFileHandler.loadMapDataFromFile(filePath);
-        this.model = new TileMapModel(data);
+        this.data = FileHandler.loadMapDataFromFile(filePath);
+        this.model = new Model(data);
     }
 
     public void saveToFile(String destinationFolder)
     {
-        TileMapFileHandler.saveMapDataToFile(data, destinationFolder);
+        FileHandler.saveMapDataToFile(data, destinationFolder);
     }
 
-    public TileMapModel getModel()
+    public Model getModel()
     {
         return model;
     }
 
-    public MapData getData()
+    public Data getData()
     {
         return data;
     }

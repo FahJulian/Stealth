@@ -7,6 +7,7 @@ import java.util.Arrays;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
+import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.opengl.OpenGLMemoryManager;
 import com.github.fahjulian.stealth.graphics.opengl.Shader;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
@@ -86,40 +87,40 @@ public class Renderer2D
         staticColoredRectsModel.addRect(x, y, z, width, height, color);
     }
 
-    public static void drawStaticRectangle(float x, float y, float width, float height, Texture2D texture)
+    public static void drawStaticRectangle(float x, float y, float width, float height, Sprite sprite)
     {
-        drawStaticRectangle(x, y, 0.0f, width, height, texture);
+        drawStaticRectangle(x, y, 0.0f, width, height, sprite);
     }
 
-    public static void drawStaticRectangle(float x, float y, float z, float width, float height, Texture2D texture)
+    public static void drawStaticRectangle(float x, float y, float z, float width, float height, Sprite sprite)
     {
-        int textureSlot = Arrays.asList(registeredTextures).indexOf(texture);
+        int textureSlot = Arrays.asList(registeredTextures).indexOf(sprite.getTexture());
         if (textureSlot == -1)
         {
             Log.warn("(Renderer2D) Could not draw Rectangle with texture %s. Must first register this texture.",
-                    texture);
+                    sprite.getTexture());
             return;
         }
 
-        staticTexturedRectsModel.addRect(x, y, z, width, height, textureSlot);
+        staticTexturedRectsModel.addRect(x, y, z, width, height, sprite.getTextureCoords(), textureSlot);
     }
 
-    public static void drawRectangle(float x, float y, float width, float height, Texture2D texture)
+    public static void drawRectangle(float x, float y, float width, float height, Sprite sprite)
     {
-        drawRectangle(x, y, 0.0f, width, height, texture);
+        drawRectangle(x, y, 0.0f, width, height, sprite);
     }
 
-    public static void drawRectangle(float x, float y, float z, float width, float height, Texture2D texture)
+    public static void drawRectangle(float x, float y, float z, float width, float height, Sprite sprite)
     {
-        int textureSlot = Arrays.asList(registeredTextures).indexOf(texture);
+        int textureSlot = Arrays.asList(registeredTextures).indexOf(sprite.getTexture());
         if (textureSlot == -1)
         {
             Log.warn("(Renderer2D) Could not draw Rectangle with texture %s. Must first register this texture.",
-                    texture);
+                    sprite.getTexture());
             return;
         }
 
-        texturedRectsModel.addRect(x, y, z, width, height, textureSlot);
+        texturedRectsModel.addRect(x, y, z, width, height, sprite.getTextureCoords(), textureSlot);
     }
 
     public static void drawRectangle(float x, float y, float width, float height, Color color)

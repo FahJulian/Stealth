@@ -39,7 +39,7 @@ public class BatchedTexturedModel extends AbstractModel
         rectCount = 0;
     }
 
-    public void addRect(float x, float y, float z, float width, float height, int textureSlot)
+    public void addRect(float x, float y, float z, float width, float height, float[] textureCoords, int textureSlot)
     {
         if (rectCount == maxRects)
         {
@@ -49,12 +49,12 @@ public class BatchedTexturedModel extends AbstractModel
 
         for (int i = 0; i < 4; i++)
         {
-            positions[rectCount * (4 * 3) + i * 3 + 0] = x + (i % 2 == 0 ? width : 0);
-            positions[rectCount * (4 * 3) + i * 3 + 1] = y + (i / 2 == 0 ? height : 0);
-            positions[rectCount * (4 * 3) + i * 3 + 2] = z;
-            textureCoords[rectCount * (4 * 2) + i * 2 + 0] = i % 2 == 0 ? 1 : 0;
-            textureCoords[rectCount * (4 * 2) + i * 2 + 1] = i / 2 == 0 ? 1 : 0;
-            textureSlots[rectCount * (4 * 1) + i * 1 + 0] = (float) textureSlot;
+            this.positions[rectCount * (4 * 3) + i * 3 + 0] = x + (1 - i % 2) * width;
+            this.positions[rectCount * (4 * 3) + i * 3 + 1] = y + (1 - i / 2) * height;
+            this.positions[rectCount * (4 * 3) + i * 3 + 2] = z;
+            this.textureCoords[rectCount * (4 * 2) + i * 2 + 0] = textureCoords[i * 2 + 0];
+            this.textureCoords[rectCount * (4 * 2) + i * 2 + 1] = textureCoords[i * 2 + 1];
+            this.textureSlots[rectCount * (4 * 1) + i * 1 + 0] = (float) textureSlot;
         }
 
         rectCount++;

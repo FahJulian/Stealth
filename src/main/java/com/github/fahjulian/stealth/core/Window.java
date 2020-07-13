@@ -26,6 +26,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowCloseCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
@@ -33,9 +34,13 @@ import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_ONE;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glEnable;
@@ -45,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.events.application.WindowCloseEvent;
 import com.github.fahjulian.stealth.events.key.AKeyEvent.Key;
 import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.events.key.KeyReleasedEvent;
@@ -129,6 +135,7 @@ public final class Window
         glfwSetMouseButtonCallback(glfwID, inputListener::mouseButtonCallback);
         glfwSetScrollCallback(glfwID, inputListener::scrollCallback);
         glfwSetKeyCallback(glfwID, inputListener::keyCallback);
+        glfwSetWindowCloseCallback(glfwID, inputListener::windowCloseCallback);
 
         glfwMakeContextCurrent(glfwID);
         glfwSwapInterval(1);
@@ -136,8 +143,8 @@ public final class Window
 
         GL.createCapabilities();
 
-        // glEnable(GL_BLEND);
-        // glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
 
         glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
@@ -260,19 +267,24 @@ class GLFWInputListener
         }
     }
 
+    public void windowCloseCallback(long window)
+    {
+        new WindowCloseEvent();
+    }
+
     private Button translateMouseButton(int glfwButtonID)
     {
         switch (glfwButtonID)
         {
-        case GLFW_MOUSE_BUTTON_1:
-            return Button.LEFT;
-        case GLFW_MOUSE_BUTTON_2:
-            return Button.RIGHT;
-        case GLFW_MOUSE_BUTTON_3:
-            return Button.MIDDLE;
-        default:
-            Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
-            return Button.UNKNOWN;
+            case GLFW_MOUSE_BUTTON_1:
+                return Button.LEFT;
+            case GLFW_MOUSE_BUTTON_2:
+                return Button.RIGHT;
+            case GLFW_MOUSE_BUTTON_3:
+                return Button.MIDDLE;
+            default:
+                Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
+                return Button.UNKNOWN;
         }
     }
 
@@ -280,19 +292,19 @@ class GLFWInputListener
     {
         switch (glfwKeyID)
         {
-        case GLFW_KEY_SPACE:
-            return Key.SPACE;
-        case GLFW_KEY_W:
-            return Key.W;
-        case GLFW_KEY_A:
-            return Key.A;
-        case GLFW_KEY_S:
-            return Key.S;
-        case GLFW_KEY_D:
-            return Key.D;
-        default:
-            Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
-            return Key.UNKNOWN;
+            case GLFW_KEY_SPACE:
+                return Key.SPACE;
+            case GLFW_KEY_W:
+                return Key.W;
+            case GLFW_KEY_A:
+                return Key.A;
+            case GLFW_KEY_S:
+                return Key.S;
+            case GLFW_KEY_D:
+                return Key.D;
+            default:
+                Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
+                return Key.UNKNOWN;
         }
     }
 }

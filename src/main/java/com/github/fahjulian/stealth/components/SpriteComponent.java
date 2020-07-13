@@ -4,7 +4,7 @@ import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
-import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 
 /**
@@ -14,25 +14,25 @@ public class SpriteComponent extends AbstractComponent
 {
     public static final class Blueprint implements IComponentBlueprint<SpriteComponent>
     {
-        private final Texture2D texture;
+        private final Sprite sprite;
 
-        public Blueprint(Texture2D texture)
+        public Blueprint(Sprite sprite)
         {
-            this.texture = texture;
+            this.sprite = sprite;
         }
 
         @Override
         public SpriteComponent createComponent()
         {
-            return new SpriteComponent(texture);
+            return new SpriteComponent(sprite);
         }
     }
 
-    private final Texture2D texture;
+    private final Sprite sprite;
 
-    public SpriteComponent(Texture2D texture)
+    public SpriteComponent(Sprite sprite)
     {
-        this.texture = texture;
+        this.sprite = sprite;
     }
 
     @Override
@@ -45,6 +45,6 @@ public class SpriteComponent extends AbstractComponent
     {
         Transform t = entity.getTransform();
         Renderer2D.drawRectangle(t.getPositionX(), t.getPositionY(), t.getPositionZ(), t.getScaleX(), t.getScaleY(),
-                texture);
+                sprite);
     }
 }

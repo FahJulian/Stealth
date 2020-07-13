@@ -33,6 +33,9 @@ void main()
 {
     int textureSlot = int(fTextureSlot);
 
+    // color = vec4(fTextureCoords, 0.0, 1.0);
+    // return;
+
     switch (textureSlot)
     {
         case 0:

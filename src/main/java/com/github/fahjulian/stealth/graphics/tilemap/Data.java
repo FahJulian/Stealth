@@ -6,21 +6,16 @@ import java.util.List;
 import com.github.fahjulian.stealth.core.util.Toolbox;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
 
-class MapData
+public class Data
 {
-    String name;
-    int width, height;
-    float tileSize;
-    float posZ;
-    Texture2D[] textures;
-    MapTile[] tiles;
+    final String name;
+    final int width, height;
+    final float tileSize;
+    final float posZ;
+    final Texture2D[] textures;
+    final Tile[] tiles;
 
-    MapData()
-    {
-    }
-
-    public MapData(String name, int width, int height, float tileSize, float posZ, Texture2D[] textures,
-            MapTile[] tiles)
+    public Data(String name, int width, int height, float tileSize, float posZ, Texture2D[] textures, Tile[] tiles)
     {
         this.name = name;
         this.width = width;
@@ -31,7 +26,7 @@ class MapData
         this.tiles = tiles;
     }
 
-    public MapData(String name, int width, int height, float tileSize, float posZ, MapTile[] tiles)
+    public Data(String name, int width, int height, float tileSize, float posZ, Tile[] tiles)
     {
         this.name = name;
         this.width = width;
@@ -41,9 +36,9 @@ class MapData
         this.tiles = tiles;
 
         final List<Texture2D> textures = new ArrayList<>();
-        for (MapTile tile : tiles)
-            if (!textures.contains(tile.getTexture()))
-                textures.add(tile.getTexture());
+        for (Tile tile : tiles)
+            if (!textures.contains(tile.getSprite().getTexture()))
+                textures.add(tile.getSprite().getTexture());
 
         this.textures = Toolbox.toArray(textures, new Texture2D[textures.size()]);
     }
