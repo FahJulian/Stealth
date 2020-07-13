@@ -7,7 +7,7 @@ import com.github.fahjulian.stealth.core.scene.AbstractScene;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
-import com.github.fahjulian.stealth.graphics.Renderer2D;
+import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 
 public abstract class AbstractApp
 {
@@ -30,8 +30,12 @@ public abstract class AbstractApp
         currentScene.init();
         AbstractEvent.setDefaultDispatcher(currentScene.getEventDispatcher());
 
+        Renderer2D.init(currentScene.getCamera());
+
         initialized = true;
         running = false;
+
+        Log.info("(AbstractApp) Initialization complete.");
     }
 
     abstract protected AbstractScene onInit();
@@ -97,7 +101,8 @@ public abstract class AbstractApp
         if (initialized)
             scene.init();
 
-        AbstractEvent.setDefaultDispatcher(currentScene.getEventDispatcher());
+        Renderer2D.setCamera(scene.getCamera());
+        AbstractEvent.setDefaultDispatcher(scene.getEventDispatcher());
     }
 
     public Window getWindow()

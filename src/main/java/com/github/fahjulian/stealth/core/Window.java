@@ -14,7 +14,6 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_3;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
@@ -27,6 +26,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowCloseCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
@@ -40,11 +40,9 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glClearDepth;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -52,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.events.application.WindowCloseEvent;
 import com.github.fahjulian.stealth.events.key.AKeyEvent.Key;
 import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.events.key.KeyReleasedEvent;
@@ -68,7 +67,6 @@ import org.lwjgl.opengl.GL;
 
 public final class Window
 {
-
     private String title;
     private int width, height;
     public long glfwID;
@@ -121,7 +119,7 @@ public final class Window
         }
 
         glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // TODO Add window resizing
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 
@@ -137,18 +135,20 @@ public final class Window
         glfwSetMouseButtonCallback(glfwID, inputListener::mouseButtonCallback);
         glfwSetScrollCallback(glfwID, inputListener::scrollCallback);
         glfwSetKeyCallback(glfwID, inputListener::keyCallback);
+        glfwSetWindowCloseCallback(glfwID, inputListener::windowCloseCallback);
 
         glfwMakeContextCurrent(glfwID);
         glfwSwapInterval(1);
         glfwShowWindow(glfwID);
 
         GL.createCapabilities();
+
         glEnable(GL_BLEND);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_TEXTURE_2D);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_DEPTH_TEST);
 
         glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
+
         Log.info("(Window) Initialized window.");
     }
 
@@ -182,7 +182,6 @@ public final class Window
     public void clear()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearDepth(1.0);
     }
 
     /**
@@ -205,12 +204,12 @@ public final class Window
         glfwSetWindowTitle(glfwID, title);
     }
 
-    public int getWidth()
+    public float getWidth()
     {
         return width;
     }
 
-    public int getHeight()
+    public float getHeight()
     {
         return height;
     }
@@ -225,7 +224,7 @@ class GLFWInputListener
     public void cursorPosCallback(long windowID, double posX, double posY)
     {
         this.posX = (float) posX;
-        this.posY = (float) posY;
+        this.posY = Window.get().getHeight() - (float) posY;
 
         for (AMouseEvent.Button button : pressedButtons)
             new MouseDraggedEvent(this.posX, this.posY, button);
@@ -268,19 +267,24 @@ class GLFWInputListener
         }
     }
 
+    public void windowCloseCallback(long window)
+    {
+        new WindowCloseEvent();
+    }
+
     private Button translateMouseButton(int glfwButtonID)
     {
         switch (glfwButtonID)
         {
-        case GLFW_MOUSE_BUTTON_1:
-            return Button.LEFT;
-        case GLFW_MOUSE_BUTTON_2:
-            return Button.RIGHT;
-        case GLFW_MOUSE_BUTTON_3:
-            return Button.MIDDLE;
-        default:
-            Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
-            return Button.UNKNOWN;
+            case GLFW_MOUSE_BUTTON_1:
+                return Button.LEFT;
+            case GLFW_MOUSE_BUTTON_2:
+                return Button.RIGHT;
+            case GLFW_MOUSE_BUTTON_3:
+                return Button.MIDDLE;
+            default:
+                Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
+                return Button.UNKNOWN;
         }
     }
 
@@ -288,19 +292,19 @@ class GLFWInputListener
     {
         switch (glfwKeyID)
         {
-        case GLFW_KEY_SPACE:
-            return Key.SPACE;
-        case GLFW_KEY_W:
-            return Key.W;
-        case GLFW_KEY_A:
-            return Key.A;
-        case GLFW_KEY_S:
-            return Key.S;
-        case GLFW_KEY_D:
-            return Key.D;
-        default:
-            Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
-            return Key.UNKNOWN;
+            case GLFW_KEY_SPACE:
+                return Key.SPACE;
+            case GLFW_KEY_W:
+                return Key.W;
+            case GLFW_KEY_A:
+                return Key.A;
+            case GLFW_KEY_S:
+                return Key.S;
+            case GLFW_KEY_D:
+                return Key.D;
+            default:
+                Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
+                return Key.UNKNOWN;
         }
     }
 }

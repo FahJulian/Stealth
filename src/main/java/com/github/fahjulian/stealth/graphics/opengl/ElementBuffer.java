@@ -4,22 +4,25 @@ import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
 
 public class ElementBuffer
 {
     private final int ID;
+    private final int size;
 
-    public ElementBuffer(int[] indices)
+    public ElementBuffer(int[] indices, VertexArray vao)
     {
-        this.ID = create();
+        this.ID = OpenGLMemoryManager.createVertexBuffer();
+        this.size = indices.length;
 
+        vao.bind();
         this.bind();
-        this.buffer(indices);
+        IntBuffer buffer = OpenGLMemoryManager.toIntBuffer(indices);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        this.unbind();
+        vao.unbind();
     }
 
     public void bind()
@@ -32,21 +35,8 @@ public class ElementBuffer
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.ID);
     }
 
-    private int create()
+    public int getSize()
     {
-        int ID = glGenBuffers();
-        OpenGLMemoryManager.loadedVertexBuffers.add(ID);
-        return ID;
-    }
-
-    private void buffer(int[] indices)
-    {
-        IntBuffer buffer = toIntBuffer(indices);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-    }
-
-    private IntBuffer toIntBuffer(int[] data)
-    {
-        return BufferUtils.createIntBuffer(data.length).put(data).flip();
+        return size;
     }
 }

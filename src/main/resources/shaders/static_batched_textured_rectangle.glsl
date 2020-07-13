@@ -8,14 +8,13 @@ layout (location = 2) in float vTextureSlot;
 out vec2 fTextureCoords;
 out float fTextureSlot;
 
-uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 
 void main()
 {
     fTextureCoords = vTextureCoords;
     fTextureSlot = vTextureSlot;
-    gl_Position = uProjectionMatrix * uViewMatrix * vec4(vPosition, 1.0);
+    gl_Position = uProjectionMatrix * vec4(vPosition, 1.0);
 }
 
 
@@ -32,9 +31,6 @@ uniform sampler2D uTextures[16];
 void main()
 {
     int textureSlot = int(fTextureSlot);
-
-    // color = vec4(fTextureCoords, 0.0, 1.0);
-    // return;
 
     switch (textureSlot)
     {

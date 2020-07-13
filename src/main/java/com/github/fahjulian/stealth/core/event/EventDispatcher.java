@@ -4,49 +4,53 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
- * An Event Dispatcher holds Event Listeners and other Event Dispatcher and
+ * An Event Dispatcher holds Event Listeners and other Event Dispatchers and
  * passes Events to them.
  */
 public final class EventDispatcher
 {
     private final Map<Class<? extends AbstractEvent>, List<IEventListener<? extends AbstractEvent>>> listeners;
-    private final SortedMap<IEventLayer, List<EventDispatcher>> subDispatchers;
+    private final List<EventDispatcher> subDispatchers;
+    private final SortedSet<IEventLayer> subLayers;
 
     /**
      * Construct an Event Dispatcher with the given Layerstack. The Layerstack is
-     * used to sort the Dispatchers Layers to correctly dispatch Events if a Layer
-     * blocks them
+     * used to sort the Dispatchers Sub-Layers to correctly dispatch Events if a
+     * Layer blocks them
      * 
      * @param layerStack
+     *                       The Layerstack to use to sort Sub-Layers. If this Event
+     *                       Dispatcher will not hold any Sub-Layers, set this to
+     *                       null.
      */
     public EventDispatcher(IEventLayerStack layerStack)
     {
         listeners = new HashMap<>();
-        subDispatchers = new TreeMap<>(layerStack);
+        subDispatchers = new ArrayList<>();
+        subLayers = new TreeSet<>(layerStack);
     }
 
-    final boolean dispatch(AbstractEvent event)
+    final void dispatch(AbstractEvent event)
     {
         this.dispatchToListeners(event);
 
-        for (IEventLayer layer : subDispatchers.keySet())
-        {
-            for (EventDispatcher dispatcher : subDispatchers.get(layer))
-                if (dispatcher.dispatch(event))
-                    return true;
+        for (EventDispatcher subDispatcher : subDispatchers)
+            subDispatcher.dispatch(event);
 
-            if (layer.blocksEvent(event.getClass()))
-                return true;
+        for (IEventLayer subLayer : subLayers)
+        {
+            subLayer.getEventDispatcher().dispatch(event);
+            if (subLayer.blocksEvent(event.getClass()))
+                return;
         }
-        return false;
     }
 
     @SuppressWarnings("unchecked")
-    final <E extends AbstractEvent> void dispatchToListeners(E event)
+    private final <E extends AbstractEvent> void dispatchToListeners(E event)
     {
         for (Class<? extends AbstractEvent> eventClass : listeners.keySet())
         {
@@ -61,21 +65,29 @@ public final class EventDispatcher
     }
 
     /**
-     * Register another Event Dispatcher this Dispatcher will notify when an Event
-     * is dispatched.
+     * Register another Event Dispatcher that is not the Dispatcher of an Event
+     * Layer. To register an Event Dispatcher that is part of an Event Layer, use
+     * {@link #registerSubLayer(IEventLayer)}.
      * 
-     * @param layer
-     *                       The Layer the added EventDispatcher is part of. Must be
-     *                       part of this Dispatchers specified Layer Stack
      * @param dispatcher
      *                       The Dispatcher to register
      */
-    public final void registerSubDispatcher(IEventLayer layer, EventDispatcher dispatcher)
+    public final void registerSubDispatcher(EventDispatcher dispatcher)
     {
-        if (!subDispatchers.containsKey(layer))
-            subDispatchers.put(layer, new ArrayList<>());
+        subDispatchers.add(dispatcher);
+    }
 
-        subDispatchers.get(layer).add(dispatcher);
+    /**
+     * Register an Event Layer (Its Event Dispatcher) that is part of this
+     * Dispatchers Event Layer. To register an Event Dispatcher that is not part of
+     * an Event Layer, use {@link #registerSubDispatcher(EventDispatcher)}.
+     * 
+     * @param layer
+     *                  The Sub Event Layer to register
+     */
+    public final void registerSubLayer(IEventLayer layer)
+    {
+        subLayers.add(layer);
     }
 
     /**

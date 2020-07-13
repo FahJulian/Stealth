@@ -5,7 +5,6 @@ import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class VertexArray
 {
@@ -14,8 +13,7 @@ public class VertexArray
 
     public VertexArray()
     {
-        this.ID = create();
-        this.bind();
+        this.ID = OpenGLMemoryManager.createVertexArray();
     }
 
     public void bind()
@@ -32,16 +30,8 @@ public class VertexArray
         glBindVertexArray(0);
     }
 
-    public void addVBO(VertexBuffer vbo)
+    public void addVBO(int strideSize)
     {
-        glVertexAttribPointer(vboCount++, vbo.vertexSize, GL_FLOAT, false,
-                vbo.vertexSize * Float.BYTES, 0);
-    }
-
-    private int create()
-    {
-        int ID = glGenVertexArrays();
-        OpenGLMemoryManager.loadedVertexArrays.add(ID);
-        return ID;
+        glVertexAttribPointer(vboCount++, strideSize, GL_FLOAT, false, strideSize * Float.BYTES, 0);
     }
 }

@@ -1,48 +1,63 @@
 package sandbox;
 
-import com.github.fahjulian.stealth.components.KeyboardControlledMovementComponent;
-import com.github.fahjulian.stealth.components.RotationComponent;
-import com.github.fahjulian.stealth.components.SpriteComponent;
-import com.github.fahjulian.stealth.components.ThirdPersonCameraComponent;
-import com.github.fahjulian.stealth.core.entity.Entity;
-import com.github.fahjulian.stealth.core.entity.IEntityFactory;
+import java.util.Random;
+
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.core.scene.AbstractLayer;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
-import com.github.fahjulian.stealth.graphics.Color;
-import com.github.fahjulian.stealth.graphics.Renderer2D;
+import com.github.fahjulian.stealth.events.application.WindowCloseEvent;
+import com.github.fahjulian.stealth.graphics.Sprite;
+import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
+import com.github.fahjulian.stealth.graphics.tilemap.Data;
+import com.github.fahjulian.stealth.graphics.tilemap.Tile;
+import com.github.fahjulian.stealth.graphics.tilemap.TileMap;
 
-import org.joml.Vector3f;
-
-public class SandboxLayer extends AbstractLayer
+@SuppressWarnings("unused")
+public class SandboxLayer extends AbstractLayer<SandboxScene>
 {
-    static class Factories
+    private TileMap map;
+
+    SandboxLayer(SandboxScene scene)
     {
-        static final IEntityFactory player = (transform) -> new Entity("Player", transform,
-                new SpriteComponent(Renderer2D.PLAYER_TEXTURE), //
-                new RotationComponent(0.0f), //
-                new KeyboardControlledMovementComponent(250.0f), //
-                new ThirdPersonCameraComponent());
+        super(scene);
     }
 
     @Override
     protected void onInit()
     {
-        add(Factories.player
-                .create(new Transform(new Vector3f(100.0f, 100.0f, 2.0f), new Vector3f(160.0f, 160.0f, 0.0f))));
+        scene.test();
+        add(Blueprints.player.create(new Transform(0.0f, 0.0f, 0.1f, 160.0f, 160.0f)));
+
+        map = new TileMap("/home/julian/dev/java/Stealth/.maps/GeneratedMap.stealthMap.xml");
+        // map = createMap(500, 500);
 
         registerEventListener(RenderEvent.class, this::onRender);
+        registerEventListener(WindowCloseEvent.class, this::onWindowClose);
     }
 
     private void onRender(RenderEvent event)
     {
-        for (int y = 0; y < 316; y++)
-        {
-            for (int x = 0; x < 316; x++)
-            {
-                Color color = (x + y) % 2 == 0 ? Color.LIGHT_GREY : Color.DARK_GREY;
-                Renderer2D.drawRectangle(x * 100.0f, y * 100.0f, 100.0f, 100.0f, color);
-            }
-        }
+        Renderer2D.drawTileMap(map);
+    }
+
+    private void onWindowClose(WindowCloseEvent event)
+    {
+        map.saveToFile("/home/julian/dev/java/Stealth/.maps/");
+    }
+
+    private TileMap createMap(int width, int height)
+    {
+        Random r = new Random();
+        Sprite[] textureOptions = new Sprite[] {
+                Textures.TILES_SHEET.getSpriteAt(0, 0), //
+                Textures.TILES_SHEET.getSpriteAt(1, 0), //
+                Textures.TILES_SHEET.getSpriteAt(2, 0)
+        };
+
+        Tile[] tiles = new Tile[width * height];
+        for (int i = 0; i < width * height; i++)
+            tiles[i] = new Tile(textureOptions[r.nextInt(textureOptions.length)]);
+
+        return new TileMap(new Data("Generated Map", width, height, 160.0f, 0.0f, tiles));
     }
 }

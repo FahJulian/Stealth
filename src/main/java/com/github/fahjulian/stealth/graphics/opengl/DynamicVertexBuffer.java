@@ -2,40 +2,51 @@ package com.github.fahjulian.stealth.graphics.opengl;
 
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferSubData;
 
 import java.nio.FloatBuffer;
 
-import com.github.fahjulian.stealth.core.util.Log;
-
-public class DynamicVertexBuffer extends VertexBuffer
+public class DynamicVertexBuffer
 {
-    private final int size;
+    private final int ID;
+    private float[] data;
 
-    public DynamicVertexBuffer(int size, int vertexSize)
+    public DynamicVertexBuffer(float[] arrayPointer, int strideSize, VertexArray vao)
     {
-        super(vertexSize);
+        this.ID = OpenGLMemoryManager.createVertexBuffer();
+        this.data = arrayPointer;
 
-        this.size = size;
-        bufferNullData();
+        vao.bind();
+        this.bind();
+        glBufferData(GL_ARRAY_BUFFER, data.length * Float.BYTES, GL_DYNAMIC_DRAW);
+        vao.addVBO(strideSize);
+        this.unbind();
+        vao.unbind();
     }
 
-    @Override
-    public void buffer(float[] data)
+    public void bind()
     {
-        if (data.length != size)
-        {
-            Log.error("(DynamicVertexBuffer) float[] data must have length $d", size);
-            return;
-        }
+        glBindBuffer(GL_ARRAY_BUFFER, this.ID);
+    }
 
-        FloatBuffer buffer = toFloatBuffer(data);
+    public void unbind()
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    public void rebuffer()
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, this.ID);
+
+        FloatBuffer buffer = OpenGLMemoryManager.toFloatBuffer(data);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
     }
 
-    private void bufferNullData()
+    public void clear()
     {
-        glBufferData(GL_ARRAY_BUFFER, size * Float.BYTES, GL_DYNAMIC_DRAW);
+        for (int i = 0; i < data.length; i++)
+            data[i] = 0.0f;
     }
 }
