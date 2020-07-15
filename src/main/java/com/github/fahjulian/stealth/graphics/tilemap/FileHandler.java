@@ -7,28 +7,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.github.fahjulian.stealth.core.resources.ResourcePool;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.core.util.Toolbox;
 import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.Spritesheet;
+import com.github.fahjulian.stealth.graphics.Spritesheet.SpritesheetBlueprint;
+import com.github.fahjulian.stealth.graphics.Texture;
+import com.github.fahjulian.stealth.graphics.Texture.TextureBlueprint;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
-import com.github.fahjulian.stealth.resources.ResourcePool;
 
 public class FileHandler
 {
     private static final String FILE_EXTENSION = ".stealthMap.xml";
 
-    public static Data loadMapDataFromFile(String filePath)
+    public static TileMapBlueprint loadBlueprintFromFile(String filePath)
     {
         int width = -1, height = -1;
         float tileSize = -1.0f, posZ = -1.0f;
-        String name = "StealthMap";
-        final List<Texture2D> textures = new ArrayList<>();
-        final List<Tile> tiles = new ArrayList<>();
+        String name = null;
+        boolean finished = false;
 
         try (Scanner scanner = new Scanner(new File(filePath)))
         {
-            while (scanner.hasNextLine())
+            while (scanner.hasNextLine() && !finished)
             {
                 final String line = scanner.nextLine().replace(" ", "");
 
@@ -51,16 +53,8 @@ public class FileHandler
                     case "tileSize":
                         tileSize = Float.valueOf(Toolbox.stripXmlTags(line, "tileSize"));
                         break;
-                    case "texture":
-                        textures.add(loadTexture(scanner));
-                        // textures.add(new Texture2D(Toolbox.stripXmlTags(line, "texture"))); // TODO:
-                        // Add resource pool
-                        break;
-                    case "tile":
-                        tiles.add(loadTile(scanner, textures));
-                        // tiles.add(new Tile(
-                        // new Sprite(textures.get(Integer.valueOf(Toolbox.stripXmlTags(line,
-                        // "tile"))))));
+                    case "/blueprint":
+                        finished = true;
                         break;
                 }
             }
@@ -70,38 +64,100 @@ public class FileHandler
             Log.error("(TileMap) Error loading map: %n%s", e.getMessage());
         }
 
-        Log.info("(TileMap) Succesfully loaded Map from file %s", filePath);
-
-        return new Data(name, width, height, tileSize, posZ, Toolbox.toArray(textures, new Texture2D[textures.size()]),
-                Toolbox.toArray(tiles, new Tile[tiles.size()]));
+        return new TileMapBlueprint(name, filePath, width, height, tileSize, posZ);
     }
 
-    public static void saveMapDataToFile(Data data, String destinationFolder)
+    public static Texture2D[] loadTexturesFromFile(String filePath)
     {
+        final List<Texture2D> textures = new ArrayList<>();
+        boolean finished = false;
+
+        try (Scanner scanner = new Scanner(new File(filePath)))
+        {
+            while (scanner.hasNextLine() && !finished)
+            {
+                final String line = scanner.nextLine().replace(" ", "");
+
+                int idx1 = line.indexOf("<"), idx2 = line.indexOf(">");
+                String xmlTag = (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : "";
+                switch (xmlTag)
+                {
+                    case "texture":
+                        textures.add(loadTexture(scanner));
+                        break;
+                    case "/textures":
+                        finished = true;
+                        break;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.error("(TileMap) Error loading map: %n%s", e.getMessage());
+        }
+
+        return Toolbox.toArray(textures, new Texture2D[textures.size()]);
+    }
+
+    public static Tile[] loadTilesFromFile(String filePath, Texture2D[] textures)
+    {
+        final List<Tile> tiles = new ArrayList<>();
+        boolean finished = false;
+
+        try (Scanner scanner = new Scanner(new File(filePath)))
+        {
+            while (scanner.hasNextLine() && !finished)
+            {
+                final String line = scanner.nextLine().replace(" ", "");
+
+                int idx1 = line.indexOf("<"), idx2 = line.indexOf(">");
+                String xmlTag = (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : "";
+                switch (xmlTag)
+                {
+                    case "tile":
+                        tiles.add(loadTile(scanner, textures));
+                        break;
+                    case "/tiles":
+                        finished = true;
+                        break;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.error("(TileMap) Error loading map: %n%s", e.getMessage());
+        }
+
+        return Toolbox.toArray(tiles, new Tile[tiles.size()]);
+    }
+
+    public static void saveMapToFile(TileMap map, String destinationFolder)
+    {
+        TileMapBlueprint blueprint = map.getBlueprint();
         StringBuilder file = new StringBuilder();
 
-        file.append(String.format("<name>%s</name>%n%n", data.name));
+        file.append(String.format("<name>%s</name>%n%n", blueprint.name));
         file.append(String.format("<settings>%n"));
-        file.append(String.format("    <width>%d</width>%n", data.width));
-        file.append(String.format("    <height>%d</height>%n", data.height));
-        file.append(String.format("    <tileSize>%f</tileSize>%n", data.tileSize));
+        file.append(String.format("    <width>%d</width>%n", blueprint.width));
+        file.append(String.format("    <height>%d</height>%n", blueprint.height));
+        file.append(String.format("    <tileSize>%f</tileSize>%n", blueprint.tileSize));
         file.append(String.format("</settings>%n%n"));
 
         file.append(String.format("<textures>%n"));
-        for (Texture2D texture : data.textures)
+        for (Texture2D texture : map.textures)
             file.append(serializeTexture(texture));
         file.append(String.format("</textures>%n%n"));
 
         file.append(String.format("<tiles>%n"));
-        for (Tile tile : data.tiles)
-            file.append(serializeTile(tile, data.textures));
+        for (Tile tile : map.tiles)
+            file.append(serializeTile(tile, map.textures));
         file.append(String.format("</tiles>%n"));
 
         try
         {
             new File(destinationFolder).mkdirs();
 
-            String fileName = destinationFolder + data.name.replace(" ", "") + FILE_EXTENSION;
+            String fileName = destinationFolder + blueprint.name.replace(" ", "") + FILE_EXTENSION;
             FileWriter writer = new FileWriter(new File(fileName));
             writer.write(file.toString());
             writer.close();
@@ -110,11 +166,11 @@ public class FileHandler
         }
         catch (IOException e)
         {
-            Log.error("(TileSet) Exception while trying to save map %s: %s", data.name, e.getMessage());
+            Log.error("(TileSet) Exception while trying to save map %s: %s", blueprint.name, e.getMessage());
         }
     }
 
-    private static Tile loadTile(Scanner scanner, List<Texture2D> textures)
+    private static Tile loadTile(Scanner scanner, Texture2D[] textures)
     {
         final String SPRITESHEET = "spritesheet", TEXTURE2D = "texture";
         String textureType = null;
@@ -134,7 +190,7 @@ public class FileHandler
                     textureType = Toolbox.stripXmlTags(line, "spriteType");
                     break;
                 case "textureIndex":
-                    texture = textures.get(Integer.valueOf(Toolbox.stripXmlTags(line, "textureIndex")));
+                    texture = textures[(Integer.valueOf(Toolbox.stripXmlTags(line, "textureIndex")))];
                     assert textureType != null : Log
                             .error("(tilemap.FileHandler) Error loading map: Invalid tag order.");
                     if (textureType.equals(TEXTURE2D))
@@ -159,7 +215,7 @@ public class FileHandler
     private static Texture2D loadTexture(Scanner scanner)
     {
         boolean isSpritesheet = false;
-        String path = null;
+        String name = null, path = null;
         int width = -1, height = -1;
         int spriteWidth = -1, spriteHeight = -1;
         int padding = -1;
@@ -173,6 +229,9 @@ public class FileHandler
             String xmlTag = (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : "";
             switch (xmlTag)
             {
+                case "name":
+                    name = Toolbox.stripXmlTags(line, "name");
+                    break;
                 case "type":
                     isSpritesheet = Toolbox.stripXmlTags(line, "type").equals("spritesheet");
                     break;
@@ -202,9 +261,9 @@ public class FileHandler
 
         if (isSpritesheet)
             return ResourcePool.getOrCreateResource(
-                    new Spritesheet.Blueprint(path, width, height, spriteWidth, spriteHeight, padding));
+                    new SpritesheetBlueprint(name, path, width, height, spriteWidth, spriteHeight, padding));
         else
-            return ResourcePool.getOrCreateResource(new Texture2D.Blueprint(path));
+            return ResourcePool.getOrCreateResource(new TextureBlueprint(name, path));
     }
 
     private static String serializeTile(Tile tile, Texture2D[] textures)
@@ -233,15 +292,18 @@ public class FileHandler
     private static String serializeTexture(Texture2D texture)
     {
         boolean isSpritesheet = texture instanceof Spritesheet;
+        String name = isSpritesheet ? ((Spritesheet) texture).getBlueprint().name
+                : ((Texture) texture).getBlueprint().name;
 
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("    <texture>%n"));
+        sb.append(String.format("        <name>%s</name>%n", name));
         sb.append(String.format("        <type>%s</type>%n", isSpritesheet ? "spritesheet" : "texture"));
         sb.append(String.format("        <path>%s</path>%n", texture.getFilePath()));
 
         if (isSpritesheet)
         {
-            Spritesheet.Blueprint spritesheetBlueprint = ((Spritesheet) texture).getBlueprint();
+            SpritesheetBlueprint spritesheetBlueprint = ((Spritesheet) texture).getBlueprint();
             sb.append(String.format("        <width>%d</width>%n", spritesheetBlueprint.width));
             sb.append(String.format("        <height>%d</height>%n", spritesheetBlueprint.height));
             sb.append(String.format("        <spriteWidth>%d</spriteWidth>%n", spritesheetBlueprint.spriteWidth));
@@ -254,3 +316,34 @@ public class FileHandler
         return sb.toString();
     }
 }
+
+/*
+ * 
+ * 
+ * public static TileMapBlueprint loadMapFromFile(String filePath) { int width =
+ * -1, height = -1; float tileSize = -1.0f, posZ = -1.0f; String name =
+ * "StealthMap"; final List<Texture2D> textures = new ArrayList<>(); final
+ * List<Tile> tiles = new ArrayList<>();
+ * 
+ * try (Scanner scanner = new Scanner(new File(filePath))) { while
+ * (scanner.hasNextLine()) { final String line = scanner.nextLine().replace(" ",
+ * "");
+ * 
+ * int idx1 = line.indexOf("<"), idx2 = line.indexOf(">"); String xmlTag = (idx1
+ * != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : ""; switch (xmlTag) {
+ * case "name": name = Toolbox.stripXmlTags(line, "name"); break; case "width":
+ * width = Integer.valueOf(Toolbox.stripXmlTags(line, "width")); break; case
+ * "height": height = Integer.valueOf(Toolbox.stripXmlTags(line, "height"));
+ * break; case "posZ": posZ = Float.valueOf(Toolbox.stripXmlTags(line, "posZ"));
+ * break; case "tileSize": tileSize = Float.valueOf(Toolbox.stripXmlTags(line,
+ * "tileSize")); break; case "texture": textures.add(loadTexture(scanner));
+ * break; case "tile": tiles.add(loadTile(scanner, textures)); break; } } }
+ * catch (Exception e) { Log.error("(TileMap) Error loading map: %n%s",
+ * e.getMessage()); }
+ * 
+ * Log.info("(TileMap) Succesfully loaded Map from file %s", filePath);
+ * 
+ * return new TileMapBlueprint(name, width, height, tileSize, posZ,
+ * Toolbox.toArray(textures, new Texture2D[textures.size()]),
+ * Toolbox.toArray(tiles, new Tile[tiles.size()])); }
+ */

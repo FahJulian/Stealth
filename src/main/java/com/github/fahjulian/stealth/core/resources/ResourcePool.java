@@ -1,4 +1,4 @@
-package com.github.fahjulian.stealth.resources;
+package com.github.fahjulian.stealth.core.resources;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class ResourcePool
         }
 
         for (R resource : resources)
-            if (resource.getBlueprint().equals(blueprint))
+            if (((IResourceBlueprint<R>) resource.getBlueprint()).equals(blueprint))
                 return resource;
 
         // Not existing -> Create new
@@ -52,5 +52,31 @@ public class ResourcePool
         resources.add(newResource);
         Log.info("(ResourcePool) Loaded resource of type %s: %s", blueprint.getResourceClass(), newResource);
         return newResource;
+    }
+
+    /**
+     * Searches all resources of the given class for one that has the same key
+     * 
+     * @param resourceClass
+     *                          The class of the resource
+     * @param key
+     *                          The key to search with
+     * 
+     * @return The found resource or null
+     */
+    public static final <R extends IResource> R getResource(Class<R> resourceClass, String key)
+    {
+        @SuppressWarnings("unchecked")
+        List<R> resources = (List<R>) ResourcePool.resources.get(resourceClass);
+
+        if (resources == null)
+            return null;
+
+        for (R resource : resources)
+            if (resource.getBlueprint().equals(key))
+                return resource;
+
+        // Nothing found
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-package com.github.fahjulian.stealth.resources;
+package com.github.fahjulian.stealth.core.resources;
 
 /** A resource that can be held by the ResourcePool */
 public interface IResource

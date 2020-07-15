@@ -9,16 +9,18 @@ import com.github.fahjulian.stealth.graphics.opengl.StaticVertexBuffer;
 import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
 import com.github.fahjulian.stealth.graphics.renderer.AbstractModel;
 
-public class Model extends AbstractModel
+public class TileMapModel extends AbstractModel
 {
     private final Texture2D[] textures;
 
-    public Model(Data data)
+    public TileMapModel(TileMap map)
     {
-        float[] positions = calculatePositions(data.tileSize, data.width, data.height, data.posZ);
-        float[] textureCoords = calculateTextureCoords(data.width, data.height, data.tiles);
-        float[] textureSlots = calculateTextureSlots(data.width, data.height, data.textures, data.tiles);
-        int[] indices = calculateIndices(data.width, data.height);
+        TileMapBlueprint blueprint = map.getBlueprint();
+
+        float[] positions = calculatePositions(blueprint.tileSize, blueprint.width, blueprint.height, blueprint.posZ);
+        float[] textureCoords = calculateTextureCoords(blueprint.width, blueprint.height, map.tiles);
+        float[] textureSlots = calculateTextureSlots(blueprint.width, blueprint.height, map.textures, map.tiles);
+        int[] indices = calculateIndices(blueprint.width, blueprint.height);
 
         new StaticVertexBuffer(positions, 3, vao);
         new StaticVertexBuffer(textureCoords, 2, vao);
@@ -26,8 +28,8 @@ public class Model extends AbstractModel
         setIndicesBuffer(indices);
 
         this.textures = new Texture2D[16];
-        for (int i = 0; i < data.textures.length; i++)
-            this.textures[i] = data.textures[i];
+        for (int i = 0; i < map.textures.length; i++)
+            this.textures[i] = map.textures[i];
     }
 
     @Override

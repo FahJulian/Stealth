@@ -23,54 +23,28 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import com.github.fahjulian.stealth.core.util.Log;
-import com.github.fahjulian.stealth.resources.IResource;
-import com.github.fahjulian.stealth.resources.IResourceBlueprint;
 
 import org.lwjgl.BufferUtils;
 
-public class Texture2D implements IResource
+public class Texture2D
 {
-    public static class Blueprint implements IResourceBlueprint<Texture2D>
-    {
-        private final String filePath;
-
-        public Blueprint(String filePath)
-        {
-            this.filePath = filePath;
-        }
-
-        @Override
-        public boolean equals(IResourceBlueprint<Texture2D> blueprint)
-        {
-            return ((Blueprint) blueprint).filePath == this.filePath;
-        }
-
-        @Override
-        public Texture2D create()
-        {
-            return new Texture2D(this);
-        }
-
-        @Override
-        public Class<? extends Texture2D> getResourceClass()
-        {
-            return Texture2D.class;
-        }
-    }
-
-    private final Blueprint blueprint;
+    private final String filePath;
     private final int width, height; // Pixels
     private final int ID;
 
-    public Texture2D(Blueprint blueprint)
+    public Texture2D(String filePath)
     {
-        this.blueprint = blueprint;
+        this.filePath = filePath;
         this.ID = OpenGLMemoryManager.createTexture();
 
         this.bind(0);
-        this.setOpenGLParams();
 
-        int[] size = this.load(blueprint.filePath);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        int[] size = this.load(filePath);
         this.width = size[0];
         this.height = size[1];
 
@@ -98,7 +72,7 @@ public class Texture2D implements IResource
         stbi_set_flip_vertically_on_load(true);
         ByteBuffer pixels = stbi_load(imagePath, width, height, channels, 0);
 
-        assert pixels != null : Log.error("(Texture2D) Could not load texture from file %s.", blueprint.filePath);
+        assert pixels != null : Log.error("(Texture2D) Could not load texture from file %s.", filePath);
         if (pixels == null)
             return null;
 
@@ -113,38 +87,24 @@ public class Texture2D implements IResource
         };
     }
 
-    private void setOpenGLParams()
-    {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    }
-
-    public int getWidth()
+    protected int getWidth()
     {
         return width;
     }
 
-    public int getHeight()
+    protected int getHeight()
     {
         return height;
     }
 
     public String getFilePath()
     {
-        return blueprint.filePath;
+        return filePath;
     }
 
     @Override
     public String toString()
     {
-        return blueprint.filePath;
-    }
-
-    @Override
-    public IResourceBlueprint<? extends Texture2D> getBlueprint()
-    {
-        return blueprint;
+        return filePath;
     }
 }
