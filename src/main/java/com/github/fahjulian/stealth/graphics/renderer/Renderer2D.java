@@ -3,6 +3,8 @@ package com.github.fahjulian.stealth.graphics.renderer;
 import static org.lwjgl.opengl.GL11.glFlush;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import com.github.fahjulian.stealth.core.Window;
 import com.github.fahjulian.stealth.core.scene.Camera;
@@ -18,6 +20,7 @@ public class Renderer2D
 {
     static float frameStartTime;
     static float fpsTimer;
+    static Queue<Float> lastFrames = new LinkedList<>();
 
     static Camera camera;
 
@@ -151,6 +154,8 @@ public class Renderer2D
 
     public static void startFrame()
     {
+        Window.get().clear();
+
         staticColoredRectsModel.clear();
         staticTexturedRectsModel.clear();
         coloredRectsModel.clear();
@@ -167,13 +172,24 @@ public class Renderer2D
         drawStaticTexturedRects();
         glFlush();
 
+        Window.get().swapBuffers();
+
         float now = Window.get().getTime();
         float delta = now - frameStartTime;
-        if (now - fpsTimer > 0.5f)
+
+        lastFrames.add(delta);
+        if (lastFrames.size() > 7)
+            lastFrames.remove();
+
+        if (now - fpsTimer > 1.0f)
         {
-            Window.get()
-                    .setTitle(String.format("%s | %d FPS", Window.get().getInitialTitle(), (int) Math.ceil(1 / delta)));
-            fpsTimer += 0.2f;
+            float averageFPS = 0.0f;
+            for (Float f : lastFrames)
+                averageFPS += f;
+            averageFPS /= 7.0f;
+
+            Window.get().setTitle(String.format("%s | %d FPS", Window.get().getInitialTitle(), (int) (1 / averageFPS)));
+            fpsTimer += 1.0f;
         }
     }
 
@@ -203,9 +219,6 @@ public class Renderer2D
 
     private static void drawStaticColoredRects()
     {
-        if (staticColoredRectsModel.getRectCount() == 0)
-            return;
-
         staticColoredRectsModel.rebuffer();
         staticColoredRectsShader.bind();
         staticColoredRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
@@ -235,9 +248,6 @@ public class Renderer2D
 
     private static void drawColoredRects()
     {
-        if (coloredRectsModel.getRectCount() == 0)
-            return;
-
         coloredRectsModel.rebuffer();
         coloredRectsShader.bind();
         coloredRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());

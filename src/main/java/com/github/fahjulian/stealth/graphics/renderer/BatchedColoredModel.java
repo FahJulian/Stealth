@@ -29,16 +29,16 @@ public class BatchedColoredModel extends AbstractModel
 
     public void clear()
     {
-        positions = new float[maxRects * 4 * 3];
-        colors = new float[maxRects * 4 * 4];
+        positionsVBO.clear();
+        colorsVBO.clear();
         rectCount = 0;
     }
 
     public void addRect(float x, float y, float z, float width, float height, Color color)
     {
-        if (rectCount == maxRects)
+        if (rectCount >= maxRects)
         {
-            Log.warn("(BatchedTexturedModel) Maximum rect amount reached.");
+            Log.warn("(BatchedColoredModel) Maximum rect amount reached.");
             return;
         }
 
@@ -79,10 +79,5 @@ public class BatchedColoredModel extends AbstractModel
         }
 
         return indices;
-    }
-
-    public int getRectCount()
-    {
-        return rectCount;
     }
 }

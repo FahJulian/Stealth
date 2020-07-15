@@ -62,11 +62,9 @@ public abstract class AbstractApp
                 dueUpdates--;
             }
 
-            window.clear();
             Renderer2D.startFrame();
             new RenderEvent();
             Renderer2D.endFrame();
-            window.swapBuffers();
 
             final float endTime = Window.get().getTime();
             deltaSeconds = endTime - startTime;

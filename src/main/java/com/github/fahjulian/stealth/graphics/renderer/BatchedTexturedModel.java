@@ -41,7 +41,7 @@ public class BatchedTexturedModel extends AbstractModel
 
     public void addRect(float x, float y, float z, float width, float height, float[] textureCoords, int textureSlot)
     {
-        if (rectCount == maxRects)
+        if (rectCount >= maxRects)
         {
             Log.warn("(BatchedTexturedModel) Maximum rect amount reached.");
             return;
