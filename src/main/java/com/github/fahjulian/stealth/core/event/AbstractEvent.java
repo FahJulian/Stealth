@@ -21,8 +21,8 @@ public abstract class AbstractEvent
     /**
      * Sets the Event Dispatcher all Events get dispatched with by default.
      * 
-     * @param defaulDispatcher
-     *                             The new default Event Dispatcher
+     * @param defaultDispatcher
+     *                              The new default Event Dispatcher
      */
     public static void setDefaultDispatcher(EventDispatcher defaultDispatcher)
     {

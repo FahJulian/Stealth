@@ -1,47 +1,53 @@
 package com.github.fahjulian.stealth.graphics.renderer;
 
-import com.github.fahjulian.stealth.core.util.Log;
-import com.github.fahjulian.stealth.graphics.opengl.DynamicVertexBuffer;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
 
-public class BatchedTexturedModel extends AbstractModel
+import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.graphics.opengl.AbstractDynamicModel;
+
+/** A model that holds textured rects. Mostly used for the 2D batch renderer. */
+public class BatchedTexturedModel extends AbstractDynamicModel
 {
-    private final DynamicVertexBuffer positionsVBO;
-    private final DynamicVertexBuffer textureCoordsVBO;
-    private final DynamicVertexBuffer textureSlotsVBO;
     private final int maxRects;
     private int rectCount;
-    private float[] positions;
-    private float[] textureCoords;
-    private float[] textureSlots;
 
-    public BatchedTexturedModel(final int maxRects)
+    /**
+     * Construct a new textured model.
+     * 
+     * @param maxRects
+     *                     The maximum amount of rects the model is allowed to hold.
+     */
+    public BatchedTexturedModel(int maxRects)
     {
-        this.maxRects = maxRects;
+        super(maxRects * 4, 3, 2, 1);
+
         this.rectCount = 0;
-
-        this.positions = new float[maxRects * 4 * 3];
-        this.textureCoords = new float[maxRects * 4 * 2];
-        this.textureSlots = new float[maxRects * 4 * 1];
-
-        positionsVBO = new DynamicVertexBuffer(positions, 3, vao);
-        textureCoordsVBO = new DynamicVertexBuffer(textureCoords, 2, vao);
-        textureSlotsVBO = new DynamicVertexBuffer(textureSlots, 1, vao);
-
-        setIndicesBuffer(generateIndices(maxRects));
+        this.maxRects = maxRects;
     }
 
-    public void clear()
-    {
-        positionsVBO.clear();
-        textureCoordsVBO.clear();
-        textureSlotsVBO.clear();
-
-        rectCount = 0;
-    }
-
+    /**
+     * Add a new rectangle to the model.
+     * 
+     * @param x
+     *                          The x-position of the new rectangle
+     * @param y
+     *                          The y-position of the new rectangle
+     * @param z
+     *                          The z-position of the new rectangle
+     * @param width
+     *                          The width of the new rectangle
+     * @param height
+     *                          The height of the new rectangle
+     * @param textureCoords
+     *                          The coordinates on the texture of the new rectangle
+     * @param textureSlot
+     *                          The slot of the texture on the gpu
+     */
     public void addRect(float x, float y, float z, float width, float height, float[] textureCoords, int textureSlot)
     {
-        if (rectCount == maxRects)
+        if (rectCount >= maxRects)
         {
             Log.warn("(BatchedTexturedModel) Maximum rect amount reached.");
             return;
@@ -49,33 +55,40 @@ public class BatchedTexturedModel extends AbstractModel
 
         for (int i = 0; i < 4; i++)
         {
-            this.positions[rectCount * (4 * 3) + i * 3 + 0] = x + (1 - i % 2) * width;
-            this.positions[rectCount * (4 * 3) + i * 3 + 1] = y + (1 - i / 2) * height;
-            this.positions[rectCount * (4 * 3) + i * 3 + 2] = z;
-            this.textureCoords[rectCount * (4 * 2) + i * 2 + 0] = textureCoords[i * 2 + 0];
-            this.textureCoords[rectCount * (4 * 2) + i * 2 + 1] = textureCoords[i * 2 + 1];
-            this.textureSlots[rectCount * (4 * 1) + i * 1 + 0] = (float) textureSlot;
+            int idx = rectCount * 4 + i;
+            super.setVertex(idx, x + (1 - i % 2) * width, y + (1 - i / 2) * height, z, textureCoords[i * 2 + 0],
+                    textureCoords[i * 2 + 1], textureSlot);
         }
 
         rectCount++;
     }
 
-    public void rebuffer()
+    @Override
+    public void draw()
     {
-        positionsVBO.rebuffer();
-        positionsVBO.unbind();
-
-        textureCoordsVBO.rebuffer();
-        textureCoordsVBO.unbind();
-
-        textureSlotsVBO.rebuffer();
-        textureSlotsVBO.unbind();
+        vao.bind();
+        glDrawElements(GL_TRIANGLES, rectCount * 6, GL_UNSIGNED_INT, 0);
+        vao.unbind();
     }
 
-    private int[] generateIndices(int maxRects)
+    @Override
+    public void clear()
     {
-        int[] indices = new int[maxRects * 6];
-        for (int i = 0; i < maxRects; i++)
+        super.clear();
+        rectCount = 0;
+    }
+
+    @Override
+    public void rebuffer()
+    {
+        super.rebuffer();
+    }
+
+    @Override
+    protected int[] generateIndices(int vertexCount)
+    {
+        int[] indices = new int[vertexCount];
+        for (int i = 0; i < vertexCount / 6; i++)
         {
             indices[0 + i * 6] = 2 + i * 4;
             indices[1 + i * 6] = 0 + i * 4;

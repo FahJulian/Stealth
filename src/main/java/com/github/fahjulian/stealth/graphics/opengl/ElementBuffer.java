@@ -7,15 +7,22 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 
 import java.nio.IntBuffer;
 
+/** EBO Wrapper */
 public class ElementBuffer
 {
     private final int ID;
-    private final int size;
 
+    /**
+     * Construct a new element buffer
+     * 
+     * @param indices
+     *                    The indices to buffer to the graphics card
+     * @param vao
+     *                    The VAO the EBO is part of
+     */
     public ElementBuffer(int[] indices, VertexArray vao)
     {
         this.ID = OpenGLMemoryManager.createVertexBuffer();
-        this.size = indices.length;
 
         vao.bind();
         this.bind();
@@ -25,18 +32,15 @@ public class ElementBuffer
         vao.unbind();
     }
 
+    /** Binds the ebo to the graphics card */
     public void bind()
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.ID);
     }
 
+    /** Unbinds the ebo from the graphics card. */
     public void unbind()
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.ID);
-    }
-
-    public int getSize()
-    {
-        return size;
     }
 }

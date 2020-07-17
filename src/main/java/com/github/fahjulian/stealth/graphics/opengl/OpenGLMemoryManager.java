@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.lwjgl.BufferUtils;
 
+/** Hold track of all loaded opengl objects */
 public class OpenGLMemoryManager
 {
     private static final List<Integer> loadedShaders = new ArrayList<>();
@@ -26,6 +27,7 @@ public class OpenGLMemoryManager
     private static final List<Integer> loadedVertexBuffers = new ArrayList<>();
     private static final List<Integer> loadedTextures = new ArrayList<>();
 
+    /** Makes opengl free all memory related to loaded objects */
     public static void destroyAll()
     {
         for (int id : loadedShaders)

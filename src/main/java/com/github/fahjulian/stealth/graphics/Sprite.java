@@ -1,13 +1,20 @@
 package com.github.fahjulian.stealth.graphics;
 
-import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
+/** A sprite is an objet that holds a texture and texture coords */
 public class Sprite
 {
-    private Texture2D texture;
+    private AbstractTexture texture;
     private float[] textureCoords;
 
-    public Sprite(Texture2D texture)
+    /**
+     * Constuct a sprite that uses the whole texture
+     * 
+     * @param texture
+     *                    The texture the sprite is on
+     */
+    public Sprite(AbstractTexture texture)
     {
         this.texture = texture;
         this.textureCoords = new float[] {
@@ -18,13 +25,22 @@ public class Sprite
         };
     }
 
-    public Sprite(Texture2D texture, float[] textureCoords)
+    /**
+     * Construct a sprite that uses only part of the texture
+     * 
+     * @param texture
+     *                          The texture the sprite is on
+     * @param textureCoords
+     *                          An array of floats defining the area of the sprite
+     *                          on the texture
+     */
+    public Sprite(AbstractTexture texture, float[] textureCoords)
     {
         this.texture = texture;
         this.textureCoords = textureCoords;
     }
 
-    public Texture2D getTexture()
+    public AbstractTexture getTexture()
     {
         return texture;
     }

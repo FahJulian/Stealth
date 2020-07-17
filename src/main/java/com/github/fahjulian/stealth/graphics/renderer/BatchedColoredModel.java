@@ -1,74 +1,93 @@
 package com.github.fahjulian.stealth.graphics.renderer;
 
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
-import com.github.fahjulian.stealth.graphics.opengl.DynamicVertexBuffer;
+import com.github.fahjulian.stealth.graphics.opengl.AbstractDynamicModel;
 
-public class BatchedColoredModel extends AbstractModel
+/** A model that holds colored rects. Mostly used for the 2D batch renderer. */
+public class BatchedColoredModel extends AbstractDynamicModel
 {
-    private final DynamicVertexBuffer positionsVBO;
-    private final DynamicVertexBuffer colorsVBO;
     private final int maxRects;
     private int rectCount;
-    private float[] positions;
-    private float[] colors;
 
-    public BatchedColoredModel(final int maxRects)
+    /**
+     * Construct a new colored model.
+     * 
+     * @param maxRects
+     *                     The maximum amount of rects the model is allowed to hold.
+     */
+    public BatchedColoredModel(int maxRects)
     {
+        super(maxRects * 4, 3, 4);
+
         this.maxRects = maxRects;
         this.rectCount = 0;
-
-        this.positions = new float[maxRects * 4 * 3];
-        this.colors = new float[maxRects * 4 * 4];
-
-        positionsVBO = new DynamicVertexBuffer(positions, 3, vao);
-        colorsVBO = new DynamicVertexBuffer(colors, 4, vao);
-
-        setIndicesBuffer(generateIndices(maxRects));
     }
 
-    public void clear()
-    {
-        positions = new float[maxRects * 4 * 3];
-        colors = new float[maxRects * 4 * 4];
-        rectCount = 0;
-    }
-
+    /**
+     * Add a new rectangle to the model.
+     * 
+     * @param x
+     *                   The x-position of the new rectangle
+     * @param y
+     *                   The y-position of the new rectangle
+     * @param z
+     *                   The z-position of the new rectangle
+     * @param width
+     *                   The width of the new rectangle
+     * @param height
+     *                   The height of the new rectangle
+     * @param color
+     *                   The color of the new rectangle
+     */
     public void addRect(float x, float y, float z, float width, float height, Color color)
     {
-        if (rectCount == maxRects)
+        if (rectCount >= maxRects)
         {
-            Log.warn("(BatchedTexturedModel) Maximum rect amount reached.");
+            Log.warn("(BatchedColoredModel) Maximum rect amount reached.");
             return;
         }
 
         for (int i = 0; i < 4; i++)
         {
-            positions[rectCount * (4 * 3) + i * 3 + 0] = x + (i % 2 == 0 ? width : 0);
-            positions[rectCount * (4 * 3) + i * 3 + 1] = y + (i / 2 == 0 ? height : 0);
-            positions[rectCount * (4 * 3) + i * 3 + 2] = z;
-            colors[rectCount * (4 * 4) + i * 4 + 0] = color.getR();
-            colors[rectCount * (4 * 4) + i * 4 + 1] = color.getG();
-            colors[rectCount * (4 * 4) + i * 4 + 2] = color.getB();
-            colors[rectCount * (4 * 4) + i * 4 + 3] = color.getA();
+            int idx = rectCount * 4 + i;
+            super.setVertex(idx, x + (i % 2 == 0 ? width : 0), y + (i / 2 == 0 ? height : 0), z, color.getR(),
+                    color.getG(), color.getB(), color.getA());
         }
 
         rectCount++;
     }
 
-    public void rebuffer()
+    @Override
+    public void draw()
     {
-        positionsVBO.rebuffer();
-        positionsVBO.unbind();
-
-        colorsVBO.rebuffer();
-        colorsVBO.unbind();
+        vao.bind();
+        glDrawElements(GL_TRIANGLES, rectCount * 6, GL_UNSIGNED_INT, 0);
+        vao.unbind();
     }
 
-    private int[] generateIndices(int maxRects)
+    @Override
+    public void clear()
     {
-        int[] indices = new int[maxRects * 6];
-        for (int i = 0; i < maxRects; i++)
+        super.clear();
+        rectCount = 0;
+    }
+
+    @Override
+    public void rebuffer()
+    {
+        super.rebuffer();
+    }
+
+    @Override
+    protected int[] generateIndices(int vertexCount)
+    {
+        int[] indices = new int[vertexCount];
+        for (int i = 0; i < vertexCount / 6; i++)
         {
             indices[0 + i * 6] = 2 + i * 4;
             indices[1 + i * 6] = 0 + i * 4;
@@ -79,10 +98,5 @@ public class BatchedColoredModel extends AbstractModel
         }
 
         return indices;
-    }
-
-    public int getRectCount()
-    {
-        return rectCount;
     }
 }

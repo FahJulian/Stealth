@@ -7,8 +7,8 @@ import com.github.fahjulian.stealth.core.entity.EntityBlueprint;
 
 public class Blueprints
 {
-    static final EntityBlueprint player = new EntityBlueprint("Player",
+    static final EntityBlueprint player = new EntityBlueprint( //
             new KeyboardControlledMovementComponent.Blueprint(320.0f),
-            new SpriteComponent.Blueprint(Textures.MARIO_SHEET.getSpriteAt(0, 0)), //
+            new SpriteComponent.Blueprint(Resources.MARIO_SHEET.getSpriteAt(0, 0)), //
             new ThirdPersonCameraComponent.Blueprint());
 }

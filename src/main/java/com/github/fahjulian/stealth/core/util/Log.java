@@ -78,6 +78,8 @@ public final class Log
      *                    The message to log
      * @param args
      *                    Arguments to pass to the jave formatter
+     * 
+     * @return The formatted message
      */
     public static String info(String message, Object... args)
     {
@@ -95,6 +97,8 @@ public final class Log
      *                    The message to log
      * @param args
      *                    Arguments to pass to the jave formatter
+     * 
+     * @return The formatted message
      */
     public static String warn(String message, Object... args)
     {
@@ -112,6 +116,8 @@ public final class Log
      *                    The message to log
      * @param args
      *                    Arguments to pass to the jave formatter
+     * 
+     * @return The formatted message
      */
     public static String error(String message, Object... args)
     {
@@ -129,6 +135,8 @@ public final class Log
      *                    The message to log
      * @param args
      *                    Arguments to pass to the jave formatter
+     * 
+     * @return The formatted message
      */
     public static String debug(String message, Object... args)
     {
