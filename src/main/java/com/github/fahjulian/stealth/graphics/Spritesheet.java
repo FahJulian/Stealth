@@ -31,9 +31,9 @@ public class Spritesheet extends AbstractTexture implements IResource
         int[] textureSize = super.load(filePath);
 
         // Extract sprites
-        for (int y = this.height; y > 0; y--)
+        for (int y = height; y > 0; y--)
         {
-            for (int x = 0; x < this.width; x++)
+            for (int x = 0; x < width; x++)
             {
                 float x0 = x * (spriteWidth + padding) / (float) textureSize[0];
                 float y1 = y * (spriteHeight + padding) / (float) textureSize[1];

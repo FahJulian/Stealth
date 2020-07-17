@@ -42,14 +42,14 @@ public abstract class AbstractTexture
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    protected int[] load(String imagePath)
+    protected int[] load(String filePath)
     {
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
         IntBuffer channels = BufferUtils.createIntBuffer(1);
 
         stbi_set_flip_vertically_on_load(true);
-        ByteBuffer pixels = stbi_load(imagePath, width, height, channels, 0);
+        ByteBuffer pixels = stbi_load(filePath, width, height, channels, 0);
         assert pixels != null : Log.error("(Texture2D) STBI Error loading texture");
 
         this.ID = OpenGLMemoryManager.createTexture();
@@ -59,6 +59,7 @@ public abstract class AbstractTexture
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        assert pixels != null : Log.error("(Texture2D) Could not load texture from file %s.", filePath);
 
         int format = channels.get(0) == 3 ? GL_RGB : GL_RGBA;
         glTexImage2D(GL_TEXTURE_2D, 0, format, width.get(0), height.get(0), 0, format, GL_UNSIGNED_BYTE, pixels);
