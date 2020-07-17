@@ -1,5 +1,9 @@
 package com.github.fahjulian.stealth.graphics.renderer;
 
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.opengl.DynamicVertexBuffer;
@@ -27,18 +31,28 @@ public class BatchedColoredModel extends AbstractModel
         setIndicesBuffer(generateIndices(maxRects));
     }
 
+    @Override
+    public void draw()
+    {
+        vao.bind();
+
+        glDrawElements(GL_TRIANGLES, rectCount * 6, GL_UNSIGNED_INT, 0);
+
+        vao.unbind();
+    }
+
     public void clear()
     {
-        positions = new float[maxRects * 4 * 3];
-        colors = new float[maxRects * 4 * 4];
+        positionsVBO.clear();
+        colorsVBO.clear();
         rectCount = 0;
     }
 
     public void addRect(float x, float y, float z, float width, float height, Color color)
     {
-        if (rectCount == maxRects)
+        if (rectCount >= maxRects)
         {
-            Log.warn("(BatchedTexturedModel) Maximum rect amount reached.");
+            Log.warn("(BatchedColoredModel) Maximum rect amount reached.");
             return;
         }
 
@@ -79,10 +93,5 @@ public class BatchedColoredModel extends AbstractModel
         }
 
         return indices;
-    }
-
-    public int getRectCount()
-    {
-        return rectCount;
     }
 }

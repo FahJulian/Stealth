@@ -20,6 +20,7 @@ import static org.lwjgl.opengl.GL20.glUniform4f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
+import com.github.fahjulian.stealth.core.resources.IResource;
 import com.github.fahjulian.stealth.core.util.IO;
 import com.github.fahjulian.stealth.core.util.Log;
 
@@ -27,43 +28,29 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
-public class Shader
+public class Shader implements IResource
 {
-    private final int ID;
+    private int ID;
+    private final String filePath;
 
-    public Shader(String glslPath)
+    public Shader(String filePath)
     {
-        String sourceCode = IO.loadResource(glslPath);
+        this.filePath = filePath;
+    }
 
-        String[] splitCode = splitSourceCode(sourceCode);
-        if (splitCode == null)
-        {
-            Log.error("(Shader) Could not load shader %s. Please check shader type declerations.'", glslPath);
-            this.ID = 0;
-            return;
-        }
+    @Override
+    public void load()
+    {
+        final String[] splitCode = splitSourceCode(IO.loadResource(filePath));
+        assert splitCode != null : Log
+                .error("(Shader) Could not load shader %s. Please check shader type declerations.'", filePath);
 
         int vertexID = createShader(GL_VERTEX_SHADER, splitCode[0]);
         int fragmentID = createShader(GL_FRAGMENT_SHADER, splitCode[1]);
-
         this.ID = linkToProgram(vertexID, fragmentID);
-        if (!checkForErrors(this.ID, vertexID, fragmentID))
-        {
-            Log.error("(Shader) Failed to compile or link Shader %s", glslPath);
-            return;
-        }
-    }
 
-    public Shader(String vertexPath, String fragmentPath)
-    {
-        int vertexID = createShader(GL_VERTEX_SHADER, IO.loadResource(vertexPath));
-        int fragmentID = createShader(GL_FRAGMENT_SHADER, IO.loadResource(fragmentPath));
-
-        this.ID = linkToProgram(vertexID, fragmentID);
-        if (!checkForErrors(this.ID, vertexID, fragmentID))
-        {
-            Log.error("(Shader) Failed to compile or link Shader with files %s and %s", vertexPath, fragmentPath);
-        }
+        assert loadingSuccessful(ID, vertexID, fragmentID) : Log.error("(Shader) Failed to compile or link Shader %s",
+                filePath);
     }
 
     public void bind()
@@ -116,7 +103,7 @@ public class Shader
 
     private int createShader(int type, String sourceCode)
     {
-        int ID = OpenGLMemoryManager.createShader(type);
+        final int ID = OpenGLMemoryManager.createShader(type);
         glShaderSource(ID, sourceCode);
         glCompileShader(ID);
         return ID;
@@ -124,14 +111,16 @@ public class Shader
 
     private int linkToProgram(int vertexID, int fragmentID)
     {
-        int ID = OpenGLMemoryManager.createProgram();
+        final int ID = OpenGLMemoryManager.createProgram();
+        bind();
         glAttachShader(ID, vertexID);
         glAttachShader(ID, fragmentID);
         glLinkProgram(ID);
+        unbind();
         return ID;
     }
 
-    private boolean checkForErrors(int programID, int vertexID, int fragmentID)
+    private boolean loadingSuccessful(int programID, int vertexID, int fragmentID)
     {
         if (glGetShaderi(vertexID, GL_COMPILE_STATUS) == GL_FALSE)
         {
@@ -150,5 +139,11 @@ public class Shader
         }
 
         return true;
+    }
+
+    @Override
+    public String getKey()
+    {
+        return filePath;
     }
 }

@@ -3,38 +3,42 @@ package com.github.fahjulian.stealth.graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.fahjulian.stealth.core.util.Log;
-import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.core.resources.IResource;
+import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
-public class Spritesheet extends Texture2D
+public class Spritesheet extends AbstractTexture implements IResource
 {
     private final List<Sprite> sprites;
+    private final String filePath;
     private final int width, height; // Number of sprites
     private final int spriteWidth, spriteHeight;
     private final int padding;
 
     public Spritesheet(String filePath, int width, int height, int spriteWidth, int spriteHeight, int padding)
     {
-        super(filePath);
-        assert super.loadedSuccesfully() : Log
-                .error("(Spritesheet) Error constructing Spritesheet: Texture did not load succesfully.");
-
+        this.filePath = filePath;
         this.width = width;
         this.height = height;
         this.spriteWidth = spriteWidth;
         this.spriteHeight = spriteHeight;
         this.padding = padding;
         this.sprites = new ArrayList<>();
+    }
+
+    @Override
+    public void load()
+    {
+        int[] textureSize = super.load(filePath);
 
         // Extract sprites
         for (int y = this.height; y > 0; y--)
         {
             for (int x = 0; x < this.width; x++)
             {
-                float x0 = x * (spriteWidth + padding) / (float) super.getWidth();
-                float y1 = y * (spriteHeight + padding) / (float) super.getHeight();
-                float x1 = x0 + spriteWidth / (float) super.getWidth();
-                float y0 = y1 - spriteHeight / (float) super.getHeight();
+                float x0 = x * (spriteWidth + padding) / (float) textureSize[0];
+                float y1 = y * (spriteHeight + padding) / (float) textureSize[1];
+                float x1 = x0 + spriteWidth / (float) textureSize[0];
+                float y0 = y1 - spriteHeight / (float) textureSize[1];
 
                 float[] textureCoords = new float[] {
                         x1, y1, //
@@ -62,13 +66,11 @@ public class Spritesheet extends Texture2D
         };
     }
 
-    @Override
     public int getWidth()
     {
         return width;
     }
 
-    @Override
     public int getHeight()
     {
         return height;
@@ -87,5 +89,11 @@ public class Spritesheet extends Texture2D
     public int getPadding()
     {
         return padding;
+    }
+
+    @Override
+    public String getKey()
+    {
+        return filePath;
     }
 }

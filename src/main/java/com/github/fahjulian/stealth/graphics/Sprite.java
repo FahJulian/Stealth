@@ -1,13 +1,13 @@
 package com.github.fahjulian.stealth.graphics;
 
-import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
+import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
 public class Sprite
 {
-    private Texture2D texture;
+    private AbstractTexture texture;
     private float[] textureCoords;
 
-    public Sprite(Texture2D texture)
+    public Sprite(AbstractTexture texture)
     {
         this.texture = texture;
         this.textureCoords = new float[] {
@@ -18,13 +18,13 @@ public class Sprite
         };
     }
 
-    public Sprite(Texture2D texture, float[] textureCoords)
+    public Sprite(AbstractTexture texture, float[] textureCoords)
     {
         this.texture = texture;
         this.textureCoords = textureCoords;
     }
 
-    public Texture2D getTexture()
+    public AbstractTexture getTexture()
     {
         return texture;
     }

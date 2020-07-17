@@ -14,6 +14,7 @@ public class UpdateEvent extends AbstractEvent
     {
         this.deltaSeconds = deltaSeconds;
         this.updateCount = updateCounter++;
+        
         dispatch();
     }
 

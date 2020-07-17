@@ -1,53 +1,156 @@
 package com.github.fahjulian.stealth.graphics.tilemap;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.github.fahjulian.stealth.core.resources.IResource;
+import com.github.fahjulian.stealth.core.resources.ResourcePool;
+import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
+import com.github.fahjulian.stealth.graphics.opengl.Shader;
+import com.github.fahjulian.stealth.graphics.renderer.IDrawable;
 
-public class TileMap
+public class TileMap implements IResource, IDrawable
 {
-    private final Data data;
-    private final Model model;
+    private final String filePath;
+    private int width, height; // in tiles
+    private float tileSize;
+    private float posZ;
+    private Tile[] tiles;
+    private List<AbstractTexture> textures;
 
-    /**
-     * Create a map from given map data
-     * 
-     * @param data
-     *                 The data to construct the map of
-     */
-    public TileMap(Data data)
-    {
-        assert data.textures.length == data.width * data.height : Log
-                .error("(TileMap) Cant create Tile Map: The amount of textures does not fit to the size of the map.");
-        assert data.textures.length > 16 : Log
-                .error("(TileMap) Cant create Tile Map: Maximum amount of Textures is 16.");
+    private Shader shader;
+    private TileMapModel model;
 
-        this.data = data;
-        this.model = new Model(data);
-    }
-
-    /**
-     * Create a map from a .stealthMap.xml file
-     * 
-     * @param filePath
-     *                     The full path to the file
-     */
     public TileMap(String filePath)
     {
-        this.data = FileHandler.loadMapDataFromFile(filePath);
-        this.model = new Model(data);
+        this.filePath = filePath;
     }
 
-    public void saveToFile(String destinationFolder)
+    private TileMap(String filePath, int width, int height, float tileSize, float posZ, List<AbstractTexture> textures,
+            Tile[] tiles)
     {
-        FileHandler.saveMapDataToFile(data, destinationFolder);
+        this.filePath = filePath;
+        this.width = width;
+        this.height = height;
+        this.tileSize = tileSize;
+        this.posZ = posZ;
+        this.textures = textures;
+        this.tiles = tiles;
     }
 
-    public Model getModel()
+    @Override
+    public void load() throws Exception
     {
-        return model;
+        if (textures == null && tiles == null) // not loaded yet
+        {
+            FileHandler.MapInfo mapInfo = FileHandler.loadMapInfo(filePath);
+            this.width = mapInfo.width;
+            this.height = mapInfo.height;
+            this.tileSize = mapInfo.tileSize;
+            this.posZ = mapInfo.posZ;
+            this.textures = mapInfo.textures;
+            this.tiles = mapInfo.tiles;
+        }
+
+        assert tiles.length == width * height : Log.error("(TileMap) Map size does not match the amount of tiles.");
+        assert textures.size() <= 16 : Log.error("(TileMap) A maximum of 16 textures is allowed.");
+
+        model = new TileMapModel(width, height, tileSize, posZ, textures, tiles);
+        shader = ResourcePool.getOrLoadResource(
+                new Shader("/home/julian/dev/java/Stealth/src/main/resources/shaders/batched_textured_rectangle.glsl"));
     }
 
-    public Data getData()
+    public void save()
     {
-        return data;
+        try
+        {
+            Log.info("(TileMap) Saving map %s", filePath);
+            FileHandler.saveMap(width, height, tileSize, posZ, textures, tiles, filePath);
+        }
+        catch (Exception e)
+        {
+            Log.error("(TileMap) Error saving map: %s", e.getMessage());
+        }
+    }
+
+    @Override
+    public void draw(Camera camera)
+    {
+        shader.bind();
+        shader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
+        shader.setUniform("uViewMatrix", camera.getViewMatrix());
+        shader.setUniform("uTextures", new int[] {
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+        });
+
+        for (int i = 0; i < textures.size(); i++)
+            textures.get(i).bind(i);
+
+        model.draw();
+
+        for (int i = 0; i < textures.size(); i++)
+            textures.get(i).unbind(i);
+
+        shader.unbind();
+    }
+
+    public void setTile(int x, int y, Tile tile)
+    {
+        if (x < 0 || y < 0 || x >= width || y >= height)
+        {
+            Log.warn("(TileMap) Error setting tile: (%d, %d) out of bounds.", x, y);
+            return;
+        }
+
+        Tile oldTile = tiles[x + y * width];
+        tiles[x + y * width] = tile;
+
+        boolean canAddTexture = true;
+        AbstractTexture t = tile.getSprite().getTexture();
+        if (!textures.contains(t) && textures.size() >= 16)
+        {
+            updateTextures();
+            canAddTexture = textures.size() < 16;
+        }
+
+        if (canAddTexture)
+        {
+            textures.add(t);
+            model.setTile(x, y, tile);
+            model.rebuffer();
+        }
+        else
+        {
+            tiles[x + y * width] = oldTile;
+            Log.warn("(TileMap) Error setting tile: Can't add another texture.");
+        }
+    }
+
+    private void updateTextures()
+    {
+        for (Tile tile : tiles)
+        {
+            AbstractTexture t = tile.getSprite().getTexture();
+            if (!textures.contains(t))
+                textures.add(t);
+        }
+    }
+
+    public static TileMap create(String filePath, int width, int height, float tileSize, float posZ, Tile[] tiles)
+    {
+        final List<AbstractTexture> textures = new ArrayList<>();
+        for (Tile tile : tiles)
+            if (!textures.contains(tile.getSprite().getTexture()))
+                textures.add(tile.getSprite().getTexture());
+
+        return new TileMap(filePath, width, height, tileSize, posZ, textures, tiles);
+    }
+
+    @Override
+    public String getKey()
+    {
+        return filePath;
     }
 }

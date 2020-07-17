@@ -1,5 +1,9 @@
 package com.github.fahjulian.stealth.graphics.renderer;
 
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.opengl.DynamicVertexBuffer;
 
@@ -30,6 +34,16 @@ public class BatchedTexturedModel extends AbstractModel
         setIndicesBuffer(generateIndices(maxRects));
     }
 
+    @Override
+    public void draw()
+    {
+        vao.bind();
+
+        glDrawElements(GL_TRIANGLES, rectCount * 6, GL_UNSIGNED_INT, 0);
+
+        vao.unbind();
+    }
+
     public void clear()
     {
         positionsVBO.clear();
@@ -41,7 +55,7 @@ public class BatchedTexturedModel extends AbstractModel
 
     public void addRect(float x, float y, float z, float width, float height, float[] textureCoords, int textureSlot)
     {
-        if (rectCount == maxRects)
+        if (rectCount >= maxRects)
         {
             Log.warn("(BatchedTexturedModel) Maximum rect amount reached.");
             return;

@@ -3,21 +3,28 @@ package com.github.fahjulian.stealth.graphics.renderer;
 import static org.lwjgl.opengl.GL11.glFlush;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
+import com.github.fahjulian.stealth.core.Window;
+import com.github.fahjulian.stealth.core.resources.ResourcePool;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.Sprite;
+import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 import com.github.fahjulian.stealth.graphics.opengl.OpenGLMemoryManager;
 import com.github.fahjulian.stealth.graphics.opengl.Shader;
-import com.github.fahjulian.stealth.graphics.opengl.Texture2D;
-import com.github.fahjulian.stealth.graphics.tilemap.TileMap;
 
 public class Renderer2D
 {
+    static float frameStartTime;
+    static float fpsTimer;
+    static Queue<Float> lastFrames = new LinkedList<>();
+
     static Camera camera;
 
-    static Texture2D[] registeredTextures;
+    static AbstractTexture[] registeredTextures;
     static int[] textureSlots;
     static int registeredTexturesCount;
 
@@ -48,7 +55,7 @@ public class Renderer2D
         MAX_STATIC_COLORED_RECTS = 1000;
         MAX_STATIC_TEXTURED_RECTS = 1000;
         registeredTexturesCount = 0;
-        registeredTextures = new Texture2D[16];
+        registeredTextures = new AbstractTexture[16];
         textureSlots = new int[] {
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
         };
@@ -59,20 +66,20 @@ public class Renderer2D
         Renderer2D.camera = camera;
 
         staticColoredRectsModel = new BatchedColoredModel(MAX_STATIC_COLORED_RECTS);
-        staticColoredRectsShader = new Shader(
-                "/home/julian/dev/java/Stealth/src/main/resources/shaders/static_batched_colored_rectangle.glsl");
+        staticColoredRectsShader = ResourcePool.getOrLoadResource(new Shader(
+                "/home/julian/dev/java/Stealth/src/main/resources/shaders/static_batched_colored_rectangle.glsl"));
 
         staticTexturedRectsModel = new BatchedTexturedModel(MAX_STATIC_TEXTURED_RECTS);
-        staticTexturedRectsShader = new Shader(
-                "/home/julian/dev/java/Stealth/src/main/resources/shaders/static_batched_textured_rectangle.glsl");
+        staticTexturedRectsShader = ResourcePool.getOrLoadResource(new Shader(
+                "/home/julian/dev/java/Stealth/src/main/resources/shaders/static_batched_textured_rectangle.glsl"));
 
         coloredRectsModel = new BatchedColoredModel(MAX_COLORED_RECTS);
-        coloredRectsShader = new Shader(
-                "/home/julian/dev/java/Stealth/src/main/resources/shaders/batched_colored_rectangle.glsl");
+        coloredRectsShader = ResourcePool.getOrLoadResource(
+                new Shader("/home/julian/dev/java/Stealth/src/main/resources/shaders/batched_colored_rectangle.glsl"));
 
         texturedRectsModel = new BatchedTexturedModel(MAX_TEXTURED_RECTS);
-        texturedRectsShader = new Shader(
-                "/home/julian/dev/java/Stealth/src/main/resources/shaders/batched_textured_rectangle.glsl");
+        texturedRectsShader = ResourcePool.getOrLoadResource(
+                new Shader("/home/julian/dev/java/Stealth/src/main/resources/shaders/batched_textured_rectangle.glsl"));
 
         Log.info("(Renderer2D) Initialized Renderer.");
     }
@@ -133,24 +140,21 @@ public class Renderer2D
         coloredRectsModel.addRect(x, y, z, width, height, color);
     }
 
-    public static void drawTileMap(TileMap map)
+    public static void draw(IDrawable drawable)
     {
-        texturedRectsShader.bind();
-        texturedRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
-        texturedRectsShader.setUniform("uViewMatrix", camera.getViewMatrix());
-        texturedRectsShader.setUniform("uTextures", textureSlots);
-
-        map.getModel().draw();
-
-        texturedRectsShader.unbind();
+        drawable.draw(camera);
     }
 
     public static void startFrame()
     {
+        Window.get().clear();
+
         staticColoredRectsModel.clear();
         staticTexturedRectsModel.clear();
         coloredRectsModel.clear();
         texturedRectsModel.clear();
+
+        frameStartTime = Window.get().getTime();
     }
 
     public static void endFrame()
@@ -160,6 +164,26 @@ public class Renderer2D
         drawStaticColoredRects();
         drawStaticTexturedRects();
         glFlush();
+
+        Window.get().swapBuffers();
+
+        float now = Window.get().getTime();
+        float delta = now - frameStartTime;
+
+        lastFrames.add(delta);
+        if (lastFrames.size() > 7)
+            lastFrames.remove();
+
+        if (now - fpsTimer > 1.0f)
+        {
+            float averageFPS = 0.0f;
+            for (Float f : lastFrames)
+                averageFPS += f;
+            averageFPS /= 7.0f;
+
+            Window.get().setTitle(String.format("%s | %d FPS", Window.get().getInitialTitle(), (int) (1 / averageFPS)));
+            fpsTimer += 1.0f;
+        }
     }
 
     public static void destroy()
@@ -167,7 +191,7 @@ public class Renderer2D
         OpenGLMemoryManager.destroyAll();
     }
 
-    public static void registerTexture(Texture2D texture)
+    public static void registerTexture(AbstractTexture texture)
     {
         if (registeredTexturesCount == 16)
         {
@@ -188,9 +212,6 @@ public class Renderer2D
 
     private static void drawStaticColoredRects()
     {
-        if (staticColoredRectsModel.getRectCount() == 0)
-            return;
-
         staticColoredRectsModel.rebuffer();
         staticColoredRectsShader.bind();
         staticColoredRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
@@ -220,9 +241,6 @@ public class Renderer2D
 
     private static void drawColoredRects()
     {
-        if (coloredRectsModel.getRectCount() == 0)
-            return;
-
         coloredRectsModel.rebuffer();
         coloredRectsShader.bind();
         coloredRectsShader.setUniform("uProjectionMatrix", camera.getProjectionMatrix());
