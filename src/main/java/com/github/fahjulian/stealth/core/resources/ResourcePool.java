@@ -14,6 +14,22 @@ public final class ResourcePool
         resources = new HashMap<>();
     }
 
+    /**
+     * Searches all existing resources of the given type with the given key
+     * 
+     * @param <R>
+     *                          The type of the searched resource
+     * 
+     * @param resourceClass
+     *                          The type of the searched resource
+     * 
+     * @param key
+     *                          The key of the searched resource (Check
+     *                          implementation of IResource to see what the key of
+     *                          the type of resource is)
+     * 
+     * @return The found resource or null if none is found.
+     */
     @SuppressWarnings("unchecked")
     public static final <R extends IResource> R getResource(Class<R> resourceClass, String key)
     {
@@ -24,6 +40,17 @@ public final class ResourcePool
         return (R) existingResources.get(key);
     }
 
+    /**
+     * Checks if there is already a resource with the given resources key. If not,
+     * it loads the given resource.
+     * 
+     * @param <R>
+     *                     The type of the resource
+     * @param resource
+     *                     The resource to get a similar one of or load
+     * 
+     * @return The similar resource if found or the newly loaded one
+     */
     @SuppressWarnings("unchecked")
     public static final <R extends IResource> R getOrLoadResource(R resource)
     {

@@ -28,11 +28,22 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
+/** Wrapper for an opengl shader program */
+// TODO: Scan source code for unimors and create a hashmap when loading
 public class Shader implements IResource
 {
     private int ID;
     private final String filePath;
 
+    /**
+     * Construct a new shader from a .glsl file that contains both the vertex shader
+     * and the fragment shader source code. The vertex shader must start with the
+     * line '# type vertex', the fragment shader must start with the line '# type
+     * fragment'
+     * 
+     * @param filePath
+     *                     Path to the .glsl file
+     */
     public Shader(String filePath)
     {
         this.filePath = filePath;
@@ -53,11 +64,13 @@ public class Shader implements IResource
                 filePath);
     }
 
+    /** Binds the shader program to the graphics card */
     public void bind()
     {
         glUseProgram(this.ID);
     }
 
+    /** Unbind the shader program from the graphics card */
     public void unbind()
     {
         glUseProgram(0);

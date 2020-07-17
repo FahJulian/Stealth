@@ -2,6 +2,7 @@ package com.github.fahjulian.stealth.graphics;
 
 import org.joml.Vector4f;
 
+/** Wrapper around the goml Vector4f representating a color */
 public class Color extends Vector4f
 {
     public static final Color WHITE = new Color(1.0f, 1.0f, 1.0f, 1.0f), //

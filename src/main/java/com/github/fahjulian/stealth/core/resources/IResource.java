@@ -13,6 +13,10 @@ public interface IResource
      * Resources should not require any time-consuming loading during construction
      * of the instance. Instead, all loading should be done in the implementation of
      * this method.
+     * 
+     * @throws Exception
+     *                       Any Exceptions that occur when loading the map (e.g.
+     *                       IOExceptions)
      */
     void load() throws Exception;
 }

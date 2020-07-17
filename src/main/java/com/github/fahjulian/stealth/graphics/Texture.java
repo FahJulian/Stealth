@@ -3,12 +3,19 @@ package com.github.fahjulian.stealth.graphics;
 import com.github.fahjulian.stealth.core.resources.IResource;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
-public class PlainTexture extends AbstractTexture implements IResource
+/** A texture that uses the whole image it is loaded from */
+public class Texture extends AbstractTexture implements IResource
 {
     private final String filePath;
     private int width, height;
 
-    public PlainTexture(String filePath)
+    /**
+     * Construct a new texture
+     * 
+     * @param filePath
+     *                     Path to the image file to load the texture from.
+     */
+    public Texture(String filePath)
     {
         this.filePath = filePath;
         this.width = this.height = -1;
@@ -28,11 +35,17 @@ public class PlainTexture extends AbstractTexture implements IResource
         return filePath;
     }
 
+    /**
+     * @return The width of the texture in pixels
+     */
     public int getWidth()
     {
         return width;
     }
 
+    /**
+     * @return The height of the texture in pixels
+     */
     public int getHeight()
     {
         return height;

@@ -1,7 +1,8 @@
-package com.github.fahjulian.stealth.graphics.tilemap;
+package com.github.fahjulian.stealth.tilemap;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,13 +11,18 @@ import com.github.fahjulian.stealth.core.resources.IResource;
 import com.github.fahjulian.stealth.core.resources.ResourcePool;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.core.util.Toolbox;
-import com.github.fahjulian.stealth.graphics.PlainTexture;
 import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.Spritesheet;
+import com.github.fahjulian.stealth.graphics.Texture;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
+/** Handles loading tile maps from files and saving them to files */
 public class FileHandler
 {
+    /**
+     * Package-private class to transfer information about the map between the
+     * FileHandler and TileMap classes
+     */
     static class MapInfo
     {
         private MapInfo()
@@ -30,7 +36,19 @@ public class FileHandler
         Tile[] tiles;
     }
 
-    public static MapInfo loadMapInfo(String filePath) throws Exception
+    /**
+     * Load a map from the given file
+     * 
+     * @param filePath
+     *                     The .xml file to load the map from
+     * 
+     * @return The map info loaded from the file
+     * 
+     * @throws IOException
+     *                         Exceptions that occured when opening or scanning the
+     *                         file
+     */
+    static MapInfo loadMapInfo(String filePath) throws IOException
     {
         final MapInfo mapInfo = new MapInfo();
         final List<Tile> tiles = new ArrayList<>();
@@ -70,8 +88,29 @@ public class FileHandler
         return mapInfo;
     }
 
-    public static void saveMap(int width, int height, float tileSize, float posZ, List<AbstractTexture> textures,
-            Tile[] tiles, String filePath) throws Exception
+    /**
+     * Saves a map to the given .xml file
+     * 
+     * @param width
+     *                     The width of the map (Amount of tiles per coulumn)
+     * @param height
+     *                     The height of the map (Amount of tiles per row)
+     * @param tileSize
+     *                     The size of each tile on the map
+     * @param posZ
+     *                     The z-Position of the map in the world
+     * @param textures
+     *                     All textures used by the map
+     * @param tiles
+     *                     The tiles on the map
+     * @param filePath
+     *                     The file to save the map to
+     * @throws IOException
+     *                         Exceptions that occured when opening or writing to
+     *                         the file.
+     */
+    static void saveMap(int width, int height, float tileSize, float posZ, List<AbstractTexture> textures, Tile[] tiles,
+            String filePath) throws IOException
     {
         StringBuilder file = new StringBuilder();
 
@@ -188,7 +227,7 @@ public class FileHandler
             return ResourcePool
                     .getOrLoadResource(new Spritesheet(path, width, height, spriteWidth, spriteHeight, padding));
         else
-            return ResourcePool.getOrLoadResource(new PlainTexture(path));
+            return ResourcePool.getOrLoadResource(new Texture(path));
     }
 
     private static String serializeTile(Tile tile, List<AbstractTexture> textures)

@@ -12,6 +12,7 @@ import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.Sprite;
+import com.github.fahjulian.stealth.graphics.opengl.AbstractModel;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 import com.github.fahjulian.stealth.graphics.opengl.OpenGLMemoryManager;
 import com.github.fahjulian.stealth.graphics.opengl.Shader;

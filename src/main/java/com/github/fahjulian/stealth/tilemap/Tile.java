@@ -1,7 +1,11 @@
-package com.github.fahjulian.stealth.graphics.tilemap;
+package com.github.fahjulian.stealth.tilemap;
 
 import com.github.fahjulian.stealth.graphics.Sprite;
 
+/**
+ * Small class that holds information on map tiles. For now a map tile only has
+ * a sprite
+ */
 public class Tile
 {
     private final Sprite sprite;

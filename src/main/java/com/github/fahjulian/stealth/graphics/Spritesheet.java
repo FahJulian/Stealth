@@ -6,6 +6,7 @@ import java.util.List;
 import com.github.fahjulian.stealth.core.resources.IResource;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
+/** A texture holding multiple sprites */
 public class Spritesheet extends AbstractTexture implements IResource
 {
     private final List<Sprite> sprites;
@@ -14,6 +15,23 @@ public class Spritesheet extends AbstractTexture implements IResource
     private final int spriteWidth, spriteHeight;
     private final int padding;
 
+    /**
+     * Construct a new spritesheet object
+     * 
+     * @param filePath
+     *                         The path to the image file of the spritesheet
+     * @param width
+     *                         The amount of sprites per column
+     * @param height
+     *                         THe amount of sprites per row
+     * @param spriteWidth
+     *                         The width of each sprite in pixels
+     * @param spriteHeight
+     *                         The height of each sprite in pixels
+     * @param padding
+     *                         The padding on the right and bottom of each sprite in
+     *                         pixels
+     */
     public Spritesheet(String filePath, int width, int height, int spriteWidth, int spriteHeight, int padding)
     {
         this.filePath = filePath;
@@ -52,11 +70,29 @@ public class Spritesheet extends AbstractTexture implements IResource
         }
     }
 
+    /**
+     * Get the sprite located at the given coordinates
+     * 
+     * @param x
+     *              The column of the sprite
+     * @param y
+     *              The row of the sprite
+     * @return The sprite at the given coordinates
+     */
     public Sprite getSpriteAt(int x, int y)
     {
         return sprites.get(x + y * width);
     }
 
+    /**
+     * Retrieve the position of a given sprite on the spritesheet
+     * 
+     * @param sprite
+     *                   The sprite to check the position of
+     * 
+     * @return An integer array holding the x-position (column) and y-position (row)
+     *         of the sprite on the spritesheet.
+     */
     public int[] posOf(Sprite sprite)
     {
         final int i = sprites.indexOf(sprite);
@@ -66,26 +102,41 @@ public class Spritesheet extends AbstractTexture implements IResource
         };
     }
 
+    /**
+     * @return The amount of sprites per column
+     */
     public int getWidth()
     {
         return width;
     }
 
+    /**
+     * @return The amount of sprites per row
+     */
     public int getHeight()
     {
         return height;
     }
 
+    /**
+     * @return The width of each sprite in pixels
+     */
     public int getSpriteWidth()
     {
         return spriteWidth;
     }
 
+    /**
+     * @return The height of each sprite in pixels
+     */
     public int getSpriteHeight()
     {
         return spriteHeight;
     }
 
+    /**
+     * @return The padding on the left and the bottom of each sprite
+     */
     public int getPadding()
     {
         return padding;

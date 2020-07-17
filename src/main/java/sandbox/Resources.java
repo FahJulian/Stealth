@@ -3,7 +3,7 @@ package sandbox;
 import com.github.fahjulian.stealth.core.resources.ResourcePool;
 import com.github.fahjulian.stealth.graphics.Spritesheet;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
-import com.github.fahjulian.stealth.graphics.tilemap.TileMap;
+import com.github.fahjulian.stealth.tilemap.TileMap;
 
 public class Resources
 {
@@ -24,7 +24,7 @@ public class Resources
         ResourcePool.getOrLoadResource(TILES_SHEET);
         Renderer2D.registerTexture(TILES_SHEET);
 
-        ResourcePool.getOrLoadResource(
-                DEFAULT_MAP = new TileMap("/home/julian/dev/java/Stealth/.maps/GeneratedMap.stealthMap.xml"));
+        ResourcePool.getOrLoadResource(DEFAULT_MAP = ResourcePool
+                .getOrLoadResource(new TileMap("/home/julian/dev/java/Stealth/src/main/resources/maps/default.xml")));
     }
 }

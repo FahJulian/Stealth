@@ -26,22 +26,43 @@ import com.github.fahjulian.stealth.core.util.Log;
 
 import org.lwjgl.BufferUtils;
 
+/** An opengl 2D Texture wrapper */
 public abstract class AbstractTexture
 {
     private int ID;
 
+    /**
+     * Binds the texture on the given graphics card slot
+     * 
+     * @param slot
+     *                 The gpu slot
+     */
     public void bind(int slot)
     {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, this.ID);
     }
 
+    /**
+     * Unbinds the given graphics card slot
+     * 
+     * @param slot
+     *                 The gpu slot
+     */
     public void unbind(int slot)
     {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    /**
+     * Loads the texture from the given file using STBImage
+     * 
+     * @param filePath
+     *                     The file to load the texture from
+     * 
+     * @return An Integer array holding the width and the height of the image
+     */
     protected int[] load(String filePath)
     {
         IntBuffer width = BufferUtils.createIntBuffer(1);
