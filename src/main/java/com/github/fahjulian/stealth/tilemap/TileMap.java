@@ -119,12 +119,12 @@ public class TileMap implements IResource, IDrawable
     {
         if (x < 0 || y < 0 || x >= width || y >= height)
         {
-            Log.warn("(TileMap) Error setting tile: (%d, %d) out of bounds.", x, y);
+            Log.debug("(TileMap) Error setting tile: (%d, %d) out of bounds.", x, y);
             return;
         }
 
         Tile oldTile = tiles[x + y * width];
-        tiles[x + y * width] = tile;
+        tiles[x + y * width] = null;
 
         AbstractTexture t = tile.getSprite().getTexture();
         if (!textures.contains(t))
@@ -132,7 +132,7 @@ public class TileMap implements IResource, IDrawable
             updateTextures();
             if (textures.size() >= 16)
             {
-                Log.warn("(TileMap) Error setting tile: Can't add another texture.");
+                Log.debug("(TileMap) Error setting tile: Can't add another texture.");
                 tiles[x + y * width] = oldTile;
                 return;
             }
@@ -140,8 +140,29 @@ public class TileMap implements IResource, IDrawable
             textures.add(t);
         }
 
+        tiles[x + y * width] = tile;
         model.setTile(x, y, tile);
         model.rebuffer();
+    }
+
+    /**
+     * @param x
+     *              The column of the tile
+     * @param y
+     *              The row of the tile
+     * 
+     * @return The tile at the given coordinates or null if coordinates are out of
+     *         bound.
+     */
+    public Tile getTile(int x, int y)
+    {
+        if (x < 0 || y < 0 || x >= width || y >= height)
+        {
+            Log.debug("(TileMap) Error getting map tile: (%d, %d) out of bounds.", x, y);
+            return null;
+        }
+
+        return tiles[x + y * width];
     }
 
     /**
@@ -153,6 +174,8 @@ public class TileMap implements IResource, IDrawable
         textures.clear();
         for (Tile tile : tiles)
         {
+            if (tile == null)
+                continue;
             AbstractTexture t = tile.getSprite().getTexture();
             if (!textures.contains(t))
                 textures.add(t);
@@ -161,6 +184,11 @@ public class TileMap implements IResource, IDrawable
 
     @Override
     public String getKey()
+    {
+        return filePath;
+    }
+
+    public String getFilePath()
     {
         return filePath;
     }

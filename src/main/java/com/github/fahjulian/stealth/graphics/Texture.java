@@ -50,4 +50,9 @@ public class Texture extends AbstractTexture implements IResource
     {
         return height;
     }
+
+    public String getFilePath()
+    {
+        return filePath;
+    }
 }

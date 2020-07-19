@@ -101,7 +101,7 @@ public class Spritesheet extends AbstractTexture implements IResource
                 i / width
         };
     }
-
+    
     /**
      * @return The amount of sprites per column
      */

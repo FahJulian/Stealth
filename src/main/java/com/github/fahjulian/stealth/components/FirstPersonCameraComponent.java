@@ -12,14 +12,14 @@ import org.joml.Vector2f;
 /**
  * Makes the camera follow the entity.
  */
-public class ThirdPersonCameraComponent extends AbstractComponent
+public class FirstPersonCameraComponent extends AbstractComponent
 {
-    public static final class Blueprint implements IComponentBlueprint<ThirdPersonCameraComponent>
+    public static final class Blueprint implements IComponentBlueprint<FirstPersonCameraComponent>
     {
         @Override
-        public ThirdPersonCameraComponent createComponent()
+        public FirstPersonCameraComponent createComponent()
         {
-            return new ThirdPersonCameraComponent();
+            return new FirstPersonCameraComponent();
         }
     }
 

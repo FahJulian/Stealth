@@ -11,6 +11,7 @@ import java.nio.IntBuffer;
 public class ElementBuffer
 {
     private final int ID;
+    private final int size;
 
     /**
      * Construct a new element buffer
@@ -23,6 +24,7 @@ public class ElementBuffer
     public ElementBuffer(int[] indices, VertexArray vao)
     {
         this.ID = OpenGLMemoryManager.createVertexBuffer();
+        this.size = indices.length;
 
         vao.bind();
         this.bind();
@@ -42,5 +44,13 @@ public class ElementBuffer
     public void unbind()
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.ID);
+    }
+
+    /**
+     * @return The amount of indices in the EBO
+     */
+    public int getSize()
+    {
+        return size;
     }
 }

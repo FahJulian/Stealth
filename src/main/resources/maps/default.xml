@@ -627,7 +627,7 @@
     <tile>
         <spriteType>spritesheet</spriteType>
         <textureIndex>0</textureIndex>
-        <sheetX>1</sheetX>
+        <sheetX>0</sheetX>
         <sheetY>3</sheetY>
     </tile>
     <tile>

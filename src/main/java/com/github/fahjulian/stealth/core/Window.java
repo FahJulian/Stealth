@@ -140,7 +140,6 @@ public final class Window
 
         glfwMakeContextCurrent(glfwID);
         glfwSwapInterval(1);
-        glfwShowWindow(glfwID);
 
         GL.createCapabilities();
 
@@ -151,6 +150,11 @@ public final class Window
         glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
 
         Log.info("(Window) Initialized window.");
+    }
+
+    public void makeVisible()
+    {
+        glfwShowWindow(glfwID);
     }
 
     /**
@@ -285,15 +289,15 @@ class GLFWInputListener
     {
         switch (glfwButtonID)
         {
-            case GLFW_MOUSE_BUTTON_1:
-                return Button.LEFT;
-            case GLFW_MOUSE_BUTTON_2:
-                return Button.RIGHT;
-            case GLFW_MOUSE_BUTTON_3:
-                return Button.MIDDLE;
-            default:
-                Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
-                return Button.UNKNOWN;
+        case GLFW_MOUSE_BUTTON_1:
+            return Button.LEFT;
+        case GLFW_MOUSE_BUTTON_2:
+            return Button.RIGHT;
+        case GLFW_MOUSE_BUTTON_3:
+            return Button.MIDDLE;
+        default:
+            Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
+            return Button.UNKNOWN;
         }
     }
 
@@ -301,19 +305,19 @@ class GLFWInputListener
     {
         switch (glfwKeyID)
         {
-            case GLFW_KEY_SPACE:
-                return Key.SPACE;
-            case GLFW_KEY_W:
-                return Key.W;
-            case GLFW_KEY_A:
-                return Key.A;
-            case GLFW_KEY_S:
-                return Key.S;
-            case GLFW_KEY_D:
-                return Key.D;
-            default:
-                Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
-                return Key.UNKNOWN;
+        case GLFW_KEY_SPACE:
+            return Key.SPACE;
+        case GLFW_KEY_W:
+            return Key.W;
+        case GLFW_KEY_A:
+            return Key.A;
+        case GLFW_KEY_S:
+            return Key.S;
+        case GLFW_KEY_D:
+            return Key.D;
+        default:
+            Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
+            return Key.UNKNOWN;
         }
     }
 }

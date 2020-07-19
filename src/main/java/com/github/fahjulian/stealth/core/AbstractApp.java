@@ -28,6 +28,8 @@ public abstract class AbstractApp
         currentScene.init();
         AbstractEvent.setDefaultDispatcher(currentScene.getEventDispatcher());
 
+        Window.get().makeVisible();
+
         Renderer2D.init(currentScene.getCamera());
 
         initialized = true;
