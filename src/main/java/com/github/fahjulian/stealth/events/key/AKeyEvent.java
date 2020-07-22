@@ -4,6 +4,7 @@ import com.github.fahjulian.stealth.core.event.AbstractEvent;
 
 public abstract class AKeyEvent extends AbstractEvent
 {
+    private static int keyIDIterator;
 
     protected final Key key;
 
@@ -19,6 +20,18 @@ public abstract class AKeyEvent extends AbstractEvent
 
     public static enum Key
     {
-        SPACE, W, A, S, D, UNKNOWN;
+        SPACE, CONTROL, W, A, S, D, UNKNOWN;
+
+        public final int ID;
+
+        private Key()
+        {
+            this.ID = AKeyEvent.keyIDIterator++;
+        }
+
+        public static int getKeyAmount()
+        {
+            return keyIDIterator;
+        }
     }
 }

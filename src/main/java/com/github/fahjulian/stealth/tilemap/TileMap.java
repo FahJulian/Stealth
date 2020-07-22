@@ -24,15 +24,18 @@ public class TileMap implements IResource, IDrawable
     private Shader shader;
     private TileMapModel model;
 
+    private final boolean loadFromFile;
+
     /**
      * Construct a new tile map object
      * 
      * @param filePath
      *                     The .xml file to load the map from
      */
-    public TileMap(String filePath)
+    private TileMap(String filePath)
     {
         this.filePath = filePath;
+        this.loadFromFile = true;
     }
 
     private TileMap(String filePath, int width, int height, float tileSize, float posZ, List<AbstractTexture> textures,
@@ -45,12 +48,13 @@ public class TileMap implements IResource, IDrawable
         this.posZ = posZ;
         this.textures = textures;
         this.tiles = tiles;
+        this.loadFromFile = false;
     }
 
     @Override
     public void load() throws Exception
     {
-        if (textures == null && tiles == null) // not loaded yet
+        if (loadFromFile)
         {
             FileHandler.MapInfo mapInfo = FileHandler.loadMapInfo(filePath);
             this.width = mapInfo.width;
@@ -244,6 +248,7 @@ public class TileMap implements IResource, IDrawable
      *                     The z-Position of the map in the world
      * @param tiles
      *                     Array of all the tiles. Must fit the size of the map
+     * 
      * @return The newly created Tile Map object. Must be loaded with the Resource
      *         Pool.
      */
@@ -255,5 +260,18 @@ public class TileMap implements IResource, IDrawable
                 textures.add(tile.getSprite().getTexture());
 
         return new TileMap(filePath, width, height, tileSize, posZ, textures, tiles);
+    }
+
+    /**
+     * Create a map that is going to be loaded from a .xml file
+     * 
+     * @param filePath
+     *                     The full path to the file
+     * 
+     * @return The tilemap object. Must be loaded with the Resource Pool.
+     */
+    public static TileMap fromFile(String filePath)
+    {
+        return new TileMap(filePath);
     }
 }

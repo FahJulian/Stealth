@@ -8,7 +8,7 @@ import com.github.fahjulian.stealth.graphics.Sprite;
  */
 public class Tile
 {
-    private final Sprite sprite;
+    private Sprite sprite;
 
     public Tile(Sprite sprite)
     {
@@ -18,5 +18,10 @@ public class Tile
     public Sprite getSprite()
     {
         return sprite;
+    }
+
+    public void setSprite(Sprite sprite)
+    {
+        this.sprite = sprite;
     }
 }

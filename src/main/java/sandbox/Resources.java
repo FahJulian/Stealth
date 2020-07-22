@@ -30,7 +30,7 @@ public class Resources
         TEST_TEXTURE = ResourcePool.getOrLoadResource(
                 new Texture("/home/julian/dev/java/StealthMapEditor/src/main/resources/textures/default.png"));
 
-        ResourcePool.getOrLoadResource(DEFAULT_MAP = ResourcePool
-                .getOrLoadResource(new TileMap("/home/julian/dev/java/Stealth/src/main/resources/maps/default.xml")));
+        ResourcePool.getOrLoadResource(DEFAULT_MAP = ResourcePool.getOrLoadResource(
+                TileMap.fromFile("/home/julian/dev/java/Stealth/src/main/resources/maps/default.xml")));
     }
 }
