@@ -1,6 +1,6 @@
 package com.github.fahjulian.stealth.events.mouse;
 
-public class MouseScrolledEvent extends AMouseEvent
+public class MouseScrolledEvent extends AbstractMouseEvent
 {
     private final float scrollX, scrollY;
 
@@ -25,7 +25,6 @@ public class MouseScrolledEvent extends AMouseEvent
     @Override
     public String toString()
     {
-        return String.format("MouseScrolledEvent at (%f, %f), scroll: (%f, %f)", x, y, scrollX,
-                scrollY);
+        return String.format("MouseScrolledEvent at (%f, %f), scroll: (%f, %f)", x, y, scrollX, scrollY);
     }
 }

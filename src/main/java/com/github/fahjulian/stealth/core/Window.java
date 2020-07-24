@@ -56,8 +56,8 @@ import com.github.fahjulian.stealth.events.application.WindowCloseEvent;
 import com.github.fahjulian.stealth.events.key.AKeyEvent.Key;
 import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.events.key.KeyReleasedEvent;
-import com.github.fahjulian.stealth.events.mouse.AMouseEvent;
-import com.github.fahjulian.stealth.events.mouse.AMouseEvent.Button;
+import com.github.fahjulian.stealth.events.mouse.AbstractMouseEvent;
+import com.github.fahjulian.stealth.events.mouse.AbstractMouseEvent.Button;
 import com.github.fahjulian.stealth.events.mouse.MouseButtonPressedEvent;
 import com.github.fahjulian.stealth.events.mouse.MouseButtonReleasedEvent;
 import com.github.fahjulian.stealth.events.mouse.MouseDraggedEvent;
@@ -239,21 +239,33 @@ public final class Window
         return inputListener.pressedButtons.contains(button);
     }
 
+    public float getMouseX()
+    {
+        return inputListener.mouseX;
+    }
+
+    public float getMouseY()
+    {
+        return inputListener.mouseY;
+    }
+
     private static class GLFWInputListener
     {
-        private float posX, posY;
-        private List<AMouseEvent.Button> pressedButtons = new ArrayList<>();
+        private float mouseX, mouseY;
+        private List<AbstractMouseEvent.Button> pressedButtons = new ArrayList<>();
         private boolean[] pressedKeys = new boolean[Key.getKeyAmount()];
 
         public void cursorPosCallback(long windowID, double posX, double posY)
         {
-            this.posX = (float) posX;
-            this.posY = Window.get().getHeight() - (float) posY;
+            float deltaX = (float) posX - mouseX;
+            float deltaY = (Window.get().getHeight() - (float) posY) - mouseY;
+            this.mouseX = (float) posX;
+            this.mouseY = Window.get().getHeight() - (float) posY;
 
-            for (AMouseEvent.Button button : pressedButtons)
-                new MouseDraggedEvent(this.posX, this.posY, button);
+            for (AbstractMouseEvent.Button button : pressedButtons)
+                new MouseDraggedEvent(this.mouseX, this.mouseY, deltaX, deltaY, button);
 
-            new MouseMovedEvent(this.posX, this.posY);
+            new MouseMovedEvent(this.mouseX, this.mouseY, deltaX, deltaY);
         }
 
         public void mouseButtonCallback(long windowID, int buttonID, int action, int mods)
@@ -263,18 +275,18 @@ public final class Window
             if (action == GLFW_PRESS)
             {
                 pressedButtons.add(button);
-                new MouseButtonPressedEvent(this.posX, this.posY, button);
+                new MouseButtonPressedEvent(this.mouseX, this.mouseY, button);
             }
             else if (action == GLFW_RELEASE)
             {
                 pressedButtons.remove(button);
-                new MouseButtonReleasedEvent(this.posX, this.posY, button);
+                new MouseButtonReleasedEvent(this.mouseX, this.mouseY, button);
             }
         }
 
         public void scrollCallback(long windowID, double offsetX, double offsetY)
         {
-            new MouseScrolledEvent(this.posX, this.posY, (float) offsetX, (float) offsetY);
+            new MouseScrolledEvent(this.mouseX, this.mouseY, (float) offsetX, (float) offsetY);
         }
 
         public void keyCallback(long window, int keyID, int scancode, int action, int mods)

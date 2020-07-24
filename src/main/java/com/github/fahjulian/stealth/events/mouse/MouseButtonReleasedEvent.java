@@ -1,6 +1,6 @@
 package com.github.fahjulian.stealth.events.mouse;
 
-public class MouseButtonReleasedEvent extends AMouseEvent
+public class MouseButtonReleasedEvent extends AbstractMouseEvent
 {
     private final Button button;
 
@@ -19,8 +19,7 @@ public class MouseButtonReleasedEvent extends AMouseEvent
     @Override
     public String toString()
     {
-        return String.format("MouseButtonReleasedEvent at (%f, %f), button: %s", x, y,
-                button.toString());
+        return String.format("MouseButtonReleasedEvent at (%f, %f), button: %s", x, y, button.toString());
     }
 
 }

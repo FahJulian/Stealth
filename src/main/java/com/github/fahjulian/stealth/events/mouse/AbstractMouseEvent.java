@@ -2,11 +2,11 @@ package com.github.fahjulian.stealth.events.mouse;
 
 import com.github.fahjulian.stealth.core.event.AbstractEvent;
 
-public abstract class AMouseEvent extends AbstractEvent
+public abstract class AbstractMouseEvent extends AbstractEvent
 {
     protected final float x, y;
 
-    protected AMouseEvent(float posX, float posY)
+    protected AbstractMouseEvent(float posX, float posY)
     {
         this.x = posX;
         this.y = posY;
