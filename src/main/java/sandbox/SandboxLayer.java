@@ -31,7 +31,6 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
     {
         Resources.init();
 
-        scene.test();
         add(Blueprints.player.create("Player 1", new Transform(0.0f, 0.0f, 0.1f, 160.0f, 160.0f)));
 
         map = Resources.DEFAULT_MAP;

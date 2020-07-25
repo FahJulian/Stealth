@@ -11,13 +11,13 @@ import com.github.fahjulian.stealth.events.mouse.MouseButtonPressedEvent;
 import com.github.fahjulian.stealth.events.mouse.MouseMovedEvent;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 
-public class UILayer extends AbstractLayer<AbstractScene> implements IUIParent
+public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractLayer<S> implements IUIParent
 {
     private final List<UIComponent> components;
     private final float posZ;
     private boolean initialized;
 
-    public UILayer(AbstractScene scene, float posZ)
+    public AbstractUILayer(S scene, float posZ)
     {
         super(scene);
 
@@ -27,8 +27,10 @@ public class UILayer extends AbstractLayer<AbstractScene> implements IUIParent
     }
 
     @Override
-    protected void onInit()
+    public void init(AbstractScene scene)
     {
+        super.init(scene);
+
         super.registerEventListener(RenderEvent.class, this::onRender);
         super.registerEventListener(MouseMovedEvent.class, this::onMouseMoved);
         super.registerEventListener(MouseButtonPressedEvent.class, this::onMouseButtonPressed);
@@ -48,8 +50,9 @@ public class UILayer extends AbstractLayer<AbstractScene> implements IUIParent
 
     private void onRender(RenderEvent event)
     {
-        for (UIComponent c : components)
+        for (int i = 0; i < components.size(); i++)
         {
+            UIComponent c = components.get(i);
             Renderer2D.drawStaticRectangle( //
                     c.getX(), //
                     c.getY(), //
@@ -65,8 +68,9 @@ public class UILayer extends AbstractLayer<AbstractScene> implements IUIParent
         float xNow = event.getX(), yNow = event.getY();
         float xBefore = event.getX() - event.getDeltaX(), yBefore = event.getY() - event.getDeltaY();
 
-        for (UIComponent c : components)
+        for (int i = 0; i < components.size(); i++)
         {
+            UIComponent c = components.get(i);
             boolean inNow = (xNow > c.getX() && xNow <= c.getX() + c.getWidth() && yNow > c.getY()
                     && yNow <= c.getY() + c.getHeight());
             boolean outBefore = (xBefore <= c.getX() || xBefore > c.getX() + c.getWidth() || yBefore <= c.getY()
@@ -83,8 +87,9 @@ public class UILayer extends AbstractLayer<AbstractScene> implements IUIParent
     {
         float mouseX = event.getX(), mouseY = event.getY();
 
-        for (UIComponent c : components)
+        for (int i = 0; i < components.size(); i++)
         {
+            UIComponent c = components.get(i);
             if (mouseX > c.getX() && mouseX <= c.getX() + c.getWidth() && mouseY > c.getY()
                     && mouseY <= c.getY() + c.getHeight())
                 new UIComponentClickedEvent(event.getButton(), c);

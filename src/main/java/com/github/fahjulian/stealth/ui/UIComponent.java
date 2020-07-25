@@ -5,34 +5,26 @@ import com.github.fahjulian.stealth.core.event.EventDispatcher;
 import com.github.fahjulian.stealth.core.event.IEventListener;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
-import com.github.fahjulian.stealth.ui.UIConstraint.Type;
 
 public class UIComponent implements IUIParent
 {
     private final UIConstraints constraints;
-    private final Color color;
     private final IUIParent parent;
-    private final UILayer layer;
+    private final AbstractUILayer<?> layer;
     private final EventDispatcher eventDispatcher;
+
+    protected UIProperties properties;
 
     protected boolean hovered;
 
-    public UIComponent(IUIParent parent, UIConstraints constraints, Color color)
+    public UIComponent(IUIParent parent, UIConstraints constraints)
     {
         this.constraints = constraints;
-        this.color = color;
         this.parent = parent;
-        this.layer = (parent instanceof UIComponent) ? ((UIComponent) parent).layer : (UILayer) parent;
+        this.layer = (parent instanceof UIComponent) ? ((UIComponent) parent).layer : (AbstractUILayer<?>) parent;
+
         this.eventDispatcher = new EventDispatcher(null);
-    }
-
-    protected void onInit()
-    {
-    }
-
-    protected <E extends AbstractEvent> void registerEventListener(Class<E> eventClass, IEventListener<E> listener)
-    {
-        eventDispatcher.registerEventListener(eventClass, listener);
+        this.properties = new UIProperties();
     }
 
     void init()
@@ -50,25 +42,24 @@ public class UIComponent implements IUIParent
         onInit();
     }
 
-    public UIConstraints getConstraints()
+    protected void onInit()
     {
-        return constraints;
     }
 
-    public Color getColor()
+    protected <E extends AbstractEvent> void registerEventListener(Class<E> eventClass, IEventListener<E> listener)
     {
-        return color;
+        eventDispatcher.registerEventListener(eventClass, listener);
     }
 
     @Override
     public float getX()
     {
         UIConstraint c = constraints.getX();
-        if (c.getType() == Type.PIXELS)
+        if (c.getType() == UIConstraint.Type.PIXELS)
         {
             return parent.getX() + c.getValue();
         }
-        else if (c.getType() == Type.RELATIVE)
+        else if (c.getType() == UIConstraint.Type.RELATIVE)
         {
             return parent.getX() + c.getValue() * parent.getWidth();
         }
@@ -81,11 +72,11 @@ public class UIComponent implements IUIParent
     public float getY()
     {
         UIConstraint c = constraints.getY();
-        if (c.getType() == Type.PIXELS)
+        if (c.getType() == UIConstraint.Type.PIXELS)
         {
             return parent.getY() + c.getValue();
         }
-        else if (c.getType() == Type.RELATIVE)
+        else if (c.getType() == UIConstraint.Type.RELATIVE)
         {
             return parent.getY() + c.getValue() * parent.getHeight();
         }
@@ -98,11 +89,11 @@ public class UIComponent implements IUIParent
     public float getWidth()
     {
         UIConstraint c = constraints.getWidth();
-        if (c.getType() == Type.PIXELS)
+        if (c.getType() == UIConstraint.Type.PIXELS)
         {
             return c.getValue();
         }
-        else if (c.getType() == Type.RELATIVE)
+        else if (c.getType() == UIConstraint.Type.RELATIVE)
         {
             return c.getValue() * parent.getWidth();
         }
@@ -115,11 +106,11 @@ public class UIComponent implements IUIParent
     public float getHeight()
     {
         UIConstraint c = constraints.getHeight();
-        if (c.getType() == Type.PIXELS)
+        if (c.getType() == UIConstraint.Type.PIXELS)
         {
             return c.getValue();
         }
-        else if (c.getType() == Type.RELATIVE)
+        else if (c.getType() == UIConstraint.Type.RELATIVE)
         {
             return c.getValue() * parent.getHeight();
         }
@@ -131,5 +122,20 @@ public class UIComponent implements IUIParent
     public EventDispatcher getEventDispatcher()
     {
         return eventDispatcher;
+    }
+
+    public UIConstraints getConstraints()
+    {
+        return constraints;
+    }
+
+    public UIProperties getProperties()
+    {
+        return properties;
+    }
+
+    public Color getColor()
+    {
+        return hovered ? properties.get(UIProperty.Type.HOVER_COLOR) : properties.get(UIProperty.Type.PRIMARY_COLOR);
     }
 }

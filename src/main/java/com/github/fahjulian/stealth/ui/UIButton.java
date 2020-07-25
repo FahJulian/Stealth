@@ -9,7 +9,9 @@ public class UIButton extends UIComponent
 
     public UIButton(IUIParent parent, UIConstraints constraints, IEventListener<UIComponentClickedEvent> clickListener)
     {
-        super(parent, constraints, Color.WHITE);
+        super(parent, constraints);
+        super.properties.set(UIProperty.Type.HOVER_COLOR, Color.DARK_GREY);
+
         this.clickListener = clickListener;
     }
 
