@@ -1,7 +1,10 @@
 package com.github.fahjulian.stealth.core.entity;
 
+import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type.POSITION;
+import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type.ROTATION;
+import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type.SCALE;
+
 import com.github.fahjulian.stealth.events.entity.EntityTransformEvent;
-import com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -110,118 +113,118 @@ public final class Transform
     {
         position.x = x;
         position.y = y;
-        new EntityTransformEvent(Type.POSITION, entity);
+        new EntityTransformEvent(POSITION, entity);
     }
 
     public void setPosition(float x, float y, float z)
     {
         this.position.set(x, y, z);
-        new EntityTransformEvent(Type.POSITION, entity);
+        new EntityTransformEvent(POSITION, entity);
     }
 
     public void setPosition(Vector2f position)
     {
         this.position.x = position.x;
         this.position.y = position.y;
-        new EntityTransformEvent(Type.POSITION, entity);
+        new EntityTransformEvent(POSITION, entity);
     }
 
     public void setPosition(Vector3f position)
     {
         this.position.set(position);
-        new EntityTransformEvent(Type.POSITION, entity);
+        new EntityTransformEvent(POSITION, entity);
     }
 
     public void setPositionX(float x)
     {
         position.x = x;
-        new EntityTransformEvent(Type.POSITION, entity);
+        new EntityTransformEvent(POSITION, entity);
     }
 
     public void setPositionY(float y)
     {
         position.y = y;
-        new EntityTransformEvent(Type.POSITION, entity);
+        new EntityTransformEvent(POSITION, entity);
     }
 
     public void setPositionZ(float z)
     {
         position.z = z;
-        new EntityTransformEvent(Type.POSITION, entity);
+        new EntityTransformEvent(POSITION, entity);
     }
 
     public void setScale(float x, float y)
     {
         scale.x = x;
         scale.y = y;
-        new EntityTransformEvent(Type.SCALE, entity);
+        new EntityTransformEvent(SCALE, entity);
     }
 
     public void setScale(float x, float y, float z)
     {
         this.scale.set(x, y, z);
-        new EntityTransformEvent(Type.SCALE, entity);
+        new EntityTransformEvent(SCALE, entity);
     }
 
     public void setScale(Vector2f scale)
     {
         this.scale.x = scale.x;
         this.scale.y = scale.y;
-        new EntityTransformEvent(Type.SCALE, entity);
+        new EntityTransformEvent(SCALE, entity);
     }
 
     public void setScale(Vector3f scale)
     {
         this.scale.set(scale);
-        new EntityTransformEvent(Type.SCALE, entity);
+        new EntityTransformEvent(SCALE, entity);
     }
 
     public void setScaleX(float x)
     {
         scale.x = x;
-        new EntityTransformEvent(Type.SCALE, entity);
+        new EntityTransformEvent(SCALE, entity);
     }
 
     public void setScaleY(float y)
     {
         scale.y = y;
-        new EntityTransformEvent(Type.SCALE, entity);
+        new EntityTransformEvent(SCALE, entity);
     }
 
     public void setScaleZ(float z)
     {
         scale.z = z;
-        new EntityTransformEvent(Type.SCALE, entity);
+        new EntityTransformEvent(SCALE, entity);
     }
 
     public void setRotation(float x, float y, float z)
     {
         this.rotation.set(x, y, z);
-        new EntityTransformEvent(Type.ROTATION, entity);
+        new EntityTransformEvent(ROTATION, entity);
     }
 
     public void setRotation(Vector3f rotation)
     {
         this.rotation.set(rotation);
-        new EntityTransformEvent(Type.ROTATION, entity);
+        new EntityTransformEvent(ROTATION, entity);
     }
 
     public void setRotationX(float x)
     {
         rotation.x = x;
-        new EntityTransformEvent(Type.ROTATION, entity);
+        new EntityTransformEvent(ROTATION, entity);
     }
 
     public void setRotationY(float y)
     {
         rotation.y = y;
-        new EntityTransformEvent(Type.ROTATION, entity);
+        new EntityTransformEvent(ROTATION, entity);
     }
 
     public void setRotationZ(float z)
     {
         rotation.z = z;
-        new EntityTransformEvent(Type.ROTATION, entity);
+        new EntityTransformEvent(ROTATION, entity);
     }
 
     public Vector3f getPosition()

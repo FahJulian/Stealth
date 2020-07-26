@@ -1,13 +1,23 @@
 package sandbox;
 
+import static com.github.fahjulian.stealth.graphics.Color.DARK_GREEN;
+import static com.github.fahjulian.stealth.graphics.Color.DARK_GREY;
+import static com.github.fahjulian.stealth.graphics.Color.GREEN;
+import static com.github.fahjulian.stealth.ui.constraint.Type.PIXELS;
+import static com.github.fahjulian.stealth.ui.constraint.Type.RELATIVE;
+import static com.github.fahjulian.stealth.ui.property.Types.BORDER_COLOR;
+import static com.github.fahjulian.stealth.ui.property.Types.BORDER_SIZE;
+import static com.github.fahjulian.stealth.ui.property.Types.HOVER_COLOR;
+import static com.github.fahjulian.stealth.ui.property.Types.PRIMARY_COLOR;
+
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.ui.AbstractUILayer;
-import com.github.fahjulian.stealth.ui.UIButton;
 import com.github.fahjulian.stealth.ui.UIComponent;
-import com.github.fahjulian.stealth.ui.UIConstraint;
-import com.github.fahjulian.stealth.ui.UIConstraints;
-import com.github.fahjulian.stealth.ui.UIProperty;
+import com.github.fahjulian.stealth.ui.components.UIButton;
+import com.github.fahjulian.stealth.ui.components.UISlider;
+import com.github.fahjulian.stealth.ui.constraint.UIConstraint;
+import com.github.fahjulian.stealth.ui.constraint.UIConstraints;
 
 public class SandboxUILayer extends AbstractUILayer<SandboxScene>
 {
@@ -21,17 +31,18 @@ public class SandboxUILayer extends AbstractUILayer<SandboxScene>
     @Override
     protected void onInit()
     {
-        UIConstraints c = new UIConstraints(UIConstraint.Type.RELATIVE, 0.1f, 0.25f, 0.15f, 0.25f);
-        UIComponent button = new UIButton(this, c, (e) ->
-        {
-            UIComponent rect = new UIComponent(this,
-                    new UIConstraints(UIConstraint.Type.PIXELS, 25, clickCount * 50, 25, 25));
-            rect.getProperties().set(UIProperty.Type.HOVER_COLOR, Color.LIGHT_GREY);
-            super.add(rect);
+        UIConstraints c = new UIConstraints(RELATIVE, 0.1f, 0.1f, 0.1f, 0.07f);
+        UIComponent button = new UIButton(this, c, (e) -> Log.info("Clicks: %d", ++clickCount));
+        button.getProperties().set(PRIMARY_COLOR, DARK_GREY);
+        button.getProperties().set(HOVER_COLOR, DARK_GREEN);
+        button.getProperties().set(BORDER_COLOR, GREEN);
+        button.getProperties().set(BORDER_SIZE, new UIConstraint(PIXELS, 3));
 
-            Log.info("Clicks: %d", ++clickCount);
-        });
+        UIComponent rect = new UIComponent(this, new UIConstraints(100, 120, 40, 40));
 
-        super.add(button);
+        UIComponent slider = new UISlider(this, new UIConstraints(100, 300, 150, 30), 11, 5,
+                (n) -> rect.getProperties().set(PRIMARY_COLOR, new Color(n, n, n, 1.0f)));
+
+        super.add(button, slider, rect);
     }
 }

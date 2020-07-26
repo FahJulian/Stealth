@@ -1,5 +1,7 @@
 package sandbox;
 
+import static com.github.fahjulian.stealth.graphics.Color.WHITE;
+
 import java.util.Random;
 
 import com.github.fahjulian.stealth.core.entity.Transform;
@@ -8,7 +10,6 @@ import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.application.WindowCloseEvent;
 import com.github.fahjulian.stealth.events.key.AKeyEvent.Key;
 import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
-import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 import com.github.fahjulian.stealth.tilemap.Tile;
@@ -45,7 +46,7 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
     {
         Renderer2D.draw(map);
 
-        Renderer2D.drawRectangle(10, 10, 2, 100, 100, Color.WHITE);
+        Renderer2D.drawRectangle(10, 10, 2, 100, 100, WHITE);
     }
 
     private void onKeyPressed(KeyPressedEvent event)

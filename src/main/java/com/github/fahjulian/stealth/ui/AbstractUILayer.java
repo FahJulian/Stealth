@@ -6,12 +6,13 @@ import java.util.List;
 import com.github.fahjulian.stealth.core.Window;
 import com.github.fahjulian.stealth.core.scene.AbstractLayer;
 import com.github.fahjulian.stealth.core.scene.AbstractScene;
-import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.mouse.MouseButtonPressedEvent;
 import com.github.fahjulian.stealth.events.mouse.MouseMovedEvent;
-import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
+import com.github.fahjulian.stealth.ui.events.MouseEnteredEvent;
+import com.github.fahjulian.stealth.ui.events.MouseExitedEvent;
+import com.github.fahjulian.stealth.ui.events.UIComponentClickedEvent;
 
-public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractLayer<S> implements IUIParent
+public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractLayer<S> implements IUIComponent
 {
     private final List<UIComponent> components;
     private final float posZ;
@@ -31,7 +32,6 @@ public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractL
     {
         super.init(scene);
 
-        super.registerEventListener(RenderEvent.class, this::onRender);
         super.registerEventListener(MouseMovedEvent.class, this::onMouseMoved);
         super.registerEventListener(MouseButtonPressedEvent.class, this::onMouseButtonPressed);
 
@@ -48,19 +48,11 @@ public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractL
             c.init();
     }
 
-    private void onRender(RenderEvent event)
+    public void add(UIComponent c1, UIComponent... components)
     {
-        for (int i = 0; i < components.size(); i++)
-        {
-            UIComponent c = components.get(i);
-            Renderer2D.drawStaticRectangle( //
-                    c.getX(), //
-                    c.getY(), //
-                    posZ, //
-                    c.getWidth(), //
-                    c.getHeight(), //
-                    c.getColor());
-        }
+        this.add(c1);
+        for (UIComponent c : components)
+            this.add(c);
     }
 
     private void onMouseMoved(MouseMovedEvent event)
@@ -118,5 +110,10 @@ public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractL
     public float getY()
     {
         return 0.0f;
+    }
+
+    public float getPosZ()
+    {
+        return posZ;
     }
 }

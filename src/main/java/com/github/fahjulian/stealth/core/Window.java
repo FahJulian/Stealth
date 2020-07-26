@@ -149,7 +149,7 @@ public final class Window
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
 
-        glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
         Log.info("(Window) Initialized window.");
     }

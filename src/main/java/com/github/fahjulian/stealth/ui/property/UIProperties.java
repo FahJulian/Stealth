@@ -1,11 +1,11 @@
-package com.github.fahjulian.stealth.ui;
+package com.github.fahjulian.stealth.ui.property;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class UIProperties
 {
-    private final Map<UIProperty.Type<?>, Object> properties;
+    private final Map<Type<?>, Object> properties;
 
     public UIProperties(UIProperty<?>[] defaultProperties, UIProperty<?>... properties)
     {
@@ -21,7 +21,7 @@ public class UIProperties
         this(UIProperties.generateDefault(), properties);
     }
 
-    public <T> void set(UIProperty.Type<T> type, T value)
+    public <T> void set(Type<T> type, T value)
     {
         properties.put(type, value);
     }
@@ -32,16 +32,16 @@ public class UIProperties
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T get(UIProperty.Type<T> type)
+    public <T> T get(Type<T> type)
     {
         return (T) properties.get(type);
     }
 
     public static UIProperty<?>[] generateDefault()
     {
-        UIProperty<?>[] properties = new UIProperty[UIProperty.Type.allTypes.size()];
+        UIProperty<?>[] properties = new UIProperty[Types.allTypes.size()];
         for (int i = 0; i < properties.length; i++)
-            properties[i] = UIProperty.Type.allTypes.get(i).getDefault();
+            properties[i] = Types.allTypes.get(i).getDefault();
 
         return properties;
     }

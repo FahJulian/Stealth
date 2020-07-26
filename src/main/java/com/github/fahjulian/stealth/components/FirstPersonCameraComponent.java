@@ -1,11 +1,12 @@
 package com.github.fahjulian.stealth.components;
 
+import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type.POSITION;
+
 import com.github.fahjulian.stealth.core.AbstractApp;
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.events.entity.EntityTransformEvent;
-import com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type;
 
 import org.joml.Vector2f;
 
@@ -36,7 +37,7 @@ public class FirstPersonCameraComponent extends AbstractComponent
 
     private void onEntityTransform(EntityTransformEvent event)
     {
-        if (event.getType() == Type.POSITION)
+        if (event.getType() == POSITION)
         {
             Camera cam = AbstractApp.get().getCurrentScene().getCamera();
             cam.setPosition(entity.getTransform().getPositionX() - offsetFromEntity.x,

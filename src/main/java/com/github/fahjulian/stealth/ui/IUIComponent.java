@@ -1,6 +1,6 @@
 package com.github.fahjulian.stealth.ui;
 
-public interface IUIParent
+public interface IUIComponent
 {
     float getX();
 

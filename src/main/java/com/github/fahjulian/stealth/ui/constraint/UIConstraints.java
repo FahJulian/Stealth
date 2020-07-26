@@ -1,6 +1,6 @@
-package com.github.fahjulian.stealth.ui;
+package com.github.fahjulian.stealth.ui.constraint;
 
-import com.github.fahjulian.stealth.ui.UIConstraint.Type;
+import static com.github.fahjulian.stealth.ui.constraint.Type.PIXELS;
 
 public class UIConstraints
 {
@@ -20,7 +20,7 @@ public class UIConstraints
 
     public UIConstraints(float x, float y, float width, float height)
     {
-        this(Type.PIXELS, x, y, width, height);
+        this(PIXELS, x, y, width, height);
     }
 
     public UIConstraints(Type type, float x, float y, float width, float height)

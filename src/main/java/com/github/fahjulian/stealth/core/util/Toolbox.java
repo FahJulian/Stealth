@@ -8,6 +8,16 @@ public final class Toolbox
     {
     }
 
+    public static float clamp(float value, float min, float max)
+    {
+        return value > max ? max : value < min ? min : value;
+    }
+
+    public static int clamp(int value, int min, int max)
+    {
+        return value > max ? max : value < min ? min : value;
+    }
+
     public static <T> T[] toArray(List<T> list, T[] target)
     {
         for (int i = 0; i < list.size(); i++)

@@ -1,12 +1,7 @@
-package com.github.fahjulian.stealth.ui;
+package com.github.fahjulian.stealth.ui.constraint;
 
 public class UIConstraint
 {
-    public static enum Type
-    {
-        PIXELS, RELATIVE
-    }
-
     private final Type type;
     private final float value;
 

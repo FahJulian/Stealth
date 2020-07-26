@@ -1,6 +1,5 @@
 package com.github.fahjulian.stealth.tilemap;
 
-import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractDynamicModel;
 
 /** The model for the 2D tile map. */
@@ -58,7 +57,6 @@ public class TileMapModel extends AbstractDynamicModel
             indices[5 + i * 6] = 1 + i * 4;
         }
 
-        Log.info("Length of indices: %d", indices.length);
         return indices;
     }
 }
