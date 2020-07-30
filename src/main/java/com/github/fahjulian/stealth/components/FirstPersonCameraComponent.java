@@ -4,7 +4,7 @@ import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Ty
 
 import com.github.fahjulian.stealth.core.AbstractApp;
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
-import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
+import com.github.fahjulian.stealth.core.entity.AbstractComponentBlueprint;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.events.entity.EntityTransformEvent;
 
@@ -15,12 +15,23 @@ import org.joml.Vector2f;
  */
 public class FirstPersonCameraComponent extends AbstractComponent
 {
-    public static final class Blueprint implements IComponentBlueprint<FirstPersonCameraComponent>
+    public static final class Blueprint extends AbstractComponentBlueprint<FirstPersonCameraComponent>
     {
+        static
+        {
+            AbstractComponentBlueprint.register(Blueprint.class, (s) -> new Blueprint());
+        }
+
         @Override
         public FirstPersonCameraComponent createComponent()
         {
             return new FirstPersonCameraComponent();
+        }
+
+        @Override
+        public String serialize()
+        {
+            return "";
         }
     }
 

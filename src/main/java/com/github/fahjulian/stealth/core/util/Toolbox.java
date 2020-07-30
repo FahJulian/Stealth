@@ -1,11 +1,60 @@
 package com.github.fahjulian.stealth.core.util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 public final class Toolbox
 {
     private Toolbox()
     {
+    }
+
+    public static Map<String, String> toFields(String xml)
+    {
+        Map<String, String> fields = new HashMap<>();
+
+        try (Scanner scanner = new Scanner(xml))
+        {
+            while (scanner.hasNextLine())
+            {
+                String line = scanner.nextLine();
+                int idx1 = line.indexOf("<"), idx2 = line.indexOf(">");
+                String xmlTag = (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : "";
+
+                fields.put(xmlTag, Toolbox.stripXmlTags(line, xmlTag));
+            }
+        }
+
+        return fields;
+    }
+
+    public static String toXml(Map<String, String> fields)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        for (Map.Entry<String, String> field : fields.entrySet())
+            sb.append(String.format("<%s>%s</%s>%n", field.getKey(), field.getValue(), field.getKey()));
+
+        return sb.toString();
+    }
+
+    public static String toXml(Map<String, String> fields, int indent)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        for (Map.Entry<String, String> field : fields.entrySet())
+            sb.append(String.format("%s<%s>%s</%s>%n", " ".repeat(indent), field.getKey(), field.getValue(),
+                    field.getKey()));
+
+        return sb.toString();
+    }
+
+    public static String getXmlTag(String line)
+    {
+        int idx1 = line.indexOf("<"), idx2 = line.indexOf(">");
+        return (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : null;
     }
 
     public static float clamp(float value, float min, float max)

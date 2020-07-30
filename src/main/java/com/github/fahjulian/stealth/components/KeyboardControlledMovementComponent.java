@@ -1,7 +1,7 @@
 package com.github.fahjulian.stealth.components;
 
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
-import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
+import com.github.fahjulian.stealth.core.entity.AbstractComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
 import com.github.fahjulian.stealth.events.key.AbstractKeyEvent.Key;
@@ -15,8 +15,13 @@ import org.joml.Vector2f;
  */
 public class KeyboardControlledMovementComponent extends AbstractComponent
 {
-    public static final class Blueprint implements IComponentBlueprint<KeyboardControlledMovementComponent>
+    public static final class Blueprint extends AbstractComponentBlueprint<KeyboardControlledMovementComponent>
     {
+        static
+        {
+            AbstractComponentBlueprint.register(Blueprint.class, Blueprint::deserialize);
+        }
+
         private final float speed;
 
         public Blueprint(float speed)
@@ -28,6 +33,17 @@ public class KeyboardControlledMovementComponent extends AbstractComponent
         public KeyboardControlledMovementComponent createComponent()
         {
             return new KeyboardControlledMovementComponent(speed);
+        }
+
+        @Override
+        public String serialize()
+        {
+            return String.format("        <speed>%f</speed>%n", speed);
+        }
+
+        public static Blueprint deserialize(String xml)
+        {
+            return new Blueprint(0.0f);
         }
     }
 

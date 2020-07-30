@@ -1,0 +1,20 @@
+<entityBlueprint>
+    <componentBlueprint>
+        <blueprintClass>com.github.fahjulian.stealth.components.KeyboardControlledMovementComponent.Blueprint</blueprintClass>
+        <speed>320.000000</speed>
+    </componentBlueprint>
+    <componentBlueprint>
+        <blueprintClass>com.github.fahjulian.stealth.components.SpriteComponent.Blueprint</blueprintClass>
+    </componentBlueprint>
+    <componentBlueprint>
+        <blueprintClass>com.github.fahjulian.stealth.components.FirstPersonCameraComponent.Blueprint</blueprintClass>
+    </componentBlueprint>
+    <componentBlueprint>
+        <blueprintClass>com.github.fahjulian.stealth.components.ColorComponent.Blueprint</blueprintClass>
+        <color>some_color</color>
+    </componentBlueprint>
+    <componentBlueprint>
+        <blueprintClass>com.github.fahjulian.stealth.components.RotationComponent.Blueprint</blueprintClass>
+        <speed>3.000000</speed>
+    </componentBlueprint>
+</entityBlueprint>
