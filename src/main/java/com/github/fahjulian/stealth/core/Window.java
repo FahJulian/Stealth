@@ -4,6 +4,7 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
@@ -53,7 +54,7 @@ import java.util.List;
 
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.application.WindowCloseEvent;
-import com.github.fahjulian.stealth.events.key.AKeyEvent.Key;
+import com.github.fahjulian.stealth.events.key.AbstractKeyEvent.Key;
 import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.events.key.KeyReleasedEvent;
 import com.github.fahjulian.stealth.events.mouse.AbstractMouseEvent;
@@ -258,9 +259,9 @@ public final class Window
         public void cursorPosCallback(long windowID, double posX, double posY)
         {
             float deltaX = (float) posX - mouseX;
-            float deltaY = (Window.get().getHeight() - (float) posY) - mouseY;
+            float deltaY = (float) posY - mouseY;
             this.mouseX = (float) posX;
-            this.mouseY = Window.get().getHeight() - (float) posY;
+            this.mouseY = (float) posY;
 
             for (AbstractMouseEvent.Button button : pressedButtons)
                 new MouseDraggedEvent(this.mouseX, this.mouseY, deltaX, deltaY, button);
@@ -342,6 +343,8 @@ public final class Window
                 return Key.D;
             case GLFW_KEY_LEFT_CONTROL:
                 return Key.CONTROL;
+            case GLFW_KEY_ESCAPE:
+                return Key.ESCAPE;
             default:
                 Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
                 return Key.UNKNOWN;

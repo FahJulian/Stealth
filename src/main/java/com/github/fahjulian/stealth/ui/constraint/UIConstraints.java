@@ -5,28 +5,30 @@ import static com.github.fahjulian.stealth.ui.constraint.Type.PIXELS;
 public class UIConstraints
 {
     private UIConstraint x, y, width, height;
+    private float z;
 
     public UIConstraints()
     {
     }
 
-    public UIConstraints(UIConstraint x, UIConstraint y, UIConstraint width, UIConstraint height)
+    public UIConstraints(UIConstraint x, UIConstraint y, UIConstraint width, UIConstraint height, float z)
     {
         this.setX(x);
         this.setY(y);
+        this.setZ(z);
         this.setWidth(width);
         this.setHeight(height);
     }
 
-    public UIConstraints(float x, float y, float width, float height)
+    public UIConstraints(float x, float y, float z, float width, float height)
     {
-        this(PIXELS, x, y, width, height);
+        this(PIXELS, x, y, z, width, height);
     }
 
-    public UIConstraints(Type type, float x, float y, float width, float height)
+    public UIConstraints(Type type, float x, float y, float z, float width, float height)
     {
         this(new UIConstraint(type, x), new UIConstraint(type, y), new UIConstraint(type, width),
-                new UIConstraint(type, height));
+                new UIConstraint(type, height), z);
     }
 
     public void setX(UIConstraint x)
@@ -37,6 +39,11 @@ public class UIConstraints
     public void setY(UIConstraint y)
     {
         this.y = y;
+    }
+
+    public void setZ(float z)
+    {
+        this.z = z;
     }
 
     public void setWidth(UIConstraint width)
@@ -57,6 +64,11 @@ public class UIConstraints
     public UIConstraint getY()
     {
         return y;
+    }
+
+    public float getZ()
+    {
+        return z;
     }
 
     public UIConstraint getWidth()

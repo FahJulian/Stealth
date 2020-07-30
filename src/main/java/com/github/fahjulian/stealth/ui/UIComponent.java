@@ -2,23 +2,22 @@ package com.github.fahjulian.stealth.ui;
 
 import static com.github.fahjulian.stealth.ui.constraint.Type.PIXELS;
 import static com.github.fahjulian.stealth.ui.constraint.Type.RELATIVE;
-import static com.github.fahjulian.stealth.ui.property.Types.BORDER_COLOR;
-import static com.github.fahjulian.stealth.ui.property.Types.BORDER_HOVER_COLOR;
-import static com.github.fahjulian.stealth.ui.property.Types.BORDER_SIZE;
-import static com.github.fahjulian.stealth.ui.property.Types.HOVER_COLOR;
-import static com.github.fahjulian.stealth.ui.property.Types.PRIMARY_COLOR;
+import static com.github.fahjulian.stealth.ui.property.Types.BORDER;
+import static com.github.fahjulian.stealth.ui.property.Types.HOVER_BORDER;
+import static com.github.fahjulian.stealth.ui.property.Types.HOVER_MATERIAL;
+import static com.github.fahjulian.stealth.ui.property.Types.PRIMARY_MATERIAL;
 
 import com.github.fahjulian.stealth.core.event.AbstractEvent;
 import com.github.fahjulian.stealth.core.event.EventDispatcher;
 import com.github.fahjulian.stealth.core.event.IEventListener;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
-import com.github.fahjulian.stealth.graphics.Color;
+import com.github.fahjulian.stealth.graphics.IMaterial;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 import com.github.fahjulian.stealth.ui.constraint.UIConstraint;
 import com.github.fahjulian.stealth.ui.constraint.UIConstraints;
-import com.github.fahjulian.stealth.ui.events.MouseEnteredEvent;
-import com.github.fahjulian.stealth.ui.events.MouseExitedEvent;
+import com.github.fahjulian.stealth.ui.events.UIComponentMouseEnteredEvent;
+import com.github.fahjulian.stealth.ui.events.UIComponentMouseExitedEvent;
 import com.github.fahjulian.stealth.ui.property.UIProperties;
 import com.github.fahjulian.stealth.ui.property.UIProperty;
 
@@ -31,6 +30,7 @@ public class UIComponent implements IUIComponent
 
     protected UIProperties properties;
     protected boolean hovered;
+    protected boolean hidden;
 
     public UIComponent(IUIComponent parent, UIConstraints constraints, UIProperty<?>... properties)
     {
@@ -45,12 +45,12 @@ public class UIComponent implements IUIComponent
     void init()
     {
         layer.getEventDispatcher().registerSubDispatcher(eventDispatcher);
-        eventDispatcher.registerEventListener(RenderEvent.class, this::onRender);
-        eventDispatcher.registerEventListener(MouseEnteredEvent.class, (e) ->
+        this.registerEventListener(RenderEvent.class, this::onRender);
+        this.registerEventListener(UIComponentMouseEnteredEvent.class, (e) ->
         {
             hovered = true;
         });
-        eventDispatcher.registerEventListener(MouseExitedEvent.class, (e) ->
+        this.registerEventListener(UIComponentMouseExitedEvent.class, (e) ->
         {
             hovered = false;
         });
@@ -64,25 +64,32 @@ public class UIComponent implements IUIComponent
 
     protected <E extends AbstractEvent> void registerEventListener(Class<E> eventClass, IEventListener<E> listener)
     {
-        eventDispatcher.registerEventListener(eventClass, listener);
+        eventDispatcher.registerEventListener(eventClass, (e) ->
+        {
+            if (!hidden && layer.isActive())
+                listener.onEvent(e);
+        });
     }
 
     protected void onRender(RenderEvent event)
     {
-        float x = this.getX(), y = this.getY(), z = layer.getPosZ(), width = this.getWidth(), height = this.getHeight();
-        Color color = this.getColor();
+        IMaterial material = this.getMaterial();
+        if (material == null)
+            return;
 
-        if (this.getProperties().get(BORDER_SIZE).getValue() != 0)
+        float x = this.getX(), y = this.getY(), z = this.getZ(), width = this.getWidth(), height = this.getHeight();
+
+        if (this.getProperties().get(BORDER) != null)
         {
-            Color bColor = this.getBorderColor();
+            IMaterial bMaterial = this.getBorder().getMaterial();
             float bWidth = this.getBorderWidth(), bHeight = this.getBorderHeight();
-            Renderer2D.drawStaticRectangle(x, y, z, width, height, bColor);
+            Renderer2D.drawStaticRectangle(x, y, z, width, height, bMaterial);
             Renderer2D.drawStaticRectangle(x + bWidth, y + bHeight, z + 0.01f, width - 2 * bWidth, height - 2 * bHeight,
-                    color);
+                    material);
         }
         else
         {
-            Renderer2D.drawStaticRectangle(x, y, z, width, height, color);
+            Renderer2D.drawStaticRectangle(x, y, z, width, height, material);
         }
     }
 
@@ -125,6 +132,11 @@ public class UIComponent implements IUIComponent
         return 0;
     }
 
+    public float getZ()
+    {
+        return constraints.getZ();
+    }
+
     @Override
     public float getHeight()
     {
@@ -140,7 +152,7 @@ public class UIComponent implements IUIComponent
 
     public float getBorderWidth()
     {
-        UIConstraint c = properties.get(BORDER_SIZE);
+        UIConstraint c = properties.get(BORDER).getWidth();
         if (c.getType() == PIXELS)
             return c.getValue();
         else if (c.getType() == RELATIVE)
@@ -152,7 +164,7 @@ public class UIComponent implements IUIComponent
 
     public float getBorderHeight()
     {
-        UIConstraint c = properties.get(BORDER_SIZE);
+        UIConstraint c = properties.get(BORDER).getHeight();
         if (c.getType() == PIXELS)
             return c.getValue();
         else if (c.getType() == RELATIVE)
@@ -177,13 +189,24 @@ public class UIComponent implements IUIComponent
         return properties;
     }
 
-    public Color getColor()
+    public IMaterial getMaterial()
     {
-        return hovered ? properties.get(HOVER_COLOR) : properties.get(PRIMARY_COLOR);
+        return hovered && properties.get(HOVER_MATERIAL) != null ? properties.get(HOVER_MATERIAL)
+                : properties.get(PRIMARY_MATERIAL);
     }
 
-    public Color getBorderColor()
+    public UIBorder getBorder()
     {
-        return hovered ? properties.get(BORDER_HOVER_COLOR) : properties.get(BORDER_COLOR);
+        return hovered && properties.get(HOVER_BORDER) != null ? properties.get(HOVER_BORDER) : properties.get(BORDER);
+    }
+
+    public boolean isHidden()
+    {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden)
+    {
+        this.hidden = hidden;
     }
 }

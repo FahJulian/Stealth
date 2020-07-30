@@ -15,11 +15,11 @@ public class TileMapModel extends AbstractDynamicModel
 
         for (int x = 0; x < map.getWidth(); x++)
             for (int y = 0; y < map.getHeight(); y++)
-                setTile(x, y, map.getTiles()[x + y * map.getWidth()]);
+                this.setTile(x, y, map.getTiles()[x + y * map.getWidth()]);
         super.rebuffer();
     }
 
-    void setTile(int x, int y, Tile tile)
+    void setTile(int x, int y, TileComponent tile)
     {
         float[] textureCoords = tile.getSprite().getTextureCoords();
         float textureSlot = map.getTextures().indexOf(tile.getSprite().getTexture());
@@ -40,6 +40,10 @@ public class TileMapModel extends AbstractDynamicModel
     @Override
     public void rebuffer()
     {
+        for (int x = 0; x < map.getWidth(); x++)
+            for (int y = 0; y < map.getHeight(); y++)
+                this.setTile(x, y, map.getTiles()[x + y * map.getWidth()]);
+
         super.rebuffer();
     }
 

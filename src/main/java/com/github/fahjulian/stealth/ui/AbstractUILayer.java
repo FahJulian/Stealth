@@ -8,15 +8,17 @@ import com.github.fahjulian.stealth.core.scene.AbstractLayer;
 import com.github.fahjulian.stealth.core.scene.AbstractScene;
 import com.github.fahjulian.stealth.events.mouse.MouseButtonPressedEvent;
 import com.github.fahjulian.stealth.events.mouse.MouseMovedEvent;
-import com.github.fahjulian.stealth.ui.events.MouseEnteredEvent;
-import com.github.fahjulian.stealth.ui.events.MouseExitedEvent;
 import com.github.fahjulian.stealth.ui.events.UIComponentClickedEvent;
+import com.github.fahjulian.stealth.ui.events.UIComponentMouseEnteredEvent;
+import com.github.fahjulian.stealth.ui.events.UIComponentMouseExitedEvent;
 
 public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractLayer<S> implements IUIComponent
 {
     private final List<UIComponent> components;
-    private final float posZ;
     private boolean initialized;
+
+    protected final float posZ;
+    protected boolean active;
 
     public AbstractUILayer(S scene, float posZ)
     {
@@ -25,6 +27,7 @@ public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractL
         this.components = new ArrayList<>();
         this.posZ = posZ;
         this.initialized = false;
+        this.active = true;
     }
 
     @Override
@@ -48,9 +51,8 @@ public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractL
             c.init();
     }
 
-    public void add(UIComponent c1, UIComponent... components)
+    public void add(UIComponent... components)
     {
-        this.add(c1);
         for (UIComponent c : components)
             this.add(c);
     }
@@ -69,9 +71,9 @@ public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractL
                     || yBefore > c.getY() + c.getHeight());
 
             if (inNow && outBefore)
-                new MouseEnteredEvent(c);
+                new UIComponentMouseEnteredEvent(c);
             else if (!inNow && !outBefore)
-                new MouseExitedEvent(c);
+                new UIComponentMouseExitedEvent(c);
         }
     }
 
@@ -115,5 +117,15 @@ public abstract class AbstractUILayer<S extends AbstractScene> extends AbstractL
     public float getPosZ()
     {
         return posZ;
+    }
+
+    public boolean isActive()
+    {
+        return active;
+    }
+
+    public void setActive(boolean active)
+    {
+        this.active = active;
     }
 }

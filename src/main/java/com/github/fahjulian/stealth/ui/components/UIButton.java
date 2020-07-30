@@ -1,7 +1,7 @@
 package com.github.fahjulian.stealth.ui.components;
 
 import static com.github.fahjulian.stealth.graphics.Color.DARK_GREY;
-import static com.github.fahjulian.stealth.ui.property.Types.HOVER_COLOR;
+import static com.github.fahjulian.stealth.ui.property.Types.HOVER_MATERIAL;
 
 import com.github.fahjulian.stealth.core.event.IEventListener;
 import com.github.fahjulian.stealth.ui.IUIComponent;
@@ -17,7 +17,8 @@ public class UIButton extends UIComponent
             IEventListener<UIComponentClickedEvent> clickListener)
     {
         super(parent, constraints);
-        super.properties.set(HOVER_COLOR, DARK_GREY);
+
+        super.properties.set(HOVER_MATERIAL, DARK_GREY);
 
         this.clickListener = clickListener;
     }
@@ -25,6 +26,6 @@ public class UIButton extends UIComponent
     @Override
     protected void onInit()
     {
-        registerEventListener(UIComponentClickedEvent.class, clickListener);
+        super.registerEventListener(UIComponentClickedEvent.class, clickListener);
     }
 }

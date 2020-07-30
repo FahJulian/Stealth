@@ -59,10 +59,10 @@ public class Spritesheet extends AbstractTexture implements IResource
                 float y0 = y1 - spriteHeight / (float) textureSize[1];
 
                 float[] textureCoords = new float[] {
-                        x1, y1, //
-                        x0, y1, //
                         x1, y0, //
-                        x0, y0
+                        x0, y0, //
+                        x1, y1, //
+                        x0, y1
                 };
 
                 sprites.add(new Sprite(this, textureCoords));
@@ -101,7 +101,7 @@ public class Spritesheet extends AbstractTexture implements IResource
                 i / width
         };
     }
-    
+
     /**
      * @return The amount of sprites per column
      */

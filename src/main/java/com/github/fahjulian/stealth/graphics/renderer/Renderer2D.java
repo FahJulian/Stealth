@@ -11,6 +11,7 @@ import com.github.fahjulian.stealth.core.resources.ResourcePool;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
+import com.github.fahjulian.stealth.graphics.IMaterial;
 import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractModel;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
@@ -85,6 +86,22 @@ public class Renderer2D
         Log.info("(Renderer2D) Initialized Renderer.");
     }
 
+    public static void drawStaticRectangleM(float x, float y, float width, float height, IMaterial material)
+    {
+        if (material instanceof Sprite)
+            drawStaticRectangle(x, y, width, height, (Sprite) material);
+        else if (material instanceof Color)
+            drawStaticRectangle(x, y, width, height, (Color) material);
+    }
+
+    public static void drawStaticRectangle(float x, float y, float z, float width, float height, IMaterial material)
+    {
+        if (material instanceof Sprite)
+            drawStaticRectangle(x, y, z, width, height, (Sprite) material);
+        else if (material instanceof Color)
+            drawStaticRectangle(x, y, z, width, height, (Color) material);
+    }
+
     public static void drawStaticRectangle(float x, float y, float width, float height, Color color)
     {
         drawStaticRectangle(x, y, 0.0f, width, height, color);
@@ -111,6 +128,22 @@ public class Renderer2D
         }
 
         staticTexturedRectsModel.addRect(x, y, z, width, height, sprite.getTextureCoords(), textureSlot);
+    }
+
+    public static void drawRectangle(float x, float y, float width, float height, IMaterial material)
+    {
+        if (material instanceof Sprite)
+            drawRectangle(x, y, width, height, (Sprite) material);
+        else if (material instanceof Color)
+            drawRectangle(x, y, width, height, (Color) material);
+    }
+
+    public static void drawRectangle(float x, float y, float z, float width, float height, IMaterial material)
+    {
+        if (material instanceof Sprite)
+            drawRectangle(x, y, z, width, height, (Sprite) material);
+        else if (material instanceof Color)
+            drawRectangle(x, y, z, width, height, (Color) material);
     }
 
     public static void drawRectangle(float x, float y, float width, float height, Sprite sprite)

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.github.fahjulian.stealth.core.resources.IResource;
 import com.github.fahjulian.stealth.core.resources.ResourcePool;
@@ -33,7 +34,7 @@ public class FileHandler
         int width, height;
         float tileSize, posZ;
         List<AbstractTexture> textures;
-        Tile[] tiles;
+        Sprite[] tiles;
     }
 
     /**
@@ -51,7 +52,7 @@ public class FileHandler
     static MapInfo loadMapInfo(String filePath) throws IOException
     {
         final MapInfo mapInfo = new MapInfo();
-        final List<Tile> tiles = new ArrayList<>();
+        final List<Sprite> tiles = new ArrayList<>();
         final Scanner scanner = new Scanner(new File(filePath));
 
         while (scanner.hasNextLine())
@@ -62,28 +63,28 @@ public class FileHandler
             String xmlTag = (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : "";
             switch (xmlTag)
             {
-                case "width":
-                    mapInfo.width = Integer.valueOf(Toolbox.stripXmlTags(line, "width"));
-                    break;
-                case "height":
-                    mapInfo.height = Integer.valueOf(Toolbox.stripXmlTags(line, "height"));
-                    break;
-                case "posZ":
-                    mapInfo.posZ = Float.valueOf(Toolbox.stripXmlTags(line, "posZ"));
-                    break;
-                case "tileSize":
-                    mapInfo.tileSize = Float.valueOf(Toolbox.stripXmlTags(line, "tileSize"));
-                    break;
-                case "texture":
-                    mapInfo.textures.add(loadTexture(scanner));
-                    break;
-                case "tile":
-                    tiles.add(loadTile(scanner, mapInfo.textures));
-                    break;
+            case "width":
+                mapInfo.width = Integer.valueOf(Toolbox.stripXmlTags(line, "width"));
+                break;
+            case "height":
+                mapInfo.height = Integer.valueOf(Toolbox.stripXmlTags(line, "height"));
+                break;
+            case "posZ":
+                mapInfo.posZ = Float.valueOf(Toolbox.stripXmlTags(line, "posZ"));
+                break;
+            case "tileSize":
+                mapInfo.tileSize = Float.valueOf(Toolbox.stripXmlTags(line, "tileSize"));
+                break;
+            case "texture":
+                mapInfo.textures.add(loadTexture(scanner));
+                break;
+            case "tile":
+                tiles.add(loadTile(scanner, mapInfo.textures));
+                break;
             }
         }
 
-        mapInfo.tiles = Toolbox.toArray(tiles, new Tile[tiles.size()]);
+        mapInfo.tiles = Toolbox.toArray(tiles, new Sprite[tiles.size()]);
 
         return mapInfo;
     }
@@ -109,8 +110,8 @@ public class FileHandler
      *                         Exceptions that occured when opening or writing to
      *                         the file.
      */
-    static void saveMap(int width, int height, float tileSize, float posZ, List<AbstractTexture> textures, Tile[] tiles,
-            String filePath) throws IOException
+    static void saveMap(int width, int height, float tileSize, float posZ, Set<AbstractTexture> textures,
+            TileComponent[] tiles, String filePath) throws IOException
     {
         StringBuilder file = new StringBuilder();
 
@@ -127,8 +128,8 @@ public class FileHandler
         file.append(String.format("</textures>%n%n"));
 
         file.append(String.format("<tiles>%n"));
-        for (Tile tile : tiles)
-            file.append(serializeTile(tile, textures));
+        for (TileComponent tile : tiles)
+            file.append(serializeTile(tile, new ArrayList<>(textures)));
         file.append(String.format("</tiles>%n"));
 
         new File(filePath).getParentFile().mkdirs();
@@ -137,7 +138,7 @@ public class FileHandler
         writer.close();
     }
 
-    private static Tile loadTile(Scanner scanner, List<AbstractTexture> textures)
+    private static Sprite loadTile(Scanner scanner, List<AbstractTexture> textures)
     {
         final String SPRITESHEET = "spritesheet", TEXTURE2D = "texture";
         String textureType = null;
@@ -153,30 +154,29 @@ public class FileHandler
             String xmlTag = (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : "";
             switch (xmlTag)
             {
-                case "spriteType":
-                    textureType = Toolbox.stripXmlTags(line, "spriteType");
-                    break;
-                case "textureIndex":
-                    texture = textures.get(Integer.valueOf(Toolbox.stripXmlTags(line, "textureIndex")));
-                    assert textureType != null : Log
-                            .error("(tilemap.FileHandler) Error loading map: Invalid tag order.");
-                    if (textureType.equals(TEXTURE2D))
-                        finished = true;
-                    break;
-                case "sheetX":
-                    sheetX = Integer.valueOf(Toolbox.stripXmlTags(line, "sheetX"));
-                    break;
-                case "sheetY":
-                    sheetY = Integer.valueOf(Toolbox.stripXmlTags(line, "sheetY"));
+            case "spriteType":
+                textureType = Toolbox.stripXmlTags(line, "spriteType");
+                break;
+            case "textureIndex":
+                texture = textures.get(Integer.valueOf(Toolbox.stripXmlTags(line, "textureIndex")));
+                assert textureType != null : Log.error("(tilemap.FileHandler) Error loading map: Invalid tag order.");
+                if (textureType.equals(TEXTURE2D))
                     finished = true;
-                    break;
+                break;
+            case "sheetX":
+                sheetX = Integer.valueOf(Toolbox.stripXmlTags(line, "sheetX"));
+                break;
+            case "sheetY":
+                sheetY = Integer.valueOf(Toolbox.stripXmlTags(line, "sheetY"));
+                finished = true;
+                break;
             }
         }
 
         if (textureType.equals(SPRITESHEET))
-            return new Tile(((Spritesheet) texture).getSpriteAt(sheetX, sheetY));
+            return ((Spritesheet) texture).getSpriteAt(sheetX, sheetY);
         else
-            return new Tile(new Sprite(texture));
+            return new Sprite(texture);
     }
 
     private static AbstractTexture loadTexture(Scanner scanner)
@@ -196,30 +196,30 @@ public class FileHandler
             String xmlTag = (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : "";
             switch (xmlTag)
             {
-                case "type":
-                    isSpritesheet = Toolbox.stripXmlTags(line, "type").equals("spritesheet");
-                    break;
-                case "path":
-                    path = Toolbox.stripXmlTags(line, "path");
-                    if (!isSpritesheet)
-                        finished = true;
-                    break;
-                case "width":
-                    width = Integer.valueOf(Toolbox.stripXmlTags(line, "width"));
-                    break;
-                case "height":
-                    height = Integer.valueOf(Toolbox.stripXmlTags(line, "height"));
-                    break;
-                case "spriteWidth":
-                    spriteWidth = Integer.valueOf(Toolbox.stripXmlTags(line, "spriteWidth"));
-                    break;
-                case "spriteHeight":
-                    spriteHeight = Integer.valueOf(Toolbox.stripXmlTags(line, "spriteHeight"));
-                    break;
-                case "padding":
-                    padding = Integer.valueOf(Toolbox.stripXmlTags(line, "padding"));
+            case "type":
+                isSpritesheet = Toolbox.stripXmlTags(line, "type").equals("spritesheet");
+                break;
+            case "path":
+                path = Toolbox.stripXmlTags(line, "path");
+                if (!isSpritesheet)
                     finished = true;
-                    break;
+                break;
+            case "width":
+                width = Integer.valueOf(Toolbox.stripXmlTags(line, "width"));
+                break;
+            case "height":
+                height = Integer.valueOf(Toolbox.stripXmlTags(line, "height"));
+                break;
+            case "spriteWidth":
+                spriteWidth = Integer.valueOf(Toolbox.stripXmlTags(line, "spriteWidth"));
+                break;
+            case "spriteHeight":
+                spriteHeight = Integer.valueOf(Toolbox.stripXmlTags(line, "spriteHeight"));
+                break;
+            case "padding":
+                padding = Integer.valueOf(Toolbox.stripXmlTags(line, "padding"));
+                finished = true;
+                break;
             }
         }
 
@@ -230,7 +230,7 @@ public class FileHandler
             return ResourcePool.getOrLoadResource(new Texture(path));
     }
 
-    private static String serializeTile(Tile tile, List<AbstractTexture> textures)
+    private static String serializeTile(TileComponent tile, List<AbstractTexture> textures)
     {
         final String SPRITESHEET = "spritesheet", TEXTURE2D = "texture";
         String textureType = tile.getSprite().getTexture() instanceof Spritesheet ? SPRITESHEET : TEXTURE2D;

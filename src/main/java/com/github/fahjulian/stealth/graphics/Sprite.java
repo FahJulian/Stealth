@@ -3,7 +3,7 @@ package com.github.fahjulian.stealth.graphics;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
 /** A sprite is an objet that holds a texture and texture coords */
-public class Sprite
+public class Sprite implements IMaterial
 {
     private AbstractTexture texture;
     private float[] textureCoords;
@@ -18,10 +18,10 @@ public class Sprite
     {
         this.texture = texture;
         this.textureCoords = new float[] {
-                1.0f, 1.0f, //
-                0.0f, 1.0f, //
                 1.0f, 0.0f, //
-                0.0f, 0.0f
+                0.0f, 0.0f, //
+                1.0f, 1.0f, //
+                0.0f, 1.0f
         };
     }
 

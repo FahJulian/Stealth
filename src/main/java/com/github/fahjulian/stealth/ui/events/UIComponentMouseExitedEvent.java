@@ -3,9 +3,9 @@ package com.github.fahjulian.stealth.ui.events;
 import com.github.fahjulian.stealth.core.event.AbstractEvent;
 import com.github.fahjulian.stealth.ui.UIComponent;
 
-public class MouseExitedEvent extends AbstractEvent
+public class UIComponentMouseExitedEvent extends AbstractEvent
 {
-    public MouseExitedEvent(UIComponent component)
+    public UIComponentMouseExitedEvent(UIComponent component)
     {
         super.dispatcher = component.getEventDispatcher();
         super.dispatch();

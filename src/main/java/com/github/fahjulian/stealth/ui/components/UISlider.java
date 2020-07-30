@@ -2,9 +2,10 @@ package com.github.fahjulian.stealth.ui.components;
 
 import static com.github.fahjulian.stealth.graphics.Color.DARK_BLUE;
 import static com.github.fahjulian.stealth.graphics.Color.LIGHT_BLUE;
-import static com.github.fahjulian.stealth.ui.property.Types.HOVER_COLOR;
-import static com.github.fahjulian.stealth.ui.property.Types.PRIMARY_COLOR;
-import static com.github.fahjulian.stealth.ui.property.Types.SECONDARY_COLOR;
+import static com.github.fahjulian.stealth.graphics.Color.LIGHT_GREY;
+import static com.github.fahjulian.stealth.ui.property.Types.HOVER_MATERIAL;
+import static com.github.fahjulian.stealth.ui.property.Types.PRIMARY_MATERIAL;
+import static com.github.fahjulian.stealth.ui.property.Types.SECONDARY_MATERIAL;
 
 import java.util.function.Consumer;
 
@@ -13,7 +14,7 @@ import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.mouse.AbstractMouseEvent.Button;
 import com.github.fahjulian.stealth.events.mouse.MouseButtonReleasedEvent;
 import com.github.fahjulian.stealth.events.mouse.MouseMovedEvent;
-import com.github.fahjulian.stealth.graphics.Color;
+import com.github.fahjulian.stealth.graphics.IMaterial;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 import com.github.fahjulian.stealth.ui.IUIComponent;
 import com.github.fahjulian.stealth.ui.UIComponent;
@@ -32,8 +33,9 @@ public class UISlider extends UIComponent
             Consumer<Float> sliderPosCallback)
     {
         super(parent, constraints);
-        super.properties.set(PRIMARY_COLOR, LIGHT_BLUE);
-        super.properties.set(HOVER_COLOR, DARK_BLUE);
+        super.properties.set(PRIMARY_MATERIAL, LIGHT_BLUE);
+        super.properties.set(SECONDARY_MATERIAL, LIGHT_GREY);
+        super.properties.set(HOVER_MATERIAL, DARK_BLUE);
 
         this.sliderWidth = sliderWidth;
         this.barHeight = barHeight;
@@ -67,20 +69,23 @@ public class UISlider extends UIComponent
     }
 
     @Override
-    public Color getColor()
+    public IMaterial getMaterial()
     {
-        return hovered || dragged ? properties.get(HOVER_COLOR) : properties.get(PRIMARY_COLOR);
+        return hovered || dragged ? properties.get(HOVER_MATERIAL) : properties.get(PRIMARY_MATERIAL);
     }
 
     @Override
     protected void onRender(RenderEvent event)
     {
-        Color color = this.getColor();
-        Color barColor = super.getProperties().get(SECONDARY_COLOR);
-        float x = super.getX(), y = super.getY(), z = layer.getPosZ(), width = super.getWidth(),
+        if (!layer.isActive())
+            return;
+
+        IMaterial material = this.getMaterial();
+        IMaterial barMaterial = super.getProperties().get(SECONDARY_MATERIAL);
+        float x = super.getX(), y = super.getY(), z = super.getZ(), width = super.getWidth(),
                 height = super.getHeight();
 
-        Renderer2D.drawStaticRectangle(x + sliderPos - sliderWidth / 2, y, z, sliderWidth, height, color);
-        Renderer2D.drawStaticRectangle(x, y + (height - barHeight) / 2, z, width, barHeight, barColor);
+        Renderer2D.drawStaticRectangle(x + sliderPos - sliderWidth / 2, y, z, sliderWidth, height, material);
+        Renderer2D.drawStaticRectangle(x, y + (height - barHeight) / 2, z, width, barHeight, barMaterial);
     }
 }

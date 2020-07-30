@@ -9,6 +9,7 @@ import com.github.fahjulian.stealth.core.event.IEventListener;
 public abstract class AbstractComponent
 {
     protected Entity entity;
+    protected boolean active;
 
     /**
      * This method is called during initialization of the game. It should register
@@ -19,7 +20,9 @@ public abstract class AbstractComponent
     void init(Entity entity)
     {
         this.entity = entity;
-        onInit();
+        this.onInit();
+
+        this.active = true;
     }
 
     /**
@@ -27,7 +30,11 @@ public abstract class AbstractComponent
      */
     protected <E extends AbstractEvent> void registerEventListener(Class<E> eventClass, IEventListener<E> listener)
     {
-        entity.getEventDispatcher().registerEventListener(eventClass, listener);
+        entity.getEventDispatcher().registerEventListener(eventClass, (e) ->
+        {
+            if (active)
+                listener.onEvent(e);
+        });
     }
 
     public Entity getEntity()
@@ -39,5 +46,15 @@ public abstract class AbstractComponent
     public String toString()
     {
         return String.format("Component %s of entity %s", getClass(), entity);
+    }
+
+    public boolean isActive()
+    {
+        return active;
+    }
+
+    public void setActive(boolean active)
+    {
+        this.active = active;
     }
 }

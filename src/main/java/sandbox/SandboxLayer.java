@@ -8,11 +8,10 @@ import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.core.scene.AbstractLayer;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.application.WindowCloseEvent;
-import com.github.fahjulian.stealth.events.key.AKeyEvent.Key;
+import com.github.fahjulian.stealth.events.key.AbstractKeyEvent.Key;
 import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
-import com.github.fahjulian.stealth.tilemap.Tile;
 import com.github.fahjulian.stealth.tilemap.TileMap;
 
 @SuppressWarnings("unused")
@@ -32,14 +31,14 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
     {
         Resources.init();
 
-        add(Blueprints.player.create("Player 1", new Transform(0.0f, 0.0f, 0.1f, 160.0f, 160.0f)));
+        super.add(Blueprints.player.create("Player 1", new Transform(0.0f, 0.0f, 0.1f, 160.0f, 160.0f)));
 
         map = Resources.DEFAULT_MAP;
-        // map = createMap(10, 10);
+        super.add(map.getEntities());
 
-        registerEventListener(RenderEvent.class, this::onRender);
-        registerEventListener(WindowCloseEvent.class, this::onWindowClose);
-        registerEventListener(KeyPressedEvent.class, this::onKeyPressed);
+        super.registerEventListener(RenderEvent.class, this::onRender);
+        super.registerEventListener(WindowCloseEvent.class, this::onWindowClose);
+        super.registerEventListener(KeyPressedEvent.class, this::onKeyPressed);
     }
 
     private void onRender(RenderEvent event)
@@ -47,14 +46,13 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
         Renderer2D.draw(map);
 
         Renderer2D.drawRectangle(10, 10, 2, 100, 100, WHITE);
+        Renderer2D.drawStaticRectangle(10, 10, 2, 100, 100, WHITE);
     }
 
     private void onKeyPressed(KeyPressedEvent event)
     {
         if (event.getKey() == Key.SPACE)
-        {
-            map.setTile(1, 1, new Tile(Resources.TILES_SHEET.getSpriteAt(r.nextInt(5), 3)));
-        }
+            map.getTile(1, 1).setSprite(Resources.TILES_SHEET.getSpriteAt(r.nextInt(5), 3));
     }
 
     private void onWindowClose(WindowCloseEvent event)
@@ -70,9 +68,9 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
                 Resources.TILES_SHEET.getSpriteAt(2, 0)
         };
 
-        Tile[] tiles = new Tile[width * height];
+        Sprite[] tiles = new Sprite[width * height];
         for (int i = 0; i < width * height; i++)
-            tiles[i] = new Tile(textureOptions[r.nextInt(textureOptions.length)]);
+            tiles[i] = textureOptions[r.nextInt(textureOptions.length)];
 
         TileMap map = TileMap.create("/home/julian/dev/java/Stealth/src/main/resources/maps/generated_map.xml", width,
                 height, 160.0f, 0.0f, tiles);
