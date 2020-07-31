@@ -11,15 +11,29 @@ public final class Toolbox
     {
     }
 
+    public static Map<String, String> toFields(List<String> xml)
+    {
+        Map<String, String> fields = new HashMap<>();
+        for (String s : xml)
+        {
+            int idx1 = s.indexOf("<"), idx2 = s.indexOf(">");
+            String xmlTag = (idx1 != -1 && idx2 != -1) ? s.substring(idx1 + 1, idx2) : "";
+
+            fields.put(xmlTag, Toolbox.stripXmlTags(s, xmlTag));
+        }
+
+        return fields;
+    }
+
     public static Map<String, String> toFields(String xml)
     {
         Map<String, String> fields = new HashMap<>();
 
         try (Scanner scanner = new Scanner(xml))
         {
-            while (scanner.hasNextLine())
+            while (scanner.hasNext())
             {
-                String line = scanner.nextLine();
+                String line = scanner.next().replace(" ", "");
                 int idx1 = line.indexOf("<"), idx2 = line.indexOf(">");
                 String xmlTag = (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : "";
 

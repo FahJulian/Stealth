@@ -2,6 +2,7 @@ package com.github.fahjulian.stealth.core.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.github.fahjulian.stealth.core.resources.ISerializable;
@@ -68,8 +69,8 @@ public class EntityBlueprint implements ISerializable
                     currentBlueprintClass = Toolbox.stripXmlTags(line, xmlTag).replace(" ", "");
                     break;
                 case "/componentBlueprint":
-                    componentBlueprints.add(AbstractComponentBlueprint.getDeserializer(currentBlueprintClass)
-                            .deserialize(currentComponentBp.toString()));
+                    // componentBlueprints.add(AbstractComponentBlueprint.getDeserializer(currentBlueprintClass)
+                    // .deserialize(currentComponentBp.toString()));
                     break;
                 default:
                     if (currentComponentBp != null)
@@ -83,20 +84,27 @@ public class EntityBlueprint implements ISerializable
                 componentBlueprints.toArray(new AbstractComponentBlueprint[componentBlueprints.size()]));
     }
 
-    public String serialize()
+    public void serialize(Map<String, Object> fields)
     {
-        StringBuilder sb = new StringBuilder(String.format("<entityBlueprint>%n"));
+        // StringBuilder sb = new StringBuilder(String.format("<entityBlueprint>%n"));
 
-        for (AbstractComponentBlueprint<?> componentBlueprint : this.initialComponents)
-        {
-            sb.append(String.format("    <componentBlueprint>%n"));
-            sb.append(String.format("        <blueprintClass>%s</blueprintClass>%n",
-                    componentBlueprint.getClass().getCanonicalName()));
-            sb.append(componentBlueprint.serialize());
-            sb.append(String.format("    </componentBlueprint>%n"));
-        }
+        // for (AbstractComponentBlueprint<?> componentBlueprint :
+        // this.initialComponents)
+        // {
+        // sb.append(String.format(" <componentBlueprint>%n"));
+        // sb.append(String.format(" <blueprintClass>%s</blueprintClass>%n",
+        // componentBlueprint.getClass().getCanonicalName()));
+        // sb.append(componentBlueprint.serialize());
+        // sb.append(String.format(" </componentBlueprint>%n"));
+        // }
 
-        sb.append("</entityBlueprint>");
-        return sb.toString();
+        // sb.append("</entityBlueprint>");
+        // return sb.toString();
+    }
+
+    @Override
+    public String getUniqueKey()
+    {
+        return null;
     }
 }

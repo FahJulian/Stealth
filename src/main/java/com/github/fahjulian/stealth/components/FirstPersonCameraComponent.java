@@ -2,6 +2,8 @@ package com.github.fahjulian.stealth.components;
 
 import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type.POSITION;
 
+import java.util.Map;
+
 import com.github.fahjulian.stealth.core.AbstractApp;
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.entity.AbstractComponentBlueprint;
@@ -29,9 +31,15 @@ public class FirstPersonCameraComponent extends AbstractComponent
         }
 
         @Override
-        public String serialize()
+        public void serialize(Map<String, Object> fields)
         {
-            return "";
+        }
+
+        @Override
+        public String getUniqueKey()
+        {
+            // TODO Auto-generated method stub
+            return null;
         }
     }
 

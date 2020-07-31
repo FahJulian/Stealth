@@ -2,17 +2,12 @@ package sandbox;
 
 import static com.github.fahjulian.stealth.graphics.Color.WHITE;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import com.github.fahjulian.stealth.components.ColorComponent;
 import com.github.fahjulian.stealth.components.FirstPersonCameraComponent;
 import com.github.fahjulian.stealth.components.KeyboardControlledMovementComponent;
 import com.github.fahjulian.stealth.components.RotationComponent;
 import com.github.fahjulian.stealth.components.SpriteComponent;
 import com.github.fahjulian.stealth.core.entity.EntityBlueprint;
-import com.github.fahjulian.stealth.core.util.Log;
 
 public class Blueprints
 {
@@ -25,16 +20,17 @@ public class Blueprints
 
     static
     {
-        String xml = player.serialize();
-        try (FileWriter test = new FileWriter(new File("/home/julian/dev/java/Stealth/test.xml")))
-        {
-            test.write(xml);
-        }
-        catch (IOException e)
-        {
-            Log.error("Serializing entity failed.");
-        }
+        // String xml = player.serialize();
+        // try (FileWriter test = new FileWriter(new
+        // File("/home/julian/dev/java/Stealth/test.xml")))
+        // {
+        // test.write(xml);
+        // }
+        // catch (IOException e)
+        // {
+        // Log.error("Serializing entity failed.");
+        // }
 
-        EntityBlueprint e = EntityBlueprint.deserialize(xml);
+        // EntityBlueprint e = EntityBlueprint.deserialize(xml);
     }
 }

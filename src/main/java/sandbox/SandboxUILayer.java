@@ -3,8 +3,8 @@ package sandbox;
 import static com.github.fahjulian.stealth.graphics.Color.BLACK;
 import static com.github.fahjulian.stealth.graphics.Color.DARK_GREEN;
 import static com.github.fahjulian.stealth.graphics.Color.DARK_GREY;
-import static com.github.fahjulian.stealth.graphics.Color.GREEN;
 import static com.github.fahjulian.stealth.graphics.Color.LIGHT_BLUE;
+import static com.github.fahjulian.stealth.graphics.Color.LIGHT_GREEN;
 import static com.github.fahjulian.stealth.graphics.Color.LIGHT_GREY;
 import static com.github.fahjulian.stealth.ui.constraint.Type.RELATIVE;
 import static com.github.fahjulian.stealth.ui.property.Types.BORDER;
@@ -38,7 +38,7 @@ public class SandboxUILayer extends AbstractUILayer<SandboxScene>
         UIComponent button = new UIButton(this, c, (e) -> Log.info("Clicks: %d", ++clickCount));
         button.getProperties().set(PRIMARY_MATERIAL, Resources.MARIO_SHEET.getSpriteAt(0, 0));
         button.getProperties().set(HOVER_MATERIAL, DARK_GREEN);
-        button.getProperties().set(BORDER, new UIBorder(GREEN, 5));
+        button.getProperties().set(BORDER, new UIBorder(LIGHT_GREEN, 5));
         button.getProperties().set(HOVER_BORDER, new UIBorder(LIGHT_BLUE, 10));
 
         UIComponent rect = new UIComponent(this, new UIConstraints(100, 120, posZ, 40, 40));

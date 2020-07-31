@@ -2,13 +2,21 @@ package com.github.fahjulian.stealth.graphics;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.github.fahjulian.stealth.core.resources.Deserializer;
 import com.github.fahjulian.stealth.core.resources.IResource;
+import com.github.fahjulian.stealth.core.resources.SerializablePool;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
 /** A texture holding multiple sprites */
 public class Spritesheet extends AbstractTexture implements IResource
 {
+    static
+    {
+        SerializablePool.register(Spritesheet.class, Spritesheet::deserialize);
+    }
+
     private final List<Sprite> sprites;
     private final String filePath;
     private final int width, height; // Number of sprites
@@ -58,14 +66,7 @@ public class Spritesheet extends AbstractTexture implements IResource
                 float x1 = x0 + spriteWidth / (float) textureSize[0];
                 float y0 = y1 - spriteHeight / (float) textureSize[1];
 
-                float[] textureCoords = new float[] {
-                        x1, y0, //
-                        x0, y0, //
-                        x1, y1, //
-                        x0, y1
-                };
-
-                sprites.add(new Sprite(this, textureCoords));
+                sprites.add(new Sprite(this, x0, x1, y0, y1));
             }
         }
     }
@@ -146,5 +147,30 @@ public class Spritesheet extends AbstractTexture implements IResource
     public String getKey()
     {
         return filePath;
+    }
+
+    @Override
+    public String getUniqueKey()
+    {
+        return filePath;
+    }
+
+    @Override
+    public void serialize(Map<String, Object> fields)
+    {
+        fields.put("filePath", filePath);
+        fields.put("width", width);
+        fields.put("height", height);
+        fields.put("spriteWidth", spriteWidth);
+        fields.put("spriteHeight", spriteHeight);
+        fields.put("padding", padding);
+    }
+
+    @Deserializer
+    public static Spritesheet deserialize(Map<String, String> fields)
+    {
+        return new Spritesheet(fields.get("filePath"), Integer.valueOf(fields.get("width")),
+                Integer.valueOf(fields.get("height")), Integer.valueOf(fields.get("spriteWidth")),
+                Integer.valueOf(fields.get("spriteHeight")), Integer.valueOf(fields.get("padding")));
     }
 }

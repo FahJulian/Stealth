@@ -1,7 +1,7 @@
 package sandbox;
 
 import static com.github.fahjulian.stealth.graphics.Color.DARK_GREY;
-import static com.github.fahjulian.stealth.graphics.Color.GREEN;
+import static com.github.fahjulian.stealth.graphics.Color.LIGHT_GREEN;
 import static com.github.fahjulian.stealth.graphics.Color.LIGHT_GREY;
 import static com.github.fahjulian.stealth.ui.property.Types.HOVER_MATERIAL;
 import static com.github.fahjulian.stealth.ui.property.Types.PRIMARY_MATERIAL;
@@ -40,7 +40,7 @@ public class MainMenu extends AbstractUILayer<AbstractScene>
 
             if (i == 4)
             {
-                b.getProperties().set(HOVER_MATERIAL, GREEN);
+                b.getProperties().set(HOVER_MATERIAL, LIGHT_GREEN);
                 b.getProperties().set(PRIMARY_MATERIAL, DARK_GREY);
             }
 

@@ -22,12 +22,13 @@ import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import com.github.fahjulian.stealth.core.resources.ISerializable;
 import com.github.fahjulian.stealth.core.util.Log;
 
 import org.lwjgl.BufferUtils;
 
 /** An opengl 2D Texture wrapper */
-public abstract class AbstractTexture
+public abstract class AbstractTexture implements ISerializable
 {
     private int ID;
 

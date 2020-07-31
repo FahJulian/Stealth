@@ -1,12 +1,10 @@
 package com.github.fahjulian.stealth.components;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.entity.AbstractComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
-import com.github.fahjulian.stealth.core.util.Toolbox;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
@@ -56,17 +54,21 @@ public class ColorComponent extends AbstractComponent
         }
 
         @Override
-        public String serialize()
+        public void serialize(Map<String, Object> fields)
         {
-            final Map<String, String> fields = new HashMap<>();
             fields.put("color", "some_color");
-            return Toolbox.toXml(fields, 8);
         }
 
-        public static Blueprint deserialize(String xml)
+        public static Blueprint deserialize(Map<String, String> fields)
         {
-            Map<String, String> fields = Toolbox.toFields(xml);
             return new Blueprint(Color.WHITE);
+        }
+
+        @Override
+        public String getUniqueKey()
+        {
+            // TODO Auto-generated method stub
+            return null;
         }
     }
 }

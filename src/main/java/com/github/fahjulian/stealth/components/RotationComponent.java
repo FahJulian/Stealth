@@ -1,5 +1,7 @@
 package com.github.fahjulian.stealth.components;
 
+import java.util.Map;
+
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.entity.AbstractComponentBlueprint;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
@@ -28,14 +30,21 @@ public class RotationComponent extends AbstractComponent
         }
 
         @Override
-        public String serialize()
+        public void serialize(Map<String, Object> fields)
         {
-            return String.format("        <speed>%f</speed>%n", speed);
+            fields.put("speed", String.valueOf(speed));
         }
 
-        public static Blueprint deserialize(String xml)
+        public static Blueprint deserialize(Map<String, String> fields)
         {
             return new Blueprint(0.0f);
+        }
+
+        @Override
+        public String getUniqueKey()
+        {
+            // TODO Auto-generated method stub
+            return null;
         }
     }
 
