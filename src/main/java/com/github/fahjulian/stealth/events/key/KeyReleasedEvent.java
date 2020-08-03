@@ -1,6 +1,6 @@
 package com.github.fahjulian.stealth.events.key;
 
-public class KeyReleasedEvent extends AKeyEvent
+public class KeyReleasedEvent extends AbstractKeyEvent
 {
     public KeyReleasedEvent(Key key)
     {

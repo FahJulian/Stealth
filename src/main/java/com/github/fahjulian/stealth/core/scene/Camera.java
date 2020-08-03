@@ -43,7 +43,7 @@ public final class Camera
     private void updateProjectionMatrix()
     {
         projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, Window.get().getWidth(), 0.0f, Window.get().getHeight(), -10.0f, 10.0f);
+        projectionMatrix.ortho(0.0f, Window.get().getWidth(), Window.get().getHeight(), 0.0f, -10.0f, 10.0f);
     }
 
     public float getPositionX()

@@ -1,11 +1,84 @@
 package com.github.fahjulian.stealth.core.util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 public final class Toolbox
 {
     private Toolbox()
     {
+    }
+
+    public static Map<String, String> toFields(List<String> xml)
+    {
+        Map<String, String> fields = new HashMap<>();
+        for (String s : xml)
+        {
+            int idx1 = s.indexOf("<"), idx2 = s.indexOf(">");
+            String xmlTag = (idx1 != -1 && idx2 != -1) ? s.substring(idx1 + 1, idx2) : "";
+
+            fields.put(xmlTag, Toolbox.stripXmlTags(s, xmlTag));
+        }
+
+        return fields;
+    }
+
+    public static Map<String, String> toFields(String xml)
+    {
+        Map<String, String> fields = new HashMap<>();
+
+        try (Scanner scanner = new Scanner(xml))
+        {
+            while (scanner.hasNext())
+            {
+                String line = scanner.next().replace(" ", "");
+                int idx1 = line.indexOf("<"), idx2 = line.indexOf(">");
+                String xmlTag = (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : "";
+
+                fields.put(xmlTag, Toolbox.stripXmlTags(line, xmlTag));
+            }
+        }
+
+        return fields;
+    }
+
+    public static String toXml(Map<String, String> fields)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        for (Map.Entry<String, String> field : fields.entrySet())
+            sb.append(String.format("<%s>%s</%s>%n", field.getKey(), field.getValue(), field.getKey()));
+
+        return sb.toString();
+    }
+
+    public static String toXml(Map<String, String> fields, int indent)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        for (Map.Entry<String, String> field : fields.entrySet())
+            sb.append(String.format("%s<%s>%s</%s>%n", " ".repeat(indent), field.getKey(), field.getValue(),
+                    field.getKey()));
+
+        return sb.toString();
+    }
+
+    public static String getXmlTag(String line)
+    {
+        int idx1 = line.indexOf("<"), idx2 = line.indexOf(">");
+        return (idx1 != -1 && idx2 != -1) ? line.substring(idx1 + 1, idx2) : null;
+    }
+
+    public static float clamp(float value, float min, float max)
+    {
+        return value > max ? max : value < min ? min : value;
+    }
+
+    public static int clamp(int value, int min, int max)
+    {
+        return value > max ? max : value < min ? min : value;
     }
 
     public static <T> T[] toArray(List<T> list, T[] target)

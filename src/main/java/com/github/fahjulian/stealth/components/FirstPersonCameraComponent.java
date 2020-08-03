@@ -1,28 +1,23 @@
 package com.github.fahjulian.stealth.components;
 
+import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type.POSITION;
+
+import java.util.Map;
+
 import com.github.fahjulian.stealth.core.AbstractApp;
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
 import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
+import com.github.fahjulian.stealth.core.resources.Deserializer;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.events.entity.EntityTransformEvent;
-import com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type;
 
 import org.joml.Vector2f;
 
 /**
  * Makes the camera follow the entity.
  */
-public class ThirdPersonCameraComponent extends AbstractComponent
+public class FirstPersonCameraComponent extends AbstractComponent
 {
-    public static final class Blueprint implements IComponentBlueprint<ThirdPersonCameraComponent>
-    {
-        @Override
-        public ThirdPersonCameraComponent createComponent()
-        {
-            return new ThirdPersonCameraComponent();
-        }
-    }
-
     private Vector2f offsetFromEntity;
 
     @Override
@@ -36,11 +31,37 @@ public class ThirdPersonCameraComponent extends AbstractComponent
 
     private void onEntityTransform(EntityTransformEvent event)
     {
-        if (event.getType() == Type.POSITION)
+        if (event.getType() == POSITION)
         {
             Camera cam = AbstractApp.get().getCurrentScene().getCamera();
             cam.setPosition(entity.getTransform().getPositionX() - offsetFromEntity.x,
                     entity.getTransform().getPositionY() - offsetFromEntity.y);
+        }
+    }
+
+    public static final class Blueprint implements IComponentBlueprint<FirstPersonCameraComponent>
+    {
+        @Override
+        public FirstPersonCameraComponent createComponent()
+        {
+            return new FirstPersonCameraComponent();
+        }
+
+        @Override
+        public String getUniqueKey()
+        {
+            return "";
+        }
+
+        @Override
+        public void serialize(Map<String, Object> fields)
+        {
+        }
+
+        @Deserializer
+        public static Blueprint deserialize(Map<String, String> fields)
+        {
+            return new Blueprint();
         }
     }
 }

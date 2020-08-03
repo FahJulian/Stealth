@@ -4,6 +4,8 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
@@ -52,11 +54,11 @@ import java.util.List;
 
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.application.WindowCloseEvent;
-import com.github.fahjulian.stealth.events.key.AKeyEvent.Key;
+import com.github.fahjulian.stealth.events.key.AbstractKeyEvent.Key;
 import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.events.key.KeyReleasedEvent;
-import com.github.fahjulian.stealth.events.mouse.AMouseEvent;
-import com.github.fahjulian.stealth.events.mouse.AMouseEvent.Button;
+import com.github.fahjulian.stealth.events.mouse.AbstractMouseEvent;
+import com.github.fahjulian.stealth.events.mouse.AbstractMouseEvent.Button;
 import com.github.fahjulian.stealth.events.mouse.MouseButtonPressedEvent;
 import com.github.fahjulian.stealth.events.mouse.MouseButtonReleasedEvent;
 import com.github.fahjulian.stealth.events.mouse.MouseDraggedEvent;
@@ -68,6 +70,7 @@ import org.lwjgl.opengl.GL;
 
 public final class Window
 {
+    private final GLFWInputListener inputListener;
     private String title;
     private int width, height;
     public long glfwID;
@@ -76,6 +79,7 @@ public final class Window
 
     private Window()
     {
+        inputListener = new GLFWInputListener();
     }
 
     /**
@@ -131,7 +135,6 @@ public final class Window
             return;
         }
 
-        GLFWInputListener inputListener = new GLFWInputListener();
         glfwSetCursorPosCallback(glfwID, inputListener::cursorPosCallback);
         glfwSetMouseButtonCallback(glfwID, inputListener::mouseButtonCallback);
         glfwSetScrollCallback(glfwID, inputListener::scrollCallback);
@@ -140,7 +143,6 @@ public final class Window
 
         glfwMakeContextCurrent(glfwID);
         glfwSwapInterval(1);
-        glfwShowWindow(glfwID);
 
         GL.createCapabilities();
 
@@ -148,9 +150,14 @@ public final class Window
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
 
-        glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
         Log.info("(Window) Initialized window.");
+    }
+
+    public void makeVisible()
+    {
+        glfwShowWindow(glfwID);
     }
 
     /**
@@ -222,69 +229,92 @@ public final class Window
     {
         return height;
     }
-}
 
-class GLFWInputListener
-{
-
-    private float posX, posY;
-    private List<AMouseEvent.Button> pressedButtons = new ArrayList<>();
-
-    public void cursorPosCallback(long windowID, double posX, double posY)
+    public boolean isKeyPressed(Key key)
     {
-        this.posX = (float) posX;
-        this.posY = Window.get().getHeight() - (float) posY;
-
-        for (AMouseEvent.Button button : pressedButtons)
-            new MouseDraggedEvent(this.posX, this.posY, button);
-
-        new MouseMovedEvent(this.posX, this.posY);
+        return inputListener.pressedKeys[key.ID];
     }
 
-    public void mouseButtonCallback(long windowID, int buttonID, int action, int mods)
+    public boolean isMouseButtonPressed(Button button)
     {
-        Button button = translateMouseButton(buttonID);
+        return inputListener.pressedButtons.contains(button);
+    }
 
-        if (action == GLFW_PRESS)
+    public float getMouseX()
+    {
+        return inputListener.mouseX;
+    }
+
+    public float getMouseY()
+    {
+        return inputListener.mouseY;
+    }
+
+    private static class GLFWInputListener
+    {
+        private float mouseX, mouseY;
+        private List<AbstractMouseEvent.Button> pressedButtons = new ArrayList<>();
+        private boolean[] pressedKeys = new boolean[Key.getKeyAmount()];
+
+        public void cursorPosCallback(long windowID, double posX, double posY)
         {
-            pressedButtons.add(button);
-            new MouseButtonPressedEvent(this.posX, this.posY, button);
+            float deltaX = (float) posX - mouseX;
+            float deltaY = (float) posY - mouseY;
+            this.mouseX = (float) posX;
+            this.mouseY = (float) posY;
+
+            for (AbstractMouseEvent.Button button : pressedButtons)
+                new MouseDraggedEvent(this.mouseX, this.mouseY, deltaX, deltaY, button);
+
+            new MouseMovedEvent(this.mouseX, this.mouseY, deltaX, deltaY);
         }
-        else if (action == GLFW_RELEASE)
+
+        public void mouseButtonCallback(long windowID, int buttonID, int action, int mods)
         {
-            pressedButtons.remove(button);
-            new MouseButtonReleasedEvent(this.posX, this.posY, button);
+            Button button = translateMouseButton(buttonID);
+
+            if (action == GLFW_PRESS)
+            {
+                pressedButtons.add(button);
+                new MouseButtonPressedEvent(this.mouseX, this.mouseY, button);
+            }
+            else if (action == GLFW_RELEASE)
+            {
+                pressedButtons.remove(button);
+                new MouseButtonReleasedEvent(this.mouseX, this.mouseY, button);
+            }
         }
-    }
 
-    public void scrollCallback(long windowID, double offsetX, double offsetY)
-    {
-        new MouseScrolledEvent(this.posX, this.posY, (float) offsetX, (float) offsetY);
-    }
-
-    public void keyCallback(long window, int keyID, int scancode, int action, int mods)
-    {
-        Key key = translateKey(keyID);
-
-        if (action == GLFW_PRESS)
+        public void scrollCallback(long windowID, double offsetX, double offsetY)
         {
-            new KeyPressedEvent(key);
+            new MouseScrolledEvent(this.mouseX, this.mouseY, (float) offsetX, (float) offsetY);
         }
-        else if (action == GLFW_RELEASE)
+
+        public void keyCallback(long window, int keyID, int scancode, int action, int mods)
         {
-            new KeyReleasedEvent(key);
+            Key key = translateKey(keyID);
+
+            if (action == GLFW_PRESS)
+            {
+                new KeyPressedEvent(key);
+                pressedKeys[key.ID] = true;
+            }
+            else if (action == GLFW_RELEASE)
+            {
+                new KeyReleasedEvent(key);
+                pressedKeys[key.ID] = false;
+            }
         }
-    }
 
-    public void windowCloseCallback(long window)
-    {
-        new WindowCloseEvent();
-    }
-
-    private Button translateMouseButton(int glfwButtonID)
-    {
-        switch (glfwButtonID)
+        public void windowCloseCallback(long window)
         {
+            new WindowCloseEvent();
+        }
+
+        private Button translateMouseButton(int glfwButtonID)
+        {
+            switch (glfwButtonID)
+            {
             case GLFW_MOUSE_BUTTON_1:
                 return Button.LEFT;
             case GLFW_MOUSE_BUTTON_2:
@@ -294,13 +324,13 @@ class GLFWInputListener
             default:
                 Log.warn("(Window) Unknown Mouse Button ID: %d", glfwButtonID);
                 return Button.UNKNOWN;
+            }
         }
-    }
 
-    private Key translateKey(int glfwKeyID)
-    {
-        switch (glfwKeyID)
+        private Key translateKey(int glfwKeyID)
         {
+            switch (glfwKeyID)
+            {
             case GLFW_KEY_SPACE:
                 return Key.SPACE;
             case GLFW_KEY_W:
@@ -311,9 +341,15 @@ class GLFWInputListener
                 return Key.S;
             case GLFW_KEY_D:
                 return Key.D;
+            case GLFW_KEY_LEFT_CONTROL:
+                return Key.CONTROL;
+            case GLFW_KEY_ESCAPE:
+                return Key.ESCAPE;
             default:
                 Log.warn("(Window) Unknown GLFW Key ID: %d", glfwKeyID);
                 return Key.UNKNOWN;
+            }
         }
     }
+
 }

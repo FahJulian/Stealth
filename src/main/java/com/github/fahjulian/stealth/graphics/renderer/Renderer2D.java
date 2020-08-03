@@ -7,10 +7,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import com.github.fahjulian.stealth.core.Window;
-import com.github.fahjulian.stealth.core.resources.ResourcePool;
+import com.github.fahjulian.stealth.core.resources.SerializablePool;
 import com.github.fahjulian.stealth.core.scene.Camera;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.graphics.Color;
+import com.github.fahjulian.stealth.graphics.IMaterial;
 import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractModel;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
@@ -67,22 +68,38 @@ public class Renderer2D
         Renderer2D.camera = camera;
 
         staticColoredRectsModel = new BatchedColoredModel(MAX_STATIC_COLORED_RECTS);
-        staticColoredRectsShader = ResourcePool.getOrLoadResource(new Shader(
+        staticColoredRectsShader = SerializablePool.getLoaded(new Shader(
                 "/home/julian/dev/java/Stealth/src/main/resources/shaders/static_batched_colored_rectangle.glsl"));
 
         staticTexturedRectsModel = new BatchedTexturedModel(MAX_STATIC_TEXTURED_RECTS);
-        staticTexturedRectsShader = ResourcePool.getOrLoadResource(new Shader(
+        staticTexturedRectsShader = SerializablePool.getLoaded(new Shader(
                 "/home/julian/dev/java/Stealth/src/main/resources/shaders/static_batched_textured_rectangle.glsl"));
 
         coloredRectsModel = new BatchedColoredModel(MAX_COLORED_RECTS);
-        coloredRectsShader = ResourcePool.getOrLoadResource(
+        coloredRectsShader = SerializablePool.getLoaded(
                 new Shader("/home/julian/dev/java/Stealth/src/main/resources/shaders/batched_colored_rectangle.glsl"));
 
         texturedRectsModel = new BatchedTexturedModel(MAX_TEXTURED_RECTS);
-        texturedRectsShader = ResourcePool.getOrLoadResource(
+        texturedRectsShader = SerializablePool.getLoaded(
                 new Shader("/home/julian/dev/java/Stealth/src/main/resources/shaders/batched_textured_rectangle.glsl"));
 
         Log.info("(Renderer2D) Initialized Renderer.");
+    }
+
+    public static void drawStaticRectangleM(float x, float y, float width, float height, IMaterial material)
+    {
+        if (material instanceof Sprite)
+            drawStaticRectangle(x, y, width, height, (Sprite) material);
+        else if (material instanceof Color)
+            drawStaticRectangle(x, y, width, height, (Color) material);
+    }
+
+    public static void drawStaticRectangle(float x, float y, float z, float width, float height, IMaterial material)
+    {
+        if (material instanceof Sprite)
+            drawStaticRectangle(x, y, z, width, height, (Sprite) material);
+        else if (material instanceof Color)
+            drawStaticRectangle(x, y, z, width, height, (Color) material);
     }
 
     public static void drawStaticRectangle(float x, float y, float width, float height, Color color)
@@ -111,6 +128,22 @@ public class Renderer2D
         }
 
         staticTexturedRectsModel.addRect(x, y, z, width, height, sprite.getTextureCoords(), textureSlot);
+    }
+
+    public static void drawRectangle(float x, float y, float width, float height, IMaterial material)
+    {
+        if (material instanceof Sprite)
+            drawRectangle(x, y, width, height, (Sprite) material);
+        else if (material instanceof Color)
+            drawRectangle(x, y, width, height, (Color) material);
+    }
+
+    public static void drawRectangle(float x, float y, float z, float width, float height, IMaterial material)
+    {
+        if (material instanceof Sprite)
+            drawRectangle(x, y, z, width, height, (Sprite) material);
+        else if (material instanceof Color)
+            drawRectangle(x, y, z, width, height, (Color) material);
     }
 
     public static void drawRectangle(float x, float y, float width, float height, Sprite sprite)

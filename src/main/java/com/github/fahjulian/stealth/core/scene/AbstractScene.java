@@ -81,4 +81,9 @@ public abstract class AbstractScene implements IEventLayerStack
     {
         return eventDispatcher;
     }
+
+    public boolean isInitialized()
+    {
+        return initialized;
+    }
 }

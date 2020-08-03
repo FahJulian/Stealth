@@ -1,14 +1,50 @@
 package com.github.fahjulian.stealth.core;
 
+import com.github.fahjulian.stealth.components.ColorComponent;
+import com.github.fahjulian.stealth.components.FirstPersonCameraComponent;
+import com.github.fahjulian.stealth.components.KeyboardControlledMovementComponent;
+import com.github.fahjulian.stealth.components.RotationComponent;
+import com.github.fahjulian.stealth.components.SpriteComponent;
+import com.github.fahjulian.stealth.core.entity.EntityBlueprint;
+import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.core.event.AbstractEvent;
+import com.github.fahjulian.stealth.core.resources.SerializablePool;
 import com.github.fahjulian.stealth.core.scene.AbstractScene;
 import com.github.fahjulian.stealth.core.util.Log;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
+import com.github.fahjulian.stealth.graphics.Color;
+import com.github.fahjulian.stealth.graphics.Sprite;
+import com.github.fahjulian.stealth.graphics.Spritesheet;
+import com.github.fahjulian.stealth.graphics.Texture;
+import com.github.fahjulian.stealth.graphics.opengl.Shader;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
+import com.github.fahjulian.stealth.tilemap.TileComponent;
+import com.github.fahjulian.stealth.tilemap.TileMap;
 
 public abstract class AbstractApp
 {
+    static
+    {
+        SerializablePool.registerDeserializer(TileMap.class, TileMap::deserialize);
+        SerializablePool.registerDeserializer(Spritesheet.class, Spritesheet::deserialize);
+        SerializablePool.registerDeserializer(Texture.class, Texture::deserialize);
+        SerializablePool.registerDeserializer(Sprite.class, Sprite::deserialize);
+        SerializablePool.registerDeserializer(Color.class, Color::deserialize);
+        SerializablePool.registerDeserializer(Shader.class, Shader::deserialize);
+        SerializablePool.registerDeserializer(Transform.class, Transform::deserialize);
+        SerializablePool.registerDeserializer(EntityBlueprint.class, EntityBlueprint::deserialize);
+        SerializablePool.registerDeserializer(ColorComponent.Blueprint.class, ColorComponent.Blueprint::deserialize);
+        SerializablePool.registerDeserializer(FirstPersonCameraComponent.Blueprint.class,
+                FirstPersonCameraComponent.Blueprint::deserialize);
+        SerializablePool.registerDeserializer(KeyboardControlledMovementComponent.Blueprint.class,
+                KeyboardControlledMovementComponent.Blueprint::deserialize);
+        SerializablePool.registerDeserializer(RotationComponent.Blueprint.class,
+                RotationComponent.Blueprint::deserialize);
+        SerializablePool.registerDeserializer(SpriteComponent.Blueprint.class, SpriteComponent.Blueprint::deserialize);
+        SerializablePool.registerDeserializer(TileComponent.Blueprint.class, TileComponent.Blueprint::deserialize);
+    }
+
     protected Window window;
     private AbstractScene currentScene;
     private boolean initialized;
@@ -27,6 +63,8 @@ public abstract class AbstractApp
         currentScene = onInit();
         currentScene.init();
         AbstractEvent.setDefaultDispatcher(currentScene.getEventDispatcher());
+
+        Window.get().makeVisible();
 
         Renderer2D.init(currentScene.getCamera());
 

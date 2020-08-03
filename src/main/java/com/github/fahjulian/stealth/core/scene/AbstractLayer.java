@@ -1,7 +1,9 @@
 package com.github.fahjulian.stealth.core.scene;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.github.fahjulian.stealth.core.entity.Entity;
 import com.github.fahjulian.stealth.core.event.AbstractEvent;
@@ -9,6 +11,13 @@ import com.github.fahjulian.stealth.core.event.EventDispatcher;
 import com.github.fahjulian.stealth.core.event.IEventLayer;
 import com.github.fahjulian.stealth.core.event.IEventListener;
 import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
+import com.github.fahjulian.stealth.events.key.KeyReleasedEvent;
+import com.github.fahjulian.stealth.events.mouse.MouseButtonPressedEvent;
+import com.github.fahjulian.stealth.events.mouse.MouseButtonReleasedEvent;
+import com.github.fahjulian.stealth.events.mouse.MouseDraggedEvent;
+import com.github.fahjulian.stealth.events.mouse.MouseMovedEvent;
+import com.github.fahjulian.stealth.events.mouse.MouseScrolledEvent;
 
 /**
  * A Layer is part of a Scene and can block events from being passed to lower
@@ -73,7 +82,8 @@ public abstract class AbstractLayer<S extends AbstractScene> implements IEventLa
     @Override
     public void blockEvent(Class<? extends AbstractEvent> eventClass)
     {
-        currentlyBlockedEvents.add(eventClass);
+        if (!currentlyBlockedEvents.contains(eventClass))
+            currentlyBlockedEvents.add(eventClass);
     }
 
     @Override
@@ -104,6 +114,18 @@ public abstract class AbstractLayer<S extends AbstractScene> implements IEventLa
             entity.init(this);
     }
 
+    public void add(Collection<Entity> group)
+    {
+        for (Entity e : group)
+            this.add(e);
+    }
+
+    public void add(Entity... entities)
+    {
+        for (Entity e : entities)
+            this.add(e);
+    }
+
     public S getScene()
     {
         return scene;
@@ -113,5 +135,26 @@ public abstract class AbstractLayer<S extends AbstractScene> implements IEventLa
     public EventDispatcher getEventDispatcher()
     {
         return eventDispatcher;
+    }
+
+    protected void blockAllInputEventsIf(Supplier<Boolean> condition)
+    {
+        List<Class<? extends AbstractEvent>> inputEventClasses = new ArrayList<>();
+        inputEventClasses.add(KeyPressedEvent.class);
+        inputEventClasses.add(KeyReleasedEvent.class);
+        inputEventClasses.add(MouseButtonPressedEvent.class);
+        inputEventClasses.add(MouseButtonReleasedEvent.class);
+        inputEventClasses.add(MouseDraggedEvent.class);
+        inputEventClasses.add(MouseMovedEvent.class);
+        inputEventClasses.add(MouseScrolledEvent.class);
+
+        for (Class<? extends AbstractEvent> eventClass : inputEventClasses)
+        {
+            this.registerEventListener(eventClass, (e) ->
+            {
+                if (condition.get())
+                    this.blockEvent(eventClass);
+            });
+        }
     }
 }

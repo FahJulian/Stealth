@@ -10,15 +10,16 @@ public class TileMapModel extends AbstractDynamicModel
     TileMapModel(TileMap map)
     {
         super(map.getWidth() * map.getHeight() * 4, 3, 2, 1);
+
         this.map = map;
 
         for (int x = 0; x < map.getWidth(); x++)
             for (int y = 0; y < map.getHeight(); y++)
-                setTile(x, y, map.getTiles()[x + y * map.getWidth()]);
+                this.setTile(x, y, map.getTiles()[x + y * map.getWidth()]);
         super.rebuffer();
     }
 
-    void setTile(int x, int y, Tile tile)
+    void setTile(int x, int y, TileComponent tile)
     {
         float[] textureCoords = tile.getSprite().getTextureCoords();
         float textureSlot = map.getTextures().indexOf(tile.getSprite().getTexture());
@@ -45,8 +46,8 @@ public class TileMapModel extends AbstractDynamicModel
     @Override
     protected int[] generateIndices(int vertexCount)
     {
-        int[] indices = new int[vertexCount];
-        for (int i = 0; i < vertexCount / 6; i++)
+        int[] indices = new int[vertexCount * 6 / 4];
+        for (int i = 0; i < vertexCount / 4; i++)
         {
             indices[0 + i * 6] = 2 + i * 4;
             indices[1 + i * 6] = 0 + i * 4;

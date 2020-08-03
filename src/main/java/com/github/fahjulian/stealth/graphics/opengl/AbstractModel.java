@@ -8,7 +8,7 @@ import static org.lwjgl.opengl.GL11.glDrawElements;
 public abstract class AbstractModel
 {
     protected final VertexArray vao;
-    private final int vertexCount;
+    private final ElementBuffer ebo;
 
     /**
      * Construct a new model
@@ -18,11 +18,10 @@ public abstract class AbstractModel
      */
     protected AbstractModel(int vertexCount)
     {
-        this.vertexCount = vertexCount;
         this.vao = new VertexArray();
         this.vao.bind();
 
-        new ElementBuffer(generateIndices(vertexCount), vao);
+        this.ebo = new ElementBuffer(generateIndices(vertexCount), vao);
     }
 
     /**
@@ -41,7 +40,7 @@ public abstract class AbstractModel
     public void draw()
     {
         vao.bind();
-        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, ebo.getSize(), GL_UNSIGNED_INT, 0);
         vao.unbind();
     }
 }

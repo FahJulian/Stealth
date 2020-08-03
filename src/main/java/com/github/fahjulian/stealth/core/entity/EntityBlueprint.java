@@ -1,10 +1,18 @@
 package com.github.fahjulian.stealth.core.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.github.fahjulian.stealth.core.resources.Deserializer;
+import com.github.fahjulian.stealth.core.resources.ISerializable;
+import com.github.fahjulian.stealth.core.resources.SerializablePool;
+
 /**
  * An Entity Blueprint holds information about components and can create a new
  * entity from that information
  */
-public class EntityBlueprint
+public class EntityBlueprint implements ISerializable
 {
     private final IComponentBlueprint<?>[] initialComponents;
 
@@ -38,5 +46,22 @@ public class EntityBlueprint
             components[i] = initialComponents[i].createComponent();
 
         return new Entity(name, transform, components);
+    }
+
+    @Override
+    public void serialize(Map<String, Object> fields)
+    {
+        for (int i = 0; i < initialComponents.length; i++)
+            fields.put(String.format("component%d", i), initialComponents[i]);
+    }
+
+    @Deserializer
+    public static EntityBlueprint deserialize(Map<String, String> fields)
+    {
+        String s = null;
+        List<IComponentBlueprint<?>> components = new ArrayList<>();
+        for (int i = 0; (s = fields.get(String.format("component%d", i))) != null; i++)
+            components.add(SerializablePool.<IComponentBlueprint<?>>deserialize(s));
+        return new EntityBlueprint(components.toArray(new IComponentBlueprint<?>[components.size()]));
     }
 }

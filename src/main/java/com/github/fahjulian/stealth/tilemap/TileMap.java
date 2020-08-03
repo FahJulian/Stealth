@@ -1,42 +1,37 @@
 package com.github.fahjulian.stealth.tilemap;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.github.fahjulian.stealth.core.resources.IResource;
-import com.github.fahjulian.stealth.core.resources.ResourcePool;
+import com.github.fahjulian.stealth.core.entity.Entity;
+import com.github.fahjulian.stealth.core.entity.Transform;
+import com.github.fahjulian.stealth.core.resources.Deserializer;
+import com.github.fahjulian.stealth.core.resources.ISerializable;
+import com.github.fahjulian.stealth.core.resources.SerializablePool;
 import com.github.fahjulian.stealth.core.scene.Camera;
-import com.github.fahjulian.stealth.core.util.Log;
+import com.github.fahjulian.stealth.graphics.Sprite;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 import com.github.fahjulian.stealth.graphics.opengl.Shader;
 import com.github.fahjulian.stealth.graphics.renderer.IDrawable;
 
 /** A 2D map that is made up from tiles. */
-public class TileMap implements IResource, IDrawable
+public class TileMap implements IDrawable, ISerializable
 {
-    private String filePath;
-    private int width, height; // in tiles
-    private float tileSize;
-    private float posZ;
-    private Tile[] tiles;
-    private List<AbstractTexture> textures;
+    private final int width, height; // in tiles
+    private final float tileSize;
+    private final float posZ;
+    private final List<AbstractTexture> textures;
+    private final List<Entity> tiles;
 
+    private String filePath;
     private Shader shader;
     private TileMapModel model;
 
-    /**
-     * Construct a new tile map object
-     * 
-     * @param filePath
-     *                     The .xml file to load the map from
-     */
-    public TileMap(String filePath)
-    {
-        this.filePath = filePath;
-    }
-
-    private TileMap(String filePath, int width, int height, float tileSize, float posZ, List<AbstractTexture> textures,
-            Tile[] tiles)
+    public TileMap(String filePath, int width, int height, float tileSize, float posZ, List<AbstractTexture> textures,
+            Sprite[] tiles)
     {
         this.filePath = filePath;
         this.width = width;
@@ -44,44 +39,26 @@ public class TileMap implements IResource, IDrawable
         this.tileSize = tileSize;
         this.posZ = posZ;
         this.textures = textures;
-        this.tiles = tiles;
+        this.tiles = new ArrayList<>();
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                this.tiles.add(new Entity(String.format("TileMap %s tile (%d, %d)", this, x, y),
+                        new Transform(x * tileSize, y * tileSize, posZ, tileSize, tileSize),
+                        new TileComponent(tiles[x + y * width]).init(this, x, y)));
+            }
+        }
     }
 
     @Override
-    public void load() throws Exception
+    public void load()
     {
-        if (textures == null && tiles == null) // not loaded yet
-        {
-            FileHandler.MapInfo mapInfo = FileHandler.loadMapInfo(filePath);
-            this.width = mapInfo.width;
-            this.height = mapInfo.height;
-            this.tileSize = mapInfo.tileSize;
-            this.posZ = mapInfo.posZ;
-            this.textures = mapInfo.textures;
-            this.tiles = mapInfo.tiles;
-        }
-
-        assert tiles.length == width * height : Log.error("(TileMap) Map size does not match the amount of tiles.");
-        assert textures.size() <= 16 : Log.error("(TileMap) A maximum of 16 textures is allowed.");
-
-        this.model = new TileMapModel(this);
-        shader = ResourcePool.getOrLoadResource(
+        // TODO: Add shader
+        this.shader = SerializablePool.getLoaded(
                 new Shader("/home/julian/dev/java/Stealth/src/main/resources/shaders/batched_textured_rectangle.glsl"));
-    }
-
-    /** Saves the map to its specified .xml file. */
-    public void save()
-    {
-        try
-        {
-            Log.info("(TileMap) Saving map %s", filePath);
-            updateTextures();
-            FileHandler.saveMap(width, height, tileSize, posZ, textures, tiles, filePath);
-        }
-        catch (Exception e)
-        {
-            Log.error("(TileMap) Error saving map: %s", e.getMessage());
-        }
+        this.model = new TileMapModel(this);
     }
 
     @Override
@@ -105,62 +82,17 @@ public class TileMap implements IResource, IDrawable
         shader.unbind();
     }
 
-    /**
-     * Sets the tile at the given coordinates
-     * 
-     * @param x
-     *                 The column of the tile
-     * @param y
-     *                 The row of the tile
-     * @param tile
-     *                 The new tile
-     */
-    public void setTile(int x, int y, Tile tile)
+    public TileComponent getTile(int x, int y)
     {
-        if (x < 0 || y < 0 || x >= width || y >= height)
-        {
-            Log.warn("(TileMap) Error setting tile: (%d, %d) out of bounds.", x, y);
-            return;
-        }
-
-        Tile oldTile = tiles[x + y * width];
-        tiles[x + y * width] = tile;
-
-        AbstractTexture t = tile.getSprite().getTexture();
-        if (!textures.contains(t))
-        {
-            updateTextures();
-            if (textures.size() >= 16)
-            {
-                Log.warn("(TileMap) Error setting tile: Can't add another texture.");
-                tiles[x + y * width] = oldTile;
-                return;
-            }
-
-            textures.add(t);
-        }
-
-        model.setTile(x, y, tile);
-        model.rebuffer();
+        return tiles.get(x + y * width).getComponent(TileComponent.class);
     }
 
-    /**
-     * Iterates over all tiles to make sure only the necessary textures are in the
-     * texture list
-     */
-    private void updateTextures()
+    public List<Entity> getEntities()
     {
-        textures.clear();
-        for (Tile tile : tiles)
-        {
-            AbstractTexture t = tile.getSprite().getTexture();
-            if (!textures.contains(t))
-                textures.add(t);
-        }
+        return tiles;
     }
 
-    @Override
-    public String getKey()
+    public String getFilePath()
     {
         return filePath;
     }
@@ -190,9 +122,16 @@ public class TileMap implements IResource, IDrawable
         this.filePath = filePath;
     }
 
-    Tile[] getTiles()
+    public TileMapModel getModel()
     {
-        return tiles;
+        return model;
+    }
+
+    TileComponent[] getTiles()
+    {
+        final List<TileComponent> tiles = new ArrayList<>();
+        this.tiles.forEach((e) -> tiles.add(e.getComponent(TileComponent.class)));
+        return tiles.toArray(new TileComponent[width * height]);
     }
 
     List<AbstractTexture> getTextures()
@@ -200,32 +139,81 @@ public class TileMap implements IResource, IDrawable
         return textures;
     }
 
-    /**
-     * Create a new map from a know set of tiles
-     * 
-     * @param filePath
-     *                     The file to later save the map to. Must be unique to all
-     *                     tile maps
-     * @param width
-     *                     The width of the map (Amount of tiles per column)
-     * @param height
-     *                     The height of the map (Amount of tiles per row)
-     * @param tileSize
-     *                     The size of each tile in pixels
-     * @param posZ
-     *                     The z-Position of the map in the world
-     * @param tiles
-     *                     Array of all the tiles. Must fit the size of the map
-     * @return The newly created Tile Map object. Must be loaded with the Resource
-     *         Pool.
-     */
-    public static TileMap create(String filePath, int width, int height, float tileSize, float posZ, Tile[] tiles)
+    @Override
+    public String getUniqueKey()
     {
-        final List<AbstractTexture> textures = new ArrayList<>();
-        for (Tile tile : tiles)
-            if (!textures.contains(tile.getSprite().getTexture()))
-                textures.add(tile.getSprite().getTexture());
+        return filePath;
+    }
 
-        return new TileMap(filePath, width, height, tileSize, posZ, textures, tiles);
+    boolean canTileSwitchTexture(TileComponent t, Sprite newSprite)
+    {
+        AbstractTexture texture = newSprite.getTexture();
+        if (!textures.contains(texture))
+        {
+            if (textures.size() >= 16)
+            {
+                textures.clear();
+                tiles.forEach((e) ->
+                {
+                    TileComponent tile = e.getComponent(TileComponent.class);
+                    if (!textures.contains(tile.getSprite().getTexture()) && !(tile == t))
+                        textures.add(tile.getSprite().getTexture());
+                });
+
+                if (textures.size() >= 16)
+                    return false;
+            }
+        }
+
+        textures.add(texture);
+        return true;
+    }
+
+    @Override
+    public void serialize(Map<String, Object> fields)
+    {
+        fields.put("filePath", filePath);
+        fields.put("width", width);
+        fields.put("height", height);
+        fields.put("tileSize", tileSize);
+        fields.put("posZ", posZ);
+
+        for (int i = 0; i < textures.size(); i++)
+            fields.put(String.format("sheet%d", i), textures.get(i));
+
+        final Set<Sprite> spritesSet = new HashSet<>();
+        tiles.forEach(t -> spritesSet.add(t.getComponent(TileComponent.class).getSprite()));
+
+        List<Sprite> sprites = new ArrayList<>(spritesSet);
+        for (int i = 0; i < sprites.size(); i++)
+            fields.put(String.format("sprite%d", i), sprites.get(i));
+
+        for (int i = 0; i < tiles.size(); i++)
+            fields.put(String.format("tile%d", i),
+                    sprites.indexOf(tiles.get(i).getComponent(TileComponent.class).getSprite()));
+    }
+
+    @Deserializer
+    public static TileMap deserialize(Map<String, String> fields)
+    {
+        String filePath = fields.get("filePath");
+        int width = Integer.valueOf(fields.get("width"));
+        int height = Integer.valueOf(fields.get("height"));
+        float tileSize = Float.valueOf(fields.get("tileSize"));
+        float posZ = Float.valueOf(fields.get("posZ"));
+
+        String s = null;
+        List<AbstractTexture> textures = new ArrayList<>();
+        for (int i = 0; (s = fields.get(String.format("sheet%d", i))) != null; i++)
+            textures.add(SerializablePool.<AbstractTexture>deserialize(s));
+        List<Sprite> spriteOptions = new ArrayList<>();
+        for (int i = 0; (s = fields.get(String.format("sprite%d", i))) != null; i++)
+            spriteOptions.add(SerializablePool.<Sprite>deserialize(s));
+
+        Sprite[] sprites = new Sprite[width * height];
+        for (int i = 0; i < sprites.length; i++)
+            sprites[i] = spriteOptions.get(Integer.valueOf(fields.get(String.format("tile%d", i))));
+
+        return new TileMap(filePath, width, height, tileSize, posZ, textures, sprites);
     }
 }

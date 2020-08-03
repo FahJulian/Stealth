@@ -1,11 +1,11 @@
 package com.github.fahjulian.stealth.events.key;
 
-public class KeyPressedEvent extends AKeyEvent
+public class KeyPressedEvent extends AbstractKeyEvent
 {
     public KeyPressedEvent(Key key)
     {
         super(key);
-        dispatch();
+        super.dispatch();
     }
 
     @Override
