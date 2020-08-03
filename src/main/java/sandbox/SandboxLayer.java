@@ -2,15 +2,20 @@ package sandbox;
 
 import static com.github.fahjulian.stealth.graphics.Color.WHITE;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import com.github.fahjulian.stealth.core.entity.Entity;
 import com.github.fahjulian.stealth.core.entity.Transform;
+import com.github.fahjulian.stealth.core.resources.SerializablePool;
 import com.github.fahjulian.stealth.core.scene.AbstractLayer;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.events.application.WindowCloseEvent;
 import com.github.fahjulian.stealth.events.key.AbstractKeyEvent.Key;
 import com.github.fahjulian.stealth.events.key.KeyPressedEvent;
 import com.github.fahjulian.stealth.graphics.Sprite;
+import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
 import com.github.fahjulian.stealth.tilemap.TileMap;
 
@@ -20,6 +25,7 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
     private static final Random r = new Random();
 
     private TileMap map;
+    private Entity player;
 
     SandboxLayer(SandboxScene scene)
     {
@@ -31,7 +37,9 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
     {
         Resources.init();
 
-        super.add(Blueprints.player.create("Player 1", new Transform(0.0f, 0.0f, 0.1f, 160.0f, 160.0f)));
+        Transform t = SerializablePool.deserializeFromFile("/home/julian/dev/java/Stealth/.tmp/player_pos.xml");
+        player = Blueprints.player.create("Player 1", t);
+        super.add(player);
 
         map = Resources.DEFAULT_MAP;
         super.add(map.getEntities());
@@ -52,12 +60,13 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
     private void onKeyPressed(KeyPressedEvent event)
     {
         if (event.getKey() == Key.SPACE)
-            map.getTile(1, 1).setSprite(Resources.TILES_SHEET.getSpriteAt(r.nextInt(5), 3));
+            map.getTile(1, 1).setSprite(Resources.TILES_SHEET.getSpriteAt(r.nextInt(5), 5));
     }
 
     private void onWindowClose(WindowCloseEvent event)
     {
-        map.save();
+        SerializablePool.serializeToFile(map, map.getFilePath() + ".test");
+        SerializablePool.serializeToFile(player.getTransform(), "/home/julian/dev/java/Stealth/.tmp/player_pos.xml");
     }
 
     private TileMap createMap(int width, int height)
@@ -72,17 +81,12 @@ public class SandboxLayer extends AbstractLayer<SandboxScene>
         for (int i = 0; i < width * height; i++)
             tiles[i] = textureOptions[r.nextInt(textureOptions.length)];
 
-        TileMap map = TileMap.create("/home/julian/dev/java/Stealth/src/main/resources/maps/generated_map.xml", width,
-                height, 160.0f, 0.0f, tiles);
+        List<AbstractTexture> textures = new ArrayList<>();
+        textures.add(Resources.TILES_SHEET);
 
-        try
-        {
-            map.load();
-        }
-        catch (Exception e)
-        {
-        }
+        TileMap map = new TileMap("/home/julian/dev/java/Stealth/src/main/resources/maps/generated_map.xml", width,
+                height, 160.0f, 0.0f, textures, tiles);
 
-        return map;
+        return SerializablePool.getLoaded(map);
     }
 }

@@ -116,9 +116,14 @@ public abstract class AbstractLayer<S extends AbstractScene> implements IEventLa
 
     public void add(Collection<Entity> group)
     {
-        entities.addAll(group);
-        if (initialized)
-            group.forEach((e) -> e.init(this));
+        for (Entity e : group)
+            this.add(e);
+    }
+
+    public void add(Entity... entities)
+    {
+        for (Entity e : entities)
+            this.add(e);
     }
 
     public S getScene()

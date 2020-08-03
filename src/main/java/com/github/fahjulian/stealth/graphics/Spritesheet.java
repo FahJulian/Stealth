@@ -5,18 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.fahjulian.stealth.core.resources.Deserializer;
-import com.github.fahjulian.stealth.core.resources.IResource;
-import com.github.fahjulian.stealth.core.resources.SerializablePool;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
 /** A texture holding multiple sprites */
-public class Spritesheet extends AbstractTexture implements IResource
+public class Spritesheet extends AbstractTexture
 {
-    static
-    {
-        SerializablePool.register(Spritesheet.class, Spritesheet::deserialize);
-    }
-
     private final List<Sprite> sprites;
     private final String filePath;
     private final int width, height; // Number of sprites
@@ -144,7 +137,7 @@ public class Spritesheet extends AbstractTexture implements IResource
     }
 
     @Override
-    public String getKey()
+    public String getFilePath()
     {
         return filePath;
     }

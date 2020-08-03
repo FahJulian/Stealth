@@ -3,18 +3,11 @@ package com.github.fahjulian.stealth.graphics;
 import java.util.Map;
 
 import com.github.fahjulian.stealth.core.resources.Deserializer;
-import com.github.fahjulian.stealth.core.resources.IResource;
-import com.github.fahjulian.stealth.core.resources.SerializablePool;
 import com.github.fahjulian.stealth.graphics.opengl.AbstractTexture;
 
 /** A texture that uses the whole image it is loaded from */
-public class Texture extends AbstractTexture implements IResource
+public class Texture extends AbstractTexture
 {
-    static
-    {
-        SerializablePool.register(Texture.class, Texture::deserialize);
-    }
-
     private final String filePath;
     private int width, height;
 
@@ -36,12 +29,6 @@ public class Texture extends AbstractTexture implements IResource
         int[] size = super.load(filePath);
         this.width = size[0];
         this.height = size[1];
-    }
-
-    @Override
-    public String getKey()
-    {
-        return filePath;
     }
 
     /**

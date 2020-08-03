@@ -3,7 +3,7 @@ package com.github.fahjulian.stealth.components;
 import java.util.Map;
 
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
-import com.github.fahjulian.stealth.core.entity.AbstractComponentBlueprint;
+import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.core.event.EventListener;
 import com.github.fahjulian.stealth.core.resources.Deserializer;
@@ -38,14 +38,8 @@ public class SpriteComponent extends AbstractComponent
                 sprite);
     }
 
-    public static final class Blueprint extends AbstractComponentBlueprint<SpriteComponent>
+    public static final class Blueprint implements IComponentBlueprint<SpriteComponent>
     {
-        static
-        {
-            AbstractComponentBlueprint.register(Blueprint.class, Blueprint::deserialize);
-            SerializablePool.register(Blueprint.class, Blueprint::deserialize);
-        }
-
         private final Sprite sprite;
 
         public Blueprint(Sprite sprite)
@@ -74,7 +68,7 @@ public class SpriteComponent extends AbstractComponent
         @Deserializer
         public static Blueprint deserialize(Map<String, String> fields)
         {
-            return new Blueprint(SerializablePool.<Sprite>deserialize(fields.get("sprite")));
+            return new Blueprint(SerializablePool.deserialize(fields.get("sprite")));
         }
     }
 }

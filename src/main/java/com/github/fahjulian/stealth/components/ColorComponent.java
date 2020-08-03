@@ -3,8 +3,9 @@ package com.github.fahjulian.stealth.components;
 import java.util.Map;
 
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
-import com.github.fahjulian.stealth.core.entity.AbstractComponentBlueprint;
+import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
+import com.github.fahjulian.stealth.core.resources.SerializablePool;
 import com.github.fahjulian.stealth.events.application.RenderEvent;
 import com.github.fahjulian.stealth.graphics.Color;
 import com.github.fahjulian.stealth.graphics.renderer.Renderer2D;
@@ -34,13 +35,8 @@ public class ColorComponent extends AbstractComponent
                 color);
     }
 
-    public static final class Blueprint extends AbstractComponentBlueprint<ColorComponent>
+    public static final class Blueprint implements IComponentBlueprint<ColorComponent>
     {
-        static
-        {
-            AbstractComponentBlueprint.register(Blueprint.class, Blueprint::deserialize);
-        }
-
         private final Color color;
 
         public Blueprint(Color color)
@@ -56,19 +52,18 @@ public class ColorComponent extends AbstractComponent
         @Override
         public void serialize(Map<String, Object> fields)
         {
-            fields.put("color", "some_color");
+            fields.put("color", color);
         }
 
         public static Blueprint deserialize(Map<String, String> fields)
         {
-            return new Blueprint(Color.WHITE);
+            return new Blueprint(SerializablePool.deserialize(fields.get("color")));
         }
 
         @Override
         public String getUniqueKey()
         {
-            // TODO Auto-generated method stub
-            return null;
+            return color.getUniqueKey();
         }
     }
 }

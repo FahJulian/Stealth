@@ -20,7 +20,10 @@ import static org.lwjgl.opengl.GL20.glUniform4f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
-import com.github.fahjulian.stealth.core.resources.IResource;
+import java.util.Map;
+
+import com.github.fahjulian.stealth.core.resources.Deserializer;
+import com.github.fahjulian.stealth.core.resources.ISerializable;
 import com.github.fahjulian.stealth.core.util.IO;
 import com.github.fahjulian.stealth.core.util.Log;
 
@@ -30,7 +33,7 @@ import org.lwjgl.BufferUtils;
 
 /** Wrapper for an opengl shader program */
 // TODO: Scan source code for unimors and create a hashmap when loading
-public class Shader implements IResource
+public class Shader implements ISerializable
 {
     private int ID;
     private final String filePath;
@@ -155,8 +158,20 @@ public class Shader implements IResource
     }
 
     @Override
-    public String getKey()
+    public String getUniqueKey()
     {
         return filePath;
+    }
+
+    @Override
+    public void serialize(Map<String, Object> fields)
+    {
+        fields.put("filePath", filePath);
+    }
+
+    @Deserializer
+    public static Shader deserialize(Map<String, String> fields)
+    {
+        return new Shader(fields.get("filePath"));
     }
 }

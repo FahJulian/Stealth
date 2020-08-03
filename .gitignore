@@ -1,6 +1,8 @@
 .maps/
 .log/
+.tmp/
 *.log
+*test*
 
 .settings/
 .vscode/

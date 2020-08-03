@@ -4,6 +4,10 @@ import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Ty
 import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type.ROTATION;
 import static com.github.fahjulian.stealth.events.entity.EntityTransformEvent.Type.SCALE;
 
+import java.util.Map;
+
+import com.github.fahjulian.stealth.core.resources.Deserializer;
+import com.github.fahjulian.stealth.core.resources.ISerializable;
 import com.github.fahjulian.stealth.events.entity.EntityTransformEvent;
 
 import org.joml.Vector2f;
@@ -13,7 +17,7 @@ import org.joml.Vector3f;
  * A Transform is a data set that holds information about an entities position
  * and scale.
  */
-public final class Transform
+public final class Transform implements ISerializable
 {
     private Entity entity;
     private final Vector3f position;
@@ -285,5 +289,24 @@ public final class Transform
     public float getRotationZ()
     {
         return rotation.z;
+    }
+
+    @Override
+    public void serialize(Map<String, Object> fields)
+    {
+        fields.put("position", String.format("%f, %f, %f", position.x, position.y, position.z));
+        fields.put("scale", String.format("%f, %f, %f", scale.x, scale.y, scale.z));
+        fields.put("rotation", String.format("%f, %f, %f", rotation.x, rotation.y, rotation.z));
+    }
+
+    @Deserializer
+    public static Transform deserialize(Map<String, String> fields)
+    {
+        String[] position = fields.get("position").split(",");
+        String[] scale = fields.get("scale").split(",");
+        String[] rotation = fields.get("rotation").split(",");
+        return new Transform(Float.valueOf(position[0]), Float.valueOf(position[1]), Float.valueOf(position[2]), //
+                Float.valueOf(scale[0]), Float.valueOf(scale[1]), Float.valueOf(scale[2]), //
+                Float.valueOf(rotation[0]), Float.valueOf(rotation[1]), Float.valueOf(rotation[2]));
     }
 }

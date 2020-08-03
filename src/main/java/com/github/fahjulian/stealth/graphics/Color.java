@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.github.fahjulian.stealth.core.resources.Deserializer;
 import com.github.fahjulian.stealth.core.resources.ISerializable;
-import com.github.fahjulian.stealth.core.resources.SerializablePool;
 
 import org.joml.Vector4f;
 
@@ -26,8 +25,6 @@ public class Color extends Vector4f implements IMaterial, ISerializable
         DARK_GREEN = new Color(0.1f, 0.6f, 0.1f, 1.0f);
         LIGHT_BLUE = new Color(0.3f, 0.3f, 1.0f, 1.0f);
         DARK_BLUE = new Color(0.2f, 0.2f, 0.8f, 1.0f);
-
-        SerializablePool.register(Color.class, Color::deserialize);
     }
 
     public Color(float r, float g, float b, float a)

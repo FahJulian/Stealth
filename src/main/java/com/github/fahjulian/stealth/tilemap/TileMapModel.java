@@ -40,10 +40,6 @@ public class TileMapModel extends AbstractDynamicModel
     @Override
     public void rebuffer()
     {
-        for (int x = 0; x < map.getWidth(); x++)
-            for (int y = 0; y < map.getHeight(); y++)
-                this.setTile(x, y, map.getTiles()[x + y * map.getWidth()]);
-
         super.rebuffer();
     }
 

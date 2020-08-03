@@ -3,7 +3,7 @@ package com.github.fahjulian.stealth.components;
 import java.util.Map;
 
 import com.github.fahjulian.stealth.core.entity.AbstractComponent;
-import com.github.fahjulian.stealth.core.entity.AbstractComponentBlueprint;
+import com.github.fahjulian.stealth.core.entity.IComponentBlueprint;
 import com.github.fahjulian.stealth.core.entity.Transform;
 import com.github.fahjulian.stealth.events.application.UpdateEvent;
 import com.github.fahjulian.stealth.events.key.AbstractKeyEvent.Key;
@@ -17,44 +17,6 @@ import org.joml.Vector2f;
  */
 public class KeyboardControlledMovementComponent extends AbstractComponent
 {
-    public static final class Blueprint extends AbstractComponentBlueprint<KeyboardControlledMovementComponent>
-    {
-        static
-        {
-            AbstractComponentBlueprint.register(Blueprint.class, Blueprint::deserialize);
-        }
-
-        private final float speed;
-
-        public Blueprint(float speed)
-        {
-            this.speed = speed;
-        }
-
-        @Override
-        public KeyboardControlledMovementComponent createComponent()
-        {
-            return new KeyboardControlledMovementComponent(speed);
-        }
-
-        @Override
-        public void serialize(Map<String, Object> fields)
-        {
-            fields.put("speed", String.valueOf(fields));
-        }
-
-        public static Blueprint deserialize(Map<String, String> fields)
-        {
-            return new Blueprint(0.0f);
-        }
-
-        @Override
-        public String getUniqueKey()
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
-    }
 
     private final float speed;
     private Vector2f velocity;
@@ -106,5 +68,38 @@ public class KeyboardControlledMovementComponent extends AbstractComponent
             velocity.y -= speed;
         else if (event.getKey() == Key.D)
             velocity.x -= speed;
+    }
+
+    public static final class Blueprint implements IComponentBlueprint<KeyboardControlledMovementComponent>
+    {
+        private final float speed;
+
+        public Blueprint(float speed)
+        {
+            this.speed = speed;
+        }
+
+        @Override
+        public KeyboardControlledMovementComponent createComponent()
+        {
+            return new KeyboardControlledMovementComponent(speed);
+        }
+
+        @Override
+        public void serialize(Map<String, Object> fields)
+        {
+            fields.put("speed", speed);
+        }
+
+        public static Blueprint deserialize(Map<String, String> fields)
+        {
+            return new Blueprint(Float.valueOf(fields.get("speed")));
+        }
+
+        @Override
+        public String getUniqueKey()
+        {
+            return String.valueOf(speed);
+        }
     }
 }

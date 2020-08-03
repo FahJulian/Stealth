@@ -3,10 +3,10 @@ package com.github.fahjulian.stealth.core.entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
+import com.github.fahjulian.stealth.core.resources.Deserializer;
 import com.github.fahjulian.stealth.core.resources.ISerializable;
-import com.github.fahjulian.stealth.core.util.Toolbox;
+import com.github.fahjulian.stealth.core.resources.SerializablePool;
 
 /**
  * An Entity Blueprint holds information about components and can create a new
@@ -14,7 +14,7 @@ import com.github.fahjulian.stealth.core.util.Toolbox;
  */
 public class EntityBlueprint implements ISerializable
 {
-    private final AbstractComponentBlueprint<?>[] initialComponents;
+    private final IComponentBlueprint<?>[] initialComponents;
 
     /**
      * Construct a new Enitiy blueprint
@@ -23,7 +23,7 @@ public class EntityBlueprint implements ISerializable
      *                              Blueprints to create the initial components the
      *                              created entities will have
      */
-    public EntityBlueprint(AbstractComponentBlueprint<?>... initialComponents)
+    public EntityBlueprint(IComponentBlueprint<?>... initialComponents)
     {
         this.initialComponents = initialComponents;
     }
@@ -48,63 +48,20 @@ public class EntityBlueprint implements ISerializable
         return new Entity(name, transform, components);
     }
 
-    public static EntityBlueprint deserialize(String xml)
-    {
-        StringBuilder currentComponentBp = null;
-        String currentBlueprintClass = null;
-        List<AbstractComponentBlueprint<?>> componentBlueprints = new ArrayList<>();
-
-        try (Scanner scanner = new Scanner(xml))
-        {
-            while (scanner.hasNextLine())
-            {
-                String line = scanner.nextLine();
-                String xmlTag = Toolbox.getXmlTag(line);
-                switch (xmlTag)
-                {
-                case "componentBlueprint":
-                    currentComponentBp = new StringBuilder();
-                    break;
-                case "blueprintClass":
-                    currentBlueprintClass = Toolbox.stripXmlTags(line, xmlTag).replace(" ", "");
-                    break;
-                case "/componentBlueprint":
-                    // componentBlueprints.add(AbstractComponentBlueprint.getDeserializer(currentBlueprintClass)
-                    // .deserialize(currentComponentBp.toString()));
-                    break;
-                default:
-                    if (currentComponentBp != null)
-                        currentComponentBp.append(line);
-                    break;
-                }
-            }
-        }
-
-        return new EntityBlueprint(
-                componentBlueprints.toArray(new AbstractComponentBlueprint[componentBlueprints.size()]));
-    }
-
+    @Override
     public void serialize(Map<String, Object> fields)
     {
-        // StringBuilder sb = new StringBuilder(String.format("<entityBlueprint>%n"));
-
-        // for (AbstractComponentBlueprint<?> componentBlueprint :
-        // this.initialComponents)
-        // {
-        // sb.append(String.format(" <componentBlueprint>%n"));
-        // sb.append(String.format(" <blueprintClass>%s</blueprintClass>%n",
-        // componentBlueprint.getClass().getCanonicalName()));
-        // sb.append(componentBlueprint.serialize());
-        // sb.append(String.format(" </componentBlueprint>%n"));
-        // }
-
-        // sb.append("</entityBlueprint>");
-        // return sb.toString();
+        for (int i = 0; i < initialComponents.length; i++)
+            fields.put(String.format("component%d", i), initialComponents[i]);
     }
 
-    @Override
-    public String getUniqueKey()
+    @Deserializer
+    public static EntityBlueprint deserialize(Map<String, String> fields)
     {
-        return null;
+        String s = null;
+        List<IComponentBlueprint<?>> components = new ArrayList<>();
+        for (int i = 0; (s = fields.get(String.format("component%d", i))) != null; i++)
+            components.add(SerializablePool.<IComponentBlueprint<?>>deserialize(s));
+        return new EntityBlueprint(components.toArray(new IComponentBlueprint<?>[components.size()]));
     }
 }

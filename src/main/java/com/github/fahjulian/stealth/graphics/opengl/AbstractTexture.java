@@ -32,6 +32,8 @@ public abstract class AbstractTexture implements ISerializable
 {
     private int ID;
 
+    abstract public String getFilePath();
+
     /**
      * Binds the texture on the given graphics card slot
      * 
