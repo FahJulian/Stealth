@@ -41,6 +41,9 @@ public final class Log {
      * @param fileDir The directory to save .log files to
      */
     public static void init(String fileDir) {
+        assert Log.instance == null : Log.coreError("Log", "Log is already initialized.");
+        Log.instance = new Log();
+
         try {
             String date = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(new Date());
             instance.file = new File(fileDir + date + ".log");
@@ -51,46 +54,46 @@ public final class Log {
             instance.print(Level.ERROR, "(Log) Fatal error initializing log file.");
         }
 
-        Log.coreInfo("Log)", "Iniitalized logger.");
+        Log.coreInfo("Log", "Iniitalized logger.");
     }
 
     public static final String error(String origin, String message, Object... args) {
-        message = String.format("(%s) %s", origin, message, args);
+        message = String.format("(%s) %s", origin, String.format(message, args));
         instance.print(Level.ERROR, message);
         instance.write(Level.ERROR, message);
         return message;
     }
 
     public static final String coreError(String origin, String message, Object... args) {
-        message = String.format("(%s) %s", origin, message, args);
+        message = String.format("(%s) %s", origin, String.format(message, args));
         instance.print(Level.CORE_ERROR, message);
         instance.write(Level.CORE_ERROR, message);
         return message;
     }
 
     public static final String warn(String origin, String message, Object... args) {
-        message = String.format("(%s) %s", origin, message, args);
+        message = String.format("(%s) %s", origin, String.format(message, args));
         instance.print(Level.WARN, message);
         instance.write(Level.WARN, message);
         return message;
     }
 
     public static final String coreWarn(String origin, String message, Object... args) {
-        message = String.format("(%s) %s", origin, message, args);
+        message = String.format("(%s) %s", origin, String.format(message, args));
         instance.print(Level.CORE_WARN, message);
         instance.write(Level.CORE_WARN, message);
         return message;
     }
 
     public static final String info(String origin, String message, Object... args) {
-        message = String.format("(%s) %s", origin, message, args);
+        message = String.format("(%s) %s", origin, String.format(message, args));
         instance.print(Level.INFO, message);
         instance.write(Level.INFO, message);
         return message;
     }
 
     public static final String coreInfo(String origin, String message, Object... args) {
-        message = String.format("(%s) %s", origin, message, args);
+        message = String.format("(%s) %s", origin, String.format(message, args));
         instance.print(Level.CORE_INFO, message);
         instance.write(Level.CORE_INFO, message);
         return message;
@@ -113,7 +116,7 @@ public final class Log {
     }
 
     private void print(Level level, String message) {
-        System.out.println(String.format("%s%s%s[%s]%s %s", level.colorCode, level.core ? "[CORE] " : "", level.name,
+        System.out.println(String.format("%s%s[%s]%s %s", level.colorCode, level.core ? "[CORE] " : "", level.name,
                 ANSI_RESET, message));
     }
 }

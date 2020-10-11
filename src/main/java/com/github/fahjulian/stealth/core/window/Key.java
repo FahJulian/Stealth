@@ -15,7 +15,7 @@ public enum Key {
     SPACE(GLFW_KEY_SPACE), //
     W(GLFW_KEY_W), //
     A(GLFW_KEY_A), //
-    S(GLFW_KEY_S), // ,
+    S(GLFW_KEY_S), //
     D(GLFW_KEY_D), //
     CONTROL_LEFT(GLFW_KEY_LEFT_CONTROL), //
     ESCAPE(GLFW_KEY_ESCAPE);

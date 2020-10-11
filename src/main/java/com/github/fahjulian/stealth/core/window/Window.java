@@ -127,7 +127,7 @@ public class Window {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    public static boolean isClose() {
+    public static boolean isClosed() {
         return glfwWindowShouldClose(instance.glfwID);
     }
 
