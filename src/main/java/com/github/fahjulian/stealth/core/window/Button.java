@@ -37,7 +37,7 @@ public enum Button {
     private static void register(Button button) {
         if (buttonsByGlfwID == null)
             buttonsByGlfwID = new HashMap<>();
-        else if (!buttonsByGlfwID.containsKey(button.glfwID))
+        if (!buttonsByGlfwID.containsKey(button.glfwID))
             buttonsByGlfwID.put(button.glfwID, button);
     }
 }

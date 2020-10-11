@@ -44,7 +44,7 @@ public enum Key {
     private static void register(Key key) {
         if (keysByGlfwID == null)
             keysByGlfwID = new HashMap<>();
-        else if (!keysByGlfwID.containsKey(key.glfwID))
+        if (!keysByGlfwID.containsKey(key.glfwID))
             keysByGlfwID.put(key.glfwID, key);
     }
 }
